@@ -5,6 +5,9 @@
 #include "mtrand.h"
 #include "patch.h"
 #include <ctime>
+
+//testing git balkdlakfwejok.
+
 //TO DO:
 //make experimental view when paused/beginning the program- use this view to set parameters for experiment.
 
@@ -300,6 +303,8 @@ int main(int argc, char** argv)
                     display.state_putpixel(screen, *col, *(col+1), RP_ratio, RP);
                 }
             }
+            
+            
             
             //logic update.
             if(logic.getIsStepping())logic.Pause();

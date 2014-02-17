@@ -14,6 +14,7 @@ state_display::state_display (int origin_x_coord_init, int origin_y_coord_init, 
     IsStateView = true;
     IsDiscView = false;
     IsBreakView = true;
+    IsRotorView = false;
     click_x=0;
     click_y=0;
     origin_x_coord=origin_x_coord_init;
@@ -36,9 +37,13 @@ inline void state_display::ToggleDiscView(){IsDiscView = !IsDiscView;}
 
 inline void state_display::ToggleBreakView(){IsBreakView = !IsBreakView;}
 
+inline void state_display::ToggleRotorView(){IsRotorView = !IsRotorView;}
+
 bool state_display::getIsStateView(){return IsStateView;}
 
 bool state_display::getIsDiscView(){return IsDiscView;}
+
+bool state_display::getIsRotorView(){return IsRotorView;}
 
 int state_display::get_x(){return click_x;}
 
@@ -58,9 +63,13 @@ void state_display::handle_event(SDL_Event &event)
             case SDLK_s:
                 ToggleStateView();
                 return;
-            
+                
             case SDLK_b:
                 ToggleBreakView();
+                return;
+                
+            case SDLK_r:
+                ToggleRotorView();
                 return;
                 
             case SDLK_ESCAPE:
@@ -113,9 +122,9 @@ void state_display::state_putpixel(SDL_Surface* screen, int x, int y, double rat
 {
     if(IsStateView)
     {
-            SDL_Rect rect = {static_cast<Sint16>(xScale*x),static_cast<Sint16>(yScale*y),static_cast<Uint16>(xScale),static_cast<Uint16>(yScale)};
-            SDL_FillRect(screen, &rect, SDL_MapRGB(screen->format, r(ratio), g(ratio) , b(ratio)));
-            return;
+        SDL_Rect rect = {static_cast<Sint16>(xScale*x),static_cast<Sint16>(yScale*y),static_cast<Uint16>(xScale),static_cast<Uint16>(yScale)};
+        SDL_FillRect(screen, &rect, SDL_MapRGB(screen->format, r(ratio), g(ratio) , b(ratio)));
+        return;
     }
     else return;
 }
@@ -128,7 +137,7 @@ void state_display::disc_putpixel(SDL_Surface* screen, int x, int y, int disc, c
         int r = int(255.0*manual_rand(discId, 992817652));
         int g = int(255.0*manual_rand(discId, 12817612));
         int b = int(255.0*manual_rand(discId, 33437652));
- 
+        
         SDL_Rect rect = {static_cast<Sint16>(xScale*x),static_cast<Sint16>(yScale*y),static_cast<Uint16>(xScale),static_cast<Uint16>(yScale)};
         SDL_FillRect(screen, &rect, SDL_MapRGB(screen->format, r, g , b));
         return;
@@ -151,7 +160,12 @@ void state_display::break_putpixel(SDL_Surface* screen, int x, int y, const int 
     else return;
 }
 
-
-
-
-
+void state_display::rotor_putpixel(SDL_Surface* screen, int x, int y, double ratio, int RP)
+{
+    //    if(IsRotorView)
+    {
+        SDL_Rect rect = {static_cast<Sint16>(xScale*x),static_cast<Sint16>(yScale*y),static_cast<Uint16>(xScale),static_cast<Uint16>(yScale)};
+        SDL_FillRect(screen, &rect, SDL_MapRGB(screen->format, ratio*155 + 100, 155*ratio + 100, 0));
+        return;
+    }
+}

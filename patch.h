@@ -10,6 +10,7 @@
 #define __sdltest__patch__
 
 #include <iostream>
+#include "array2D.h"
 #include <SDL/SDL.h>
 
 class Spatch
@@ -21,7 +22,7 @@ class Spatch
     int yScale;
     
 public:
-    Spatch(const int &size, const int &x, const int &y, const int displayWidth, const int displayHeight, const int gridsize);
+    Spatch(const int &size, const int &x, const int &y, const int displayWidth, const int displayHeight, const int gridsize, array2D<double> &inN, array2D<double> &inS, double inNu);
     void print (SDL_Surface* screen);
     
 };
@@ -35,7 +36,7 @@ class Cpatch
     int yScale;
     
 public:
-    Cpatch(const int &radius, const int &x, const int &y, const int displayWidth, const int displayHeight, const int gridsize);
+    Cpatch(const int &size, const int &x, const int &y, const int displayWidth, const int displayHeight, const int gridsize, array2D<double> &inN, array2D<double> &inS, double inNu);
     void print (SDL_Surface* screen);
 };
 

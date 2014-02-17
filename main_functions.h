@@ -12,16 +12,19 @@
 #include <vector>
 #include <SDL/SDL.h>
 #include "state.h"
+#include "array2D.h"
+#include <utility>
+
 
 
 
 inline void update_arrays(int &state_update, std::vector<int> &all_excited_coords_cyclic, int &excitation_frame_update,  const int& frame, const int& RP, const int& i_coord, const int& j_coord)
 {
-        state_update=RP;
-        excitation_frame_update=frame;
-        all_excited_coords_cyclic.push_back(i_coord);
-        all_excited_coords_cyclic.push_back(j_coord);
-        return;
+    state_update=RP;
+    excitation_frame_update=frame;
+    all_excited_coords_cyclic.push_back(i_coord);
+    all_excited_coords_cyclic.push_back(j_coord);
+    return;
 }
 
 inline int returnDisc(const int &excitation_frame_cell, const int &excitation_frame_neighbour, const int &discont_low_bound, const int &discont_high_bound)
@@ -49,7 +52,7 @@ inline bool returnIsBreak(const int &state1, const int &state2, const int &state
     }
     return false;
 }
-    
+
 
 inline void update_discId(int& maxDiscId, int& discIdCurrent, int& discIdExcited)
 {
@@ -82,7 +85,7 @@ inline void generate_breakId(int& maxBreakId, int& breakIdEx)
 }
 
 
-void pacemaker(SDL_Surface *screen, int *state_update_first_col, std::vector<int> &all_excited_coords, int* excitation_frame, const int &frame, const int& RP, const int& GRIDSIZE, state_display &display);
+void pacemaker(SDL_Surface *screen, array2D<int> &state_update, std::vector<int> &all_excited_coords, array2D<int> &excitation_frame, const int &frame, const int &RP, const int& GRIDSIZE, state_display &display, array2D<std::pair<int,int>> &excitedBy);
 
 void init_Kishan(double*** inN, double*** inE, double*** inS, double*** inW, const int GRIDSIZE, double defect_density, double vert_conn, double firing_prob);
 

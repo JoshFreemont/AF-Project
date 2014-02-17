@@ -30,6 +30,7 @@ class state_display
     bool IsStateView;
     bool IsDiscView;
     bool IsBreakView;
+    bool IsRotorView;
     int click_x;
     int click_y;
     bool** IsDisc;
@@ -43,22 +44,25 @@ public:
     inline double r(double ratio);
     inline double b(double ratio);
     inline double g(double ratio);
-   
+    
     void state_putpixel(SDL_Surface* , int i , int j , double RP_ratio, int RP);
     void disc_putpixel(SDL_Surface* screen, int x, int y, int disc, const int &discId);
     void break_putpixel(SDL_Surface* screen, int x, int y, const int &breakId);
+    void rotor_putpixel(SDL_Surface* , int i , int j , double RP_ratio, int RP);
     inline double manual_rand(int seed, int maximum);
     
     //state display logic methods
     inline void ToggleStateView();
     inline void ToggleDiscView();
     inline void ToggleBreakView();
+    inline void ToggleRotorView();
     bool getIsStateView();
     bool getIsDiscView();
+    bool getIsRotorView();
     void handle_event(SDL_Event&);
     int get_x();
     int get_y();
-   
+    
 };
 
 #endif /* defined(__sdltest__state__) */

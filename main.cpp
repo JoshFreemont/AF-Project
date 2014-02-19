@@ -24,8 +24,8 @@ int main(int argc, char** argv)
     //******************************************Declarations and Initialization******************************************//
     //surface parameters
 	const int FPS = 50;//initial frame rates
-    const int S_WIDTH=1200;
-    const int S_HEIGHT=900;
+    const int S_WIDTH=900;
+    const int S_HEIGHT=600;
     
     //AF parameters
     const int SAP=210;//Sinoatrial period is measured in frames- not in "SI time"- SI time=SAP/FPS
@@ -82,7 +82,6 @@ int main(int argc, char** argv)
     array2D <int> rotorCellsInit (G_WIDTH,G_HEIGHT,0);
     vector <array2D <int> > rotorCells (MEMLIMIT, rotorCellsInit);//Stores whether a cell is a "rotor" cell or not
     
-    
     array2D <pair <int,int> > excitedBy(G_WIDTH,G_HEIGHT); //Stores coords of cell which excited current cell
     for (int k=0;k<G_WIDTH;k++)
     {
@@ -99,16 +98,17 @@ int main(int argc, char** argv)
     int tortoise, hare;
 
     //Patches
-    int radius=20;
-    double nuIn=0.03;
-    Cpatch patch1 (radius, 100, 100, S_WIDTH, S_HEIGHT, GRIDSIZE, inN, inS, nuIn);
-    Cpatch patch2 (radius, 150, 150, S_WIDTH, S_HEIGHT, GRIDSIZE, inN, inS, nuIn);
+    int size=40;
+    double nuIn=0.1;
+    Spatch patch1 (size, 100, 100, S_WIDTH, S_HEIGHT, GRIDSIZE, inN, inS, inE, inW, nuIn);
+    Spatch patch2 (size, 200, 200, S_WIDTH, S_HEIGHT, GRIDSIZE, inN, inS, inE, inW, nuIn);
     
     
     //excited cell memory declaration + memory reservation
     vector<int> coords;
     coords.reserve(GRIDSIZE*GRIDSIZE);
     vector<vector<int> >exCoords(MEMLIMIT, coords);
+    vector<vector<int> >rotorCoords(MEMLIMIT, coords);
     
     //cell coordinates
     int i;
@@ -148,6 +148,8 @@ int main(int argc, char** argv)
         {
             logic.handle_event(event);
             display.handle_event(event);
+            patch1.handleEvent(event);
+            patch2.handleEvent(event);
             
         }
         
@@ -225,8 +227,7 @@ int main(int argc, char** argv)
                     
                     //Check if cell is already identified as being a rotor cell
                     //continue to next iteration of loop if yes
-                    if (rotorCells[cyclicNow](tempCycleArray[rotorLengthLimit-1].first,tempCycleArray[rotorLengthLimit-1].second))
-                        continue;
+                    if (rotorCells[cyclicNow](tempCycleArray[rotorLengthLimit-1].first,tempCycleArray[rotorLengthLimit-1].second)) continue;
                     
                     //Next, check for repeats
                     cycleLength=0;
@@ -245,15 +246,19 @@ int main(int argc, char** argv)
                         }
                     }
                     
-                    if (cycleLength>2)
+                    //if (cycleLength>2)
                     {
                         for (int m=cycleStart, k=0;k<cycleLength;k++)
                         {
                             rotorCells[cyclicNow](tempCycleArray[m+k].first,tempCycleArray[m+k].second)
-                            = state_update(tempCycleArray[m+k].first,tempCycleArray[m+k].second)+1;
+                            = state_update(tempCycleArray[m+k].first,tempCycleArray[m+k].second)+1;// +1 is for resting cells st. they register in the rotor.
+                            
+                            rotorCoords[cyclicNow].push_back(tempCycleArray[m+k].first);
+                            rotorCoords[cyclicNow].push_back(tempCycleArray[m+k].second);
+                            rotorCoords[cyclicNow].push_back(state_update(tempCycleArray[m+k].first,tempCycleArray[m+k].second)+1);
                         }
                     }
-                    else continue;
+                    //else continue;
                 }
             }
             
@@ -269,21 +274,10 @@ int main(int argc, char** argv)
                     display.state_putpixel(screen, *col, *(col+1), RP_ratio, RP);
                 }
             }
-            
-            //print out rotors
-            if (display.getIsRotorView())
+            //printing for rotors
+            for(vector<int>::iterator col = rotorCoords[cyclicNow].begin(), col_end = rotorCoords[cyclicNow].end(); col != col_end; col+=3)
             {
-                for (int k=0;k<G_WIDTH;k++)
-                {
-                    for (int l=0;l<G_HEIGHT;l++)
-                    {
-                        if (rotorCells[cyclicNow](k, l))
-                        {
-                            display.rotor_putpixel(screen, k,l,
-                                                   (rotorCells[cyclicNow](k, l)-1)/(double)RP, RP);
-                        }
-                    }
-                }
+                display.rotor_putpixel(screen, *col, *(col+1), double(*(col+2)/RP), RP);
             }
             
             //pacemaker algorithm.
@@ -337,21 +331,10 @@ int main(int argc, char** argv)
                     display.state_putpixel(screen, *col, *(col+1), RP_ratio, RP);
                 }
             }
-            
-            //print out rotors
-            if (display.getIsRotorView())
+            //printing loop for rotor data
+            for(vector<int>::iterator col = rotorCoords[cyclicRwdNow].begin(), col_end = rotorCoords[cyclicRwdNow].end(); col != col_end; col+=3)
             {
-                for (int k=0;k<G_WIDTH;k++)
-                {
-                    for (int l=0;l<G_HEIGHT;l++)
-                    {
-                        if (rotorCells[cyclicRwdNow](k, l))
-                        {
-                            display.rotor_putpixel(screen, k,l,
-                                                   (rotorCells[cyclicRwdNow](k, l)-1)/(double)RP, RP);
-                        }
-                    }
-                }
+                display.rotor_putpixel(screen, *col, *(col+1), double(*(col+2)/RP), RP);
             }
             
             //logic update.
@@ -380,52 +363,3 @@ int main(int argc, char** argv)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*if(event.type==SDL_KEYDOWN)
- {
- if(event.key.keysym.sym==SDLK_a)
- {
- for(int k=-radius1; k<radius1; ++k)
- {
- for(int l=-radius1; l<radius1; ++l)
- {
- int r2= k*k + l*l;
- if(r2<=(radius1*radius1))
- {
- inN[k+x_orig1][l+y_orig1]=0.0;
- inS[k+x_orig1][l+y_orig1]=0.0;
- inE[k+x_orig1][l+y_orig1]=0.0;
- inW[k+x_orig1][l+y_orig1]=0.0;
- }
- }
- }
- 
- for(int k=-radius2; k<radius2; ++k)
- {
- for(int l=-radius2; l<radius2; ++l)
- {
- int r2= k*k + l*l;
- if(r2<=(radius2*radius2))
- {
- inN[k+x_orig2][l+y_orig2]=0.0;
- inS[k+x_orig2][l+y_orig2]=0.0;
- inE[k+x_orig2][l+y_orig2]=0.0;
- inW[k+x_orig2][l+y_orig2]=0.0;
- }
- }
- }
- }
- }*/

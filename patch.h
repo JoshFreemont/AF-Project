@@ -20,10 +20,16 @@ class Spatch
     int y;
     int xScale;
     int yScale;
+    array2D<double>* inNAddress;
+    array2D<double>* inSAddress;
+    array2D<double>* inEAddress;
+    array2D<double>* inWAddress;
     
 public:
-    Spatch(const int &size, const int &x, const int &y, const int displayWidth, const int displayHeight, const int gridsize, array2D<double> &inN, array2D<double> &inS, double inNu);
+    Spatch(const int &size, const int &x, const int &y, const int displayWidth, const int displayHeight, const int gridsize, array2D<double> &inN, array2D<double> &inS, array2D<double> &inE, array2D<double> &inW, double inNu);
     void print (SDL_Surface* screen);
+    void ablate ();
+    void handleEvent(SDL_Event &event);
     
 };
 
@@ -34,10 +40,13 @@ class Cpatch
     int y;
     int xScale;
     int yScale;
+    array2D<double>* inNAddress;
+    array2D<double>* inSAddress;
     
 public:
     Cpatch(const int &size, const int &x, const int &y, const int displayWidth, const int displayHeight, const int gridsize, array2D<double> &inN, array2D<double> &inS, double inNu);
     void print (SDL_Surface* screen);
+    void handleEvent(SDL_Event &event);
 };
 
 

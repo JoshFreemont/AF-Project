@@ -162,7 +162,7 @@ void state_display::break_putpixel(SDL_Surface* screen, int x, int y, const int 
 
 void state_display::rotor_putpixel(SDL_Surface* screen, int x, int y, double ratio, int RP)
 {
-    //    if(IsRotorView)
+    if(IsRotorView)
     {
         SDL_Rect rect = {static_cast<Sint16>(xScale*x),static_cast<Sint16>(yScale*y),static_cast<Uint16>(xScale),static_cast<Uint16>(yScale)};
         SDL_FillRect(screen, &rect, SDL_MapRGB(screen->format, ratio*155 + 100, 155*ratio + 100, 0));

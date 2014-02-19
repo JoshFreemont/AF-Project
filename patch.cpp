@@ -8,20 +8,25 @@
 
 #include "patch.h"
 
-Spatch::Spatch(const int &size_init, const int &x_init, const int &y_init, const int displayWidth, const int displayHeight, const int gridsize, array2D<double> &inN, array2D<double> &inS, double nuIn)
+Spatch::Spatch(const int &size_init, const int &x_init, const int &y_init, const int displayWidth, const int displayHeight, const int gridsize, array2D<double> &inN, array2D<double> &inS, array2D<double> &inE, array2D<double> &inW, double nuIn)
 {
     x=x_init;
     y=y_init;
     size=size_init;
     xScale=(int)displayWidth/gridsize;
     yScale=(int)displayHeight/gridsize;
+    inNAddress=&inN;
+    inSAddress=&inS;
+    inEAddress=&inE;
+    inWAddress=&inW;
     
+    //initialize patch nuIn
     for(int i=x_init-size/2; i<x_init+size/2; ++i)
     {
-        for(int j=y_init; j<y_init+size; ++j)
+        for(int j=y_init-size/2; j<y_init+size/2; ++j)
         {
-            inN(i,j)=nuIn;
-            inS(i,j)=nuIn;
+            (*inNAddress)(i,j)=nuIn;
+            (*inSAddress)(i,j)=nuIn;
         }
     }
 }
@@ -49,6 +54,39 @@ void Spatch::print (SDL_Surface* screen)
         }
     }
     return;
+}
+
+
+void Spatch::ablate()
+{
+    for(int i=x-size/2; i<x+size/2; ++i)
+    {
+        for(int j=y-size/2; j<y+size/2; ++j)
+        {
+            (*inNAddress)(i,j)=0.0;
+            (*inSAddress)(i,j)=0.0;
+            (*inEAddress)(i,j)=0.0;
+            (*inWAddress)(i,j)=0.0;
+        }
+    }
+    return;
+}
+
+void Spatch::handleEvent(SDL_Event &event)
+{
+    switch(event.type)
+    {
+        case SDL_KEYDOWN:
+            switch(event.key.keysym.sym)
+            {
+                case SDLK_a:
+                    ablate();
+                    return;
+               
+                default: return;
+            }
+        default: return;
+    }
 }
 
 

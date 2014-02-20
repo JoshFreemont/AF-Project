@@ -79,8 +79,8 @@ int main(int argc, char** argv)
     }
     
     //rotor identification variables
-    array2D <int> rotorCellsInit (G_WIDTH,G_HEIGHT,0);
-    vector <array2D <int> > rotorCells (MEMLIMIT, rotorCellsInit);//Stores whether a cell is a "rotor" cell or not
+    array2D <bool> isRotorInit (G_WIDTH,G_HEIGHT,false);
+    vector <array2D <bool> > isRotor (MEMLIMIT, isRotorInit);//Stores whether a cell is a "rotor" cell or not
     
     array2D <pair <int,int> > excitedBy(G_WIDTH,G_HEIGHT); //Stores coords of cell which excited current cell
     for (int k=0;k<G_WIDTH;k++)
@@ -99,9 +99,9 @@ int main(int argc, char** argv)
 
     //Patches
     int size=40;
-    double nuIn=0.1;
-    Spatch patch1 (size, 100, 100, S_WIDTH, S_HEIGHT, GRIDSIZE, inN, inS, inE, inW, nuIn);
-    Spatch patch2 (size, 200, 200, S_WIDTH, S_HEIGHT, GRIDSIZE, inN, inS, inE, inW, nuIn);
+    double nuIn=0.05;
+    Spatch patch1 (size, 50, 50, S_WIDTH, S_HEIGHT, GRIDSIZE, inN, inS, inE, inW, nuIn);
+    Spatch patch2 (size, 150, 150, S_WIDTH, S_HEIGHT, GRIDSIZE, inN, inS, inE, inW, nuIn);
     
     
     //excited cell memory declaration + memory reservation
@@ -169,7 +169,8 @@ int main(int argc, char** argv)
             if(FRAME>MEMLIMIT-1)
             {
                 exCoords[cyclicNow].erase(exCoords[cyclicNow].begin(), exCoords[cyclicNow].end());
-                rotorCells[cyclicNow] = rotorCellsInit;
+                isRotor[cyclicNow] = isRotorInit;
+                rotorCoords[cyclicNow].erase(rotorCoords[cyclicNow].begin(), rotorCoords[cyclicNow].end());
             }
             
             
@@ -217,21 +218,24 @@ int main(int argc, char** argv)
             {
                 for (auto col = exCoords[cyclicNow].begin(); col!= exCoords[cyclicNow].end(); col+=2)
                 {
+
                     //First, fill up temp array to check for cycles
                     tempCycleArray[0] = excitedBy(*col,*(col+1));
                     
-                    for (int k=1;k<rotorLengthLimit;k++)
+                    for (int k=1; k<rotorLengthLimit; ++k)
                     {
                         tempCycleArray[k]=excitedBy(tempCycleArray[k-1].first,tempCycleArray[k-1].second);
                     }
                     
                     //Check if cell is already identified as being a rotor cell
                     //continue to next iteration of loop if yes
-                    if (rotorCells[cyclicNow](tempCycleArray[rotorLengthLimit-1].first,tempCycleArray[rotorLengthLimit-1].second)) continue;
-                    
+                    if (isRotor[cyclicNow](tempCycleArray[rotorLengthLimit-1].first,tempCycleArray[rotorLengthLimit-1].second)) continue;
+                    if (abs(tempCycleArray[rotorLengthLimit-1].second - *(col+1)) > 15) continue;
+                        
+                        
                     //Next, check for repeats
                     cycleLength=0;
-                    for(tortoise=rotorLengthLimit-1; tortoise>=RP; tortoise--)
+                    for(tortoise=rotorLengthLimit-1; tortoise>=RP; --tortoise)
                     {
                         for(hare=tortoise-RP; hare>=0; hare--)
                         {
@@ -246,19 +250,15 @@ int main(int argc, char** argv)
                         }
                     }
                     
-                    //if (cycleLength>2)
+                    for (int m=cycleStart, k=0;k<cycleLength;++k)
                     {
-                        for (int m=cycleStart, k=0;k<cycleLength;k++)
-                        {
-                            rotorCells[cyclicNow](tempCycleArray[m+k].first,tempCycleArray[m+k].second)
-                            = state_update(tempCycleArray[m+k].first,tempCycleArray[m+k].second)+1;// +1 is for resting cells st. they register in the rotor.
+                        int i = tempCycleArray[m+k].first, j = tempCycleArray[m+k].second, state = state_update(i,j)+1;
                             
-                            rotorCoords[cyclicNow].push_back(tempCycleArray[m+k].first);
-                            rotorCoords[cyclicNow].push_back(tempCycleArray[m+k].second);
-                            rotorCoords[cyclicNow].push_back(state_update(tempCycleArray[m+k].first,tempCycleArray[m+k].second)+1);
-                        }
+                        rotorCoords[cyclicNow].push_back(i);
+                        rotorCoords[cyclicNow].push_back(j);
+                        rotorCoords[cyclicNow].push_back(state);
+                        isRotor[cyclicNow](i,j)=true;
                     }
-                    //else continue;
                 }
             }
             
@@ -277,7 +277,7 @@ int main(int argc, char** argv)
             //printing for rotors
             for(vector<int>::iterator col = rotorCoords[cyclicNow].begin(), col_end = rotorCoords[cyclicNow].end(); col != col_end; col+=3)
             {
-                display.rotor_putpixel(screen, *col, *(col+1), double(*(col+2)/RP), RP);
+                display.rotor_putpixel(screen, *col, *(col+1), ((double)*(col+2)/RP), RP);
             }
             
             //pacemaker algorithm.

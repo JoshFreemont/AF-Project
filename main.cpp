@@ -18,6 +18,10 @@
 //Note, always update the current frame= "FRAME" and always check the previous frame.
 //EXCITED CELL PRINTING PROCEDURE + STATE DE-EXCITATION PROCESS: Use iterator to iterate back through the exCoords array from "FRAME-1" all the way to "FRAME-RP" (where applicable). Use the "current frame" and the scanned FRAME to determine refractoriness and use this to colour the pixels accordingly.
 
+
+//NOTES ON ROTOR IDENTIFICATION
+
+
 using namespace std;
 
 int main(int argc, char** argv)
@@ -87,7 +91,7 @@ int main(int argc, char** argv)
     //rotor id variables
     array2D<int> rotorId (G_WIDTH, G_HEIGHT, 0);//stores all rotor ids for the state.*****MAYBE CHANGE THIS TO KEEP FRAME DATA****
     unordered_map<int, int> tempRotorIdFrequency;//stores temp frequency count of ids
-    double rotorIdThresh = 1.0, tempRotorIdRatio;//threshold for rotor id inheritence. 1.0=100% of current rotor cells must have same id.
+    double rotorIdThresh = 0.1, tempRotorIdRatio;//threshold for rotor id inheritence. 1.0=100% of current rotor cells must have same id.
     int maxFreq;//counts the maximum frequency rotor id within rotor
     int tempRotorId;//creates a temp rotor id variable.
     int maxRotorId=0;//global maximum rotor id counter.
@@ -292,7 +296,7 @@ int main(int argc, char** argv)
                     tempRotorIdRatio=(double)maxFreq/cycleLength;
                     if(tempRotorIdRatio >= rotorIdThresh && tempRotorId != 0)
                     {
-                        //put data in memory
+                        //put data in memory, [0]=i, [1]=j, [2]=state, [3]=rotorid
                         for (int m=cycleStart, k=0;k<cycleLength;++k)
                         {
                             int i = tempCycleArray[m+k].first, j = tempCycleArray[m+k].second, state = state_update(i,j)+1;
@@ -308,9 +312,10 @@ int main(int argc, char** argv)
                     
                     else
                     {
+                        //add to max rotor id counter and assign this new id to rotor.
                         maxRotorId++;
                         
-                        //put data in memory
+                        //put data in memory, [0]=i, [1]=j, [2]=state, [3]=rotorid
                         for (int m=cycleStart, k=0;k<cycleLength;++k)
                         {
                             int i = tempCycleArray[m+k].first, j = tempCycleArray[m+k].second, state = state_update(i,j)+1;
@@ -326,6 +331,14 @@ int main(int argc, char** argv)
                 }
             }
             
+            //update rotorid array.
+            for(int i=0; i<G_WIDTH; ++i)
+            {
+                for(int j=0; j<G_HEIGHT; ++j)
+                {
+                    if(!isRotor[cyclicNow](i,j)) rotorId(i,j) = 0;
+                }
+            }
             
             //de-excitation process for refractory cells AND printing process for all cells.
             for (int row = cyclicNow, rowEnd = cyclicBackRP; row != rowEnd; row=(row-1+MEMLIMIT)%MEMLIMIT)

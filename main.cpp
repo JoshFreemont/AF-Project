@@ -6,6 +6,7 @@
 #include "patch.h"
 #include "array2D.h"
 #include <ctime>
+#include <unordered_map>
 //TO DO:
 //make experimental view when paused/beginning the program- use this view to set parameters for experiment.
 
@@ -78,9 +79,18 @@ int main(int argc, char** argv)
         }
     }
     
-    //rotor identification variables
+    //rotor variables
+    const int rotorLengthLimit = 2*RP;
     array2D <bool> isRotorInit (G_WIDTH,G_HEIGHT,false);
     vector <array2D <bool> > isRotor (MEMLIMIT, isRotorInit);//Stores whether a cell is a "rotor" cell or not
+    
+    //rotor id variables
+    array2D<int> rotorId (G_WIDTH, G_HEIGHT, 0);//stores all rotor ids for the state.*****MAYBE CHANGE THIS TO KEEP FRAME DATA****
+    unordered_map<int, int> tempRotorIdFrequency;//stores temp frequency count of ids
+    double rotorIdThresh = 1.0, tempRotorIdRatio;//threshold for rotor id inheritence. 1.0=100% of current rotor cells must have same id.
+    int maxFreq;//counts the maximum frequency rotor id within rotor
+    int tempRotorId;//creates a temp rotor id variable.
+    int maxRotorId=0;//global maximum rotor id counter.
     
     array2D <pair <int,int> > excitedBy(G_WIDTH,G_HEIGHT); //Stores coords of cell which excited current cell
     for (int k=0;k<G_WIDTH;k++)
@@ -90,12 +100,13 @@ int main(int argc, char** argv)
             excitedBy(k,l) = make_pair(k,l);
         }
     }
-    const int rotorLengthLimit = 2*RP;
+    
     pair <int,int> tempCycleArray[rotorLengthLimit+1];//Temporary array to store values
     //to detect rotors
     int cycleStart = 0;
     int cycleLength = 0;
     int tortoise, hare;
+    bool isCycle;
 
     //Patches
     int size=40;
@@ -235,6 +246,7 @@ int main(int argc, char** argv)
                         
                     //Next, check for repeats
                     cycleLength=0;
+                    isCycle=false;
                     for(tortoise=rotorLengthLimit-1; tortoise>=RP; --tortoise)
                     {
                         for(hare=tortoise-RP; hare>=0; hare--)
@@ -245,19 +257,71 @@ int main(int argc, char** argv)
                                 cycleStart=hare;
                                 cycleLength=tortoise-hare;
                                 tortoise=-1;
+                                isCycle=true;
                                 break;
                             }
                         }
                     }
                     
+                    //if no cycle then continue through next iteration.
+                    if(!isCycle)continue;
+                    
+                    //Rotor Id allocation protocol
+                    //fill rotor frequency map.
                     for (int m=cycleStart, k=0;k<cycleLength;++k)
                     {
-                        int i = tempCycleArray[m+k].first, j = tempCycleArray[m+k].second, state = state_update(i,j)+1;
+                        int i = tempCycleArray[m+k].first, j = tempCycleArray[m+k].second;
+                        tempRotorIdFrequency[rotorId(i,j)]++;
+                    }
+                    
+                    //now find highest rotor id frequency in map
+                    maxFreq=0;
+                    for(unordered_map<int, int>::iterator it = tempRotorIdFrequency.begin(); it != tempRotorIdFrequency.end(); ++it)
+                    {
+                        if(it->second > maxFreq)
+                        {
+                            maxFreq = it->second;
+                            tempRotorId = it->first;
+                        }
+                    }
+                    tempRotorIdFrequency.clear();//clear rotor id frequency map after use.
+                    
+                    
+                    //now check if tempRotorIdRatio > rotorIdThresh if so then inherit id and put rotor data in memory.
+                    // + create new id if all current ids are zeros.
+                    tempRotorIdRatio=(double)maxFreq/cycleLength;
+                    if(tempRotorIdRatio >= rotorIdThresh && tempRotorId != 0)
+                    {
+                        //put data in memory
+                        for (int m=cycleStart, k=0;k<cycleLength;++k)
+                        {
+                            int i = tempCycleArray[m+k].first, j = tempCycleArray[m+k].second, state = state_update(i,j)+1;
+
+                            rotorCoords[cyclicNow].push_back(i);
+                            rotorCoords[cyclicNow].push_back(j);
+                            rotorCoords[cyclicNow].push_back(state);
+                            rotorCoords[cyclicNow].push_back(tempRotorId);
+                            rotorId(i,j)=tempRotorId;
+                            isRotor[cyclicNow](i,j)=true;
+                        }
+                    }
+                    
+                    else
+                    {
+                        maxRotorId++;
+                        
+                        //put data in memory
+                        for (int m=cycleStart, k=0;k<cycleLength;++k)
+                        {
+                            int i = tempCycleArray[m+k].first, j = tempCycleArray[m+k].second, state = state_update(i,j)+1;
                             
-                        rotorCoords[cyclicNow].push_back(i);
-                        rotorCoords[cyclicNow].push_back(j);
-                        rotorCoords[cyclicNow].push_back(state);
-                        isRotor[cyclicNow](i,j)=true;
+                            rotorCoords[cyclicNow].push_back(i);
+                            rotorCoords[cyclicNow].push_back(j);
+                            rotorCoords[cyclicNow].push_back(state);
+                            rotorCoords[cyclicNow].push_back(maxRotorId);
+                            rotorId(i,j)=maxRotorId;
+                            isRotor[cyclicNow](i,j)=true;
+                        }
                     }
                 }
             }
@@ -271,13 +335,14 @@ int main(int argc, char** argv)
                 {
                     //do not de-excite if state has just been excited in frame=cyclicNow.
                     if(row!=cyclicNow)--state_update(*col,*(col+1));
-                    display.state_putpixel(screen, *col, *(col+1), RP_ratio, RP);
+                    display.state_putpixel(screen, *col, *(col+1), RP_ratio);
                 }
             }
             //printing for rotors
-            for(vector<int>::iterator col = rotorCoords[cyclicNow].begin(), col_end = rotorCoords[cyclicNow].end(); col != col_end; col+=3)
+            for(vector<int>::iterator col = rotorCoords[cyclicNow].begin(), col_end = rotorCoords[cyclicNow].end(); col != col_end; col+=4)
             {
-                display.rotor_putpixel(screen, *col, *(col+1), ((double)*(col+2)/(double)RP), RP);
+                //display.rotor_putpixel(screen, *col, *(col+1), ((double)*(col+2)/(double)RP));
+                display.rotor_id_putpixel(screen, *col, *(col+1), *(col+3), *(col+2));
             }
             
             //pacemaker algorithm.
@@ -328,13 +393,14 @@ int main(int argc, char** argv)
                 double RP_ratio=(double)(RP-(RWD_FRAME+MEMLIMIT-row)%MEMLIMIT)/RP;
                 for(vector<int>::iterator col = exCoords[row].begin(), col_end = exCoords[row].end(); col != col_end; col+=2)
                 {
-                    display.state_putpixel(screen, *col, *(col+1), RP_ratio, RP);
+                    display.state_putpixel(screen, *col, *(col+1), RP_ratio);
                 }
             }
             //printing loop for rotor data
-            for(vector<int>::iterator col = rotorCoords[cyclicRwdNow].begin(), col_end = rotorCoords[cyclicRwdNow].end(); col != col_end; col+=3)
+            for(vector<int>::iterator col = rotorCoords[cyclicRwdNow].begin(), col_end = rotorCoords[cyclicRwdNow].end(); col != col_end; col+=4)
             {
-                display.rotor_putpixel(screen, *col, *(col+1), ((double)*(col+2)/RP), RP);
+                //display.rotor_putpixel(screen, *col, *(col+1), ((double)*(col+2)/RP));
+                display.rotor_id_putpixel(screen, *col, *(col+1), *(col+3), *(col+2));
             }
             
             //logic update.

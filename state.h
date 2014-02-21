@@ -45,10 +45,11 @@ public:
     inline double b(double ratio);
     inline double g(double ratio);
     
-    void state_putpixel(SDL_Surface* , int i , int j , double RP_ratio, int RP);
+    void state_putpixel(SDL_Surface* , int i , int j , double RP_ratio);
     void disc_putpixel(SDL_Surface* screen, int x, int y, int disc, const int &discId);
     void break_putpixel(SDL_Surface* screen, int x, int y, const int &breakId);
-    void rotor_putpixel(SDL_Surface* , int i , int j , double RP_ratio, int RP);
+    void rotor_putpixel(SDL_Surface* , int i , int j , double RP_ratio);
+    void rotor_id_putpixel(SDL_Surface*, int i, int j, const int &rotorId, double RP_ratio);
     inline double manual_rand(int seed, int maximum);
     
     //state display logic methods

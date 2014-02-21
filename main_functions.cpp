@@ -19,7 +19,7 @@ void pacemaker(SDL_Surface *screen, array2D<int> &state_update, std::vector<int>
             all_excited_coords.push_back(0);//push back i coord in same coordinate definition as the state array.
             all_excited_coords.push_back(j);//push back j coord as above
             excitation_frame(0,j)=frame;
-            display.state_putpixel(screen, 0, j, 1.0, RP);
+            display.state_putpixel(screen, 0, j, 1.0);
         }
     return;
 }

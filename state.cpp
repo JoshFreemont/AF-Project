@@ -118,7 +118,7 @@ inline double state_display::manual_rand(int seed, int maximum)
 }
 
 //function to print out to screen.
-void state_display::state_putpixel(SDL_Surface* screen, int x, int y, double ratio, int RP)
+void state_display::state_putpixel(SDL_Surface* screen, int x, int y, double ratio)
 {
     if(IsStateView)
     {
@@ -160,7 +160,7 @@ void state_display::break_putpixel(SDL_Surface* screen, int x, int y, const int 
     else return;
 }
 
-void state_display::rotor_putpixel(SDL_Surface* screen, int x, int y, double ratio, int RP)
+void state_display::rotor_putpixel(SDL_Surface* screen, int x, int y, double ratio)
 {
     if(IsRotorView)
     {
@@ -169,3 +169,16 @@ void state_display::rotor_putpixel(SDL_Surface* screen, int x, int y, double rat
         return;
     }
 }
+
+void state_display::rotor_id_putpixel(SDL_Surface* screen, int x, int y,const int &rotorId , double ratio)
+{
+    int r = int(255.0*manual_rand(rotorId, 992817652));
+    int g = int(255.0*manual_rand(rotorId, 12817612));
+    int b = int(255.0*manual_rand(rotorId, 33437652));
+    
+    SDL_Rect rect = {static_cast<Sint16>(xScale*x),static_cast<Sint16>(yScale*y),static_cast<Uint16>(xScale),static_cast<Uint16>(yScale)};
+    SDL_FillRect(screen, &rect, SDL_MapRGB(screen->format, r, g, b));
+    return;
+}
+
+

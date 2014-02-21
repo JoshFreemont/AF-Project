@@ -24,15 +24,15 @@ int main(int argc, char** argv)
     //******************************************Declarations and Initialization******************************************//
     //surface parameters
 	const int FPS = 50;//initial frame rates
-    const int S_WIDTH=900;
+    const int S_WIDTH=1000;
     const int S_HEIGHT=600;
     
     //AF parameters
     const int SAP=210;//Sinoatrial period is measured in frames- not in "SI time"- SI time=SAP/FPS
     const int RP=50;//Refractory peiod is measured in frames - not in "SI time".
-    const double VER=0.35;//0.1477
+    const double VER=0.23;//0.1477
     const double HOR=0.985;//0.97
-    const int GRIDSIZE=300;
+    const int GRIDSIZE=200;
     const int G_HEIGHT=GRIDSIZE;
     const int G_WIDTH=GRIDSIZE;
     
@@ -99,7 +99,7 @@ int main(int argc, char** argv)
 
     //Patches
     int size=40;
-    double nuIn=0.05;
+    double nuIn=0.08;
     Spatch patch1 (size, 50, 50, S_WIDTH, S_HEIGHT, GRIDSIZE, inN, inS, inE, inW, nuIn);
     Spatch patch2 (size, 150, 150, S_WIDTH, S_HEIGHT, GRIDSIZE, inN, inS, inE, inW, nuIn);
     
@@ -277,7 +277,7 @@ int main(int argc, char** argv)
             //printing for rotors
             for(vector<int>::iterator col = rotorCoords[cyclicNow].begin(), col_end = rotorCoords[cyclicNow].end(); col != col_end; col+=3)
             {
-                display.rotor_putpixel(screen, *col, *(col+1), ((double)*(col+2)/RP), RP);
+                display.rotor_putpixel(screen, *col, *(col+1), ((double)*(col+2)/(double)RP), RP);
             }
             
             //pacemaker algorithm.
@@ -334,7 +334,7 @@ int main(int argc, char** argv)
             //printing loop for rotor data
             for(vector<int>::iterator col = rotorCoords[cyclicRwdNow].begin(), col_end = rotorCoords[cyclicRwdNow].end(); col != col_end; col+=3)
             {
-                display.rotor_putpixel(screen, *col, *(col+1), double(*(col+2)/RP), RP);
+                display.rotor_putpixel(screen, *col, *(col+1), ((double)*(col+2)/RP), RP);
             }
             
             //logic update.

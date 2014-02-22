@@ -7,6 +7,7 @@
 //
 
 #include "state.h"
+#include <cmath>
 
 
 state_display::state_display (int origin_x_coord_init, int origin_y_coord_init, int grid_size_init, int sWidthInit, int sHeightInit, const int sElementsInit, bool** histoIsBinSelect, bool& histoIsAllSelect)

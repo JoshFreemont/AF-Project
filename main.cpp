@@ -29,13 +29,13 @@ int main(int argc, char** argv)
     //******************************************Declarations and Initialization******************************************//
     //surface parameters
 	const int FPS = 50;//initial frame rates
-    const int S_WIDTH=1000;
+    const int S_WIDTH=800;
     const int S_HEIGHT=600;
     
     //AF parameters
     const int SAP=210;//Sinoatrial period is measured in frames- not in "SI time"- SI time=SAP/FPS
     const int RP=50;//Refractory peiod is measured in frames - not in "SI time".
-    const double VER=0.23;//0.1477
+    const double VER=0.35;//0.1477
     const double HOR=0.985;//0.97
     const int GRIDSIZE=200;
     const int G_HEIGHT=GRIDSIZE;
@@ -91,7 +91,7 @@ int main(int argc, char** argv)
     //rotor id variables
     array2D<int> rotorId (G_WIDTH, G_HEIGHT, 0);//stores all rotor ids for the state.*****MAYBE CHANGE THIS TO KEEP FRAME DATA****
     unordered_map<int, int> tempRotorIdFrequency;//stores temp frequency count of ids
-    double rotorIdThresh = 0.1, tempRotorIdRatio;//threshold for rotor id inheritence. 1.0=100% of current rotor cells must have same id.
+    double rotorIdThresh = 1.0, tempRotorIdRatio;//threshold for rotor id inheritence. 1.0=100% of current rotor cells must have same id.
     int maxFreq;//counts the maximum frequency rotor id within rotor
     int tempRotorId;//creates a temp rotor id variable.
     int maxRotorId=0;//global maximum rotor id counter.
@@ -270,8 +270,8 @@ int main(int argc, char** argv)
                     //if no cycle then continue through next iteration.
                     if(!isCycle)continue;
                     
-                    //Rotor Id allocation protocol
-                    //fill rotor frequency map.
+                    //Rotor Id allocation
+                    //fill rotor frequency map with previous rotor ids for rotor cells
                     for (int m=cycleStart, k=0;k<cycleLength;++k)
                     {
                         int i = tempCycleArray[m+k].first, j = tempCycleArray[m+k].second;
@@ -282,7 +282,7 @@ int main(int argc, char** argv)
                     maxFreq=0;
                     for(unordered_map<int, int>::iterator it = tempRotorIdFrequency.begin(); it != tempRotorIdFrequency.end(); ++it)
                     {
-                        if(it->second > maxFreq)
+                        if(it->second > maxFreq && it->first != 0)
                         {
                             maxFreq = it->second;
                             tempRotorId = it->first;
@@ -291,10 +291,10 @@ int main(int argc, char** argv)
                     tempRotorIdFrequency.clear();//clear rotor id frequency map after use.
                     
                     
-                    //now check if tempRotorIdRatio > rotorIdThresh if so then inherit id and put rotor data in memory.
+                    //now check if tempRotorIdRatio > rotorIdThresh if so then inherit id and put all rotor data in memory.
                     // + create new id if all current ids are zeros.
                     tempRotorIdRatio=(double)maxFreq/cycleLength;
-                    if(tempRotorIdRatio >= rotorIdThresh && tempRotorId != 0)
+                    if(tempRotorIdRatio >= rotorIdThresh)
                     {
                         //put data in memory, [0]=i, [1]=j, [2]=state, [3]=rotorid
                         for (int m=cycleStart, k=0;k<cycleLength;++k)
@@ -355,7 +355,7 @@ int main(int argc, char** argv)
             for(vector<int>::iterator col = rotorCoords[cyclicNow].begin(), col_end = rotorCoords[cyclicNow].end(); col != col_end; col+=4)
             {
                 //display.rotor_putpixel(screen, *col, *(col+1), ((double)*(col+2)/(double)RP));
-                display.rotor_id_putpixel(screen, *col, *(col+1), *(col+3), *(col+2));
+                display.rotor_id_putpixel(screen, *col, *(col+1), *(col+3), ((double)*(col+2))/RP);
             }
             
             //pacemaker algorithm.
@@ -413,7 +413,7 @@ int main(int argc, char** argv)
             for(vector<int>::iterator col = rotorCoords[cyclicRwdNow].begin(), col_end = rotorCoords[cyclicRwdNow].end(); col != col_end; col+=4)
             {
                 //display.rotor_putpixel(screen, *col, *(col+1), ((double)*(col+2)/RP));
-                display.rotor_id_putpixel(screen, *col, *(col+1), *(col+3), *(col+2));
+                display.rotor_id_putpixel(screen, *col, *(col+1), *(col+3), ((double)*(col+2))/RP);
             }
             
             //logic update.

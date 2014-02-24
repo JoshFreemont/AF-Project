@@ -21,6 +21,7 @@
 
 //NOTES ON ROTOR IDENTIFICATION
 
+
 using namespace std;
 
 int main(int argc, char** argv)
@@ -113,7 +114,7 @@ int main(int argc, char** argv)
 
     //Patches
     int size=40;
-    double nuIn=0.05;
+    double nuIn=0.08;
     Spatch patch1 (size, 50, 50, S_WIDTH, S_HEIGHT, GRIDSIZE, inN, inS, inE, inW, nuIn);
     Spatch patch2 (size, 150, 150, S_WIDTH, S_HEIGHT, GRIDSIZE, inN, inS, inE, inW, nuIn);
     

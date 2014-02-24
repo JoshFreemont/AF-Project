@@ -21,16 +21,12 @@
 
 //NOTES ON ROTOR IDENTIFICATION
 
+
 using namespace std;
 
 int main(int argc, char** argv)
 {
     //******************************************Declarations and Initialization******************************************//
-    //surface parameters
-	const int FPS = 50;//initial frame rates
-    const int S_WIDTH=800;
-    const int S_HEIGHT=600;
-    
     //AF parameters
     const int SAP=210;//Sinoatrial period is measured in frames- not in "SI time"- SI time=SAP/FPS
     const int RP=50;//Refractory peiod is measured in frames - not in "SI time".
@@ -41,7 +37,7 @@ int main(int argc, char** argv)
     const int G_WIDTH=GRIDSIZE;
     
     //frame and memory variables
-    const int MEMLIMIT=50*RP;
+    const int MEMLIMIT=RP+1;
     const int MAXFRAME=1000000;
     int FRAME=0;
     int cyclicNow=0;
@@ -112,10 +108,10 @@ int main(int argc, char** argv)
     bool isCycle;
 
     //Patches
-    int size=40;
-    double nuIn=0.05;
+    /*int size=40;
+    double nuIn=0.08;
     Spatch patch1 (size, 50, 50, S_WIDTH, S_HEIGHT, GRIDSIZE, inN, inS, inE, inW, nuIn);
-    Spatch patch2 (size, 150, 150, S_WIDTH, S_HEIGHT, GRIDSIZE, inN, inS, inE, inW, nuIn);
+    Spatch patch2 (size, 150, 150, S_WIDTH, S_HEIGHT, GRIDSIZE, inN, inS, inE, inW, nuIn);*/
     
     
     //excited cell memory declaration + memory reservation
@@ -134,60 +130,30 @@ int main(int argc, char** argv)
     
     //measures of fibrillation
     int HIGHDISC=SAP;
-    
-    //display + event classes *****make display controller class which automatically carries out positioning of elements on the screen.*****
-    histogram histo (0, 0, 100 , 100, HIGHDISC, 500);
-    state_display display(0, S_HEIGHT, GRIDSIZE, S_WIDTH, S_HEIGHT, GRIDSIZE, histo.getIsBinSelectArray(), histo.getIsAllSelect());
-    general_logic logic(FPS);
-    
-    //Window initialization
-    SDL_Init(SDL_INIT_EVERYTHING);//initialize sdl
-	SDL_Surface *screen;//declare screen (sdl surface)
-	screen = SDL_SetVideoMode(S_WIDTH, S_HEIGHT, 32, SDL_SWSURFACE);
-    
-    //Christensen model initialization
-    /*double defect_density = 0.3;
-     double vertical_connections = 0.2;
-     double firing_prob = 0.95;
-     init_Kishan(&inN, &inE, &inS, &inW, GRIDSIZE, defect_density, vertical_connections, firing_prob);
-     test(inN);*/
+
+    //setup to scan through different rotor id inheritence thresholds without any patches. Aim: to determine how to classify rotors.
+
+
+
     
     //******************************************AF Experimentation Loop******************************************//
-    
-    while(logic.getIsRunning())
-    {
-        start = SDL_GetTicks();
-        SDL_Event event;
-        while(SDL_PollEvent(&event))
-        {
-            logic.handle_event(event);
-            display.handle_event(event);
-            patch1.handleEvent(event);
-            patch2.handleEvent(event);
+
+        //update frame and cyclic frame values
+        cyclicNow = FRAME%MEMLIMIT;
+        cyclicOld = (FRAME+MEMLIMIT-1)%MEMLIMIT;
+        cyclicBackRP = (FRAME+MEMLIMIT-1-RP)%MEMLIMIT;
+        RWD_FRAME = FRAME;
             
+        //free memory in exCoords and rotorCells arrays.
+        if(FRAME>MEMLIMIT-1)
+        {
+            exCoords[cyclicNow].erase(exCoords[cyclicNow].begin(), exCoords[cyclicNow].end());
+            isRotor[cyclicNow] = isRotorInit;
+            rotorCoords[cyclicNow].erase(rotorCoords[cyclicNow].begin(), rotorCoords[cyclicNow].end());
         }
-        
-        //LIVE LOOP.
-        if(!logic.getIsPaused() && logic.getIsLive())//if not paused and is live then carry out loop.
-        {
-            //clear screen
-            if(logic.getIsClearScreen())SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 20, 20, 20));
             
-            //update frame and cyclic frame values
-            cyclicNow = FRAME%MEMLIMIT;
-            cyclicOld = (FRAME+MEMLIMIT-1)%MEMLIMIT;
-            cyclicBackRP = (FRAME+MEMLIMIT-1-RP)%MEMLIMIT;
-            RWD_FRAME = FRAME;
-            
-            //free memory in exCoords and rotorCells arrays.
-            if(FRAME>MEMLIMIT-1)
-            {
-                exCoords[cyclicNow].erase(exCoords[cyclicNow].begin(), exCoords[cyclicNow].end());
-                isRotor[cyclicNow] = isRotorInit;
-                rotorCoords[cyclicNow].erase(rotorCoords[cyclicNow].begin(), rotorCoords[cyclicNow].end());
-            }
-            
-            
+         
+
             //begin excited scan process to calculate new excited cells
             for(vector<int>::iterator it = exCoords[cyclicOld].begin(), it_end = exCoords[cyclicOld].end(); it != it_end; it+=2)
             {
@@ -228,8 +194,6 @@ int main(int argc, char** argv)
             }
             
             //check for rotors
-            if (display.getIsRotorView())
-            {
                 for (auto col = exCoords[cyclicNow].begin(); col!= exCoords[cyclicNow].end(); col+=2)
                 {
 
@@ -328,7 +292,6 @@ int main(int argc, char** argv)
                         }
                     }
                 }
-            }
             
             //update rotorid array.
             for(int i=0; i<G_WIDTH; ++i)
@@ -340,21 +303,13 @@ int main(int argc, char** argv)
             }
             
             //de-excitation process for refractory cells AND printing process for all cells.
-            for (int row = cyclicNow, rowEnd = cyclicBackRP; row != rowEnd; row=(row-1+MEMLIMIT)%MEMLIMIT)
+            for (int row = cyclicOld, rowEnd = cyclicBackRP; row != rowEnd; row=(row-1+MEMLIMIT)%MEMLIMIT)
             {
                 double RP_ratio=(double)(RP-(FRAME+MEMLIMIT-row)%MEMLIMIT)/RP;
                 for(vector<int>::iterator col = exCoords[row].begin(), col_end = exCoords[row].end(); col != col_end; col+=2)
-                {
-                    //do not de-excite if state has just been excited in frame=cyclicNow.
-                    if(row!=cyclicNow)--state_update(*col,*(col+1));
-                    display.state_putpixel(screen, *col, *(col+1), RP_ratio);
+                {                
+                    --state_update(*col,*(col+1));
                 }
-            }
-            //printing for rotors
-            for(vector<int>::iterator col = rotorCoords[cyclicNow].begin(), col_end = rotorCoords[cyclicNow].end(); col != col_end; col+=4)
-            {
-                //display.rotor_putpixel(screen, *col, *(col+1), ((double)*(col+2)/(double)RP));
-                display.rotor_id_putpixel(screen, *col, *(col+1), *(col+3), ((double)*(col+2))/RP);
             }
             
             //pacemaker algorithm.
@@ -366,74 +321,9 @@ int main(int argc, char** argv)
             //update loop variables.
             state=state_update;
             exFrame=exFrameNew;
-            
-            //logic update
-            if(logic.getIsStepping())logic.Pause();//framestep logic
-            if(FRAME==MAXFRAME)logic.Stop();//stop at MAXFRAME
             ++FRAME;
         }
         
-        
-        
-        //NON LIVE LOOP
-        //use dummy frame RWD_FRAME.
-        else if(!logic.getIsLive() && !logic.getIsPaused())
-        {
-            //if memory limit is reached- pause, set fwd and exit.
-            if(RWD_FRAME%MEMLIMIT == (FRAME+RP+1)%MEMLIMIT && logic.getIsRWD())
-            {
-                logic.Pause();
-                logic.setFWD();
-                continue;
-            }
-            
-            //check if rwd or fwd and change frame accordingly
-            if(logic.getIsRWD() && RWD_FRAME>0)--RWD_FRAME;
-            if(logic.getIsFWD())++RWD_FRAME;
-            
-            //update cyclic frames depending on new RWD_FRAME
-            cyclicRwdNow = RWD_FRAME%MEMLIMIT;
-            cyclicRwdOld = (RWD_FRAME+MEMLIMIT-1)%MEMLIMIT;
-            cyclicRwdBackRP = (RWD_FRAME+MEMLIMIT-1-RP)%MEMLIMIT;
-            
-            //clear screen
-            if(logic.getIsClearScreen())SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 20, 20, 20));
-            
-            //printing loop for previous state data
-            for (int row = cyclicRwdNow, rowEnd = cyclicRwdBackRP; row != rowEnd; row=(row-1+MEMLIMIT)%MEMLIMIT)
-            {
-                double RP_ratio=(double)(RP-(RWD_FRAME+MEMLIMIT-row)%MEMLIMIT)/RP;
-                for(vector<int>::iterator col = exCoords[row].begin(), col_end = exCoords[row].end(); col != col_end; col+=2)
-                {
-                    display.state_putpixel(screen, *col, *(col+1), RP_ratio);
-                }
-            }
-            //printing loop for rotor data
-            for(vector<int>::iterator col = rotorCoords[cyclicRwdNow].begin(), col_end = rotorCoords[cyclicRwdNow].end(); col != col_end; col+=4)
-            {
-                //display.rotor_putpixel(screen, *col, *(col+1), ((double)*(col+2)/RP));
-                display.rotor_id_putpixel(screen, *col, *(col+1), *(col+3), ((double)*(col+2))/RP);
-            }
-            
-            //logic update.
-            if(logic.getIsStepping())logic.Pause();
-            if(RWD_FRAME==FRAME-1)logic.GoLive();
-        }
-        
-        //print patches
-        patch1.print(screen);
-        patch2.print(screen);
-
-        
-        //buffer
-        if(1000/logic.getFrameRate() > SDL_GetTicks()-start) {SDL_Delay(1000/logic.getFrameRate()-(SDL_GetTicks()-start));}
-        //render
-        SDL_Flip(screen);
-    }
-    
-    //exit SDL when complete
-    SDL_Quit();
-    
     return 0;
 }
 

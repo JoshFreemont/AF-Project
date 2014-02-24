@@ -81,7 +81,7 @@ int main(int argc, char** argv)
     double rotorIdThresh = 0.01, tempRotorIdRatio;//threshold for rotor id inheritence. 1.0=100% of current rotor cells must have same id.
     int maxFreq;//counts the maximum frequency rotor id within rotor
     int tempRotorId;//creates a temp rotor id variable.
-    int maxRotorId=0;//global maximum rotor id counter.
+    int maxRotorId=-1;//global maximum rotor id counter.
     vector<int> rotorIdDuration;
 
     array2D <pair <int,int> > excitedBy(G_WIDTH,G_HEIGHT); //Stores coords of cell which excited current cell
@@ -185,6 +185,7 @@ int main(int argc, char** argv)
     }
     rotorIdDuration.clear();
     tempRotorIdFrequency.clear();
+    maxRotorId=-1;
 
     exCoords = emptyCoords;
     rotorCoords = emptyCoords;
@@ -342,8 +343,8 @@ int main(int argc, char** argv)
                             rotorCoords[cyclicNow].push_back(maxRotorId);
                             rotorId(i,j)=maxRotorId;
                             isRotor[cyclicNow](i,j)=true;
-                            rotorIdDuration.push_back(1);
                         }
+                        rotorIdDuration.push_back(1);
                     }
                 }
 

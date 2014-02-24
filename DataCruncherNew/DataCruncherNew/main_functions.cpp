@@ -9,7 +9,7 @@
 #include "main_functions.h"
 
 
-void pacemaker(SDL_Surface *screen, array2D<int> &state_update, std::vector<int> &all_excited_coords, array2D<int> &excitation_frame, const int &frame, const int& RP, const int& GRIDSIZE, state_display &display, array2D<std::pair<int,int>> &excitedBy)
+void pacemaker(array2D<int> &state_update, std::vector<int> &all_excited_coords, array2D<int> &excitation_frame, const int &frame, const int& RP, const int& GRIDSIZE, array2D<std::pair<int,int>> &excitedBy)
 {
     for(int j=0; j<GRIDSIZE; ++j)
         if(state_update(0,j)==0)

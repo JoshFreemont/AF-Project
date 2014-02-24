@@ -32,30 +32,6 @@ Spatch::Spatch(const int &size_init, const int &x_init, const int &y_init, const
 }
 
 
-void Spatch::print (SDL_Surface* screen)
-{
-    for(int i=x-size/2; i<=x+size/2; ++i)
-    {
-        for(int j=y-size/2; j<=y+size/2; j+=size)
-        {
-            Uint32* pixels = (Uint32*)screen->pixels;
-            Uint32* pixel = pixels + yScale*j*screen->pitch/4 + xScale*i; // offset of pointer
-            *pixel = SDL_MapRGB(screen->format, 100, 100, 100);
-        }
-    }
-    
-    for(int i=x-size/2; i<=x+size/2; i+=size)
-    {
-        for(int j=y-size/2; j<=y+size/2; ++j)
-        {
-            Uint32* pixels = (Uint32*)screen->pixels;
-            Uint32* pixel = pixels + yScale*j*screen->pitch/4 + xScale*i; // offset of pointer
-            *pixel = SDL_MapRGB(screen->format, 100, 100, 100);
-        }
-    }
-    return;
-}
-
 
 void Spatch::ablate()
 {
@@ -70,23 +46,6 @@ void Spatch::ablate()
         }
     }
     return;
-}
-
-void Spatch::handleEvent(SDL_Event &event)
-{
-    switch(event.type)
-    {
-        case SDL_KEYDOWN:
-            switch(event.key.keysym.sym)
-            {
-                case SDLK_a:
-                    ablate();
-                    return;
-               
-                default: return;
-            }
-        default: return;
-    }
 }
 
 
@@ -110,23 +69,5 @@ Cpatch::Cpatch(const int &radius_init, const int &x_init, const int &y_init, con
             }
         }
     }
-}
-
-void Cpatch::print (SDL_Surface* screen)
-{
-    for(int i=x-radius; i<=x+radius; ++i)
-    {
-        for(int j=y-radius; j<=y+radius; ++j)
-        {
-            int r2=(x-i)*(x-i) + (y-j)*(y-j);
-            if(r2<(radius*radius) && r2>(radius*radius)-40)
-            {
-                Uint32* pixels = (Uint32*)screen->pixels;
-                Uint32* pixel = pixels + yScale*j*screen->pitch/4 + xScale*i; // offset of pointer
-                *pixel = SDL_MapRGB(screen->format, 100, 100, 100);
-            }
-        }
-    }
-    return;
 }
 

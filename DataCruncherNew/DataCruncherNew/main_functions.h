@@ -10,8 +10,6 @@
 #define __sdltest__main_functions__
 #include <iostream>
 #include <vector>
-#include <SDL/SDL.h>
-#include "state.h"
 #include "array2D.h"
 #include <utility>
 
@@ -27,7 +25,7 @@ inline void update_arrays(int &state_update, std::vector<int> &all_excited_coord
     return;
 }
 
-void pacemaker(SDL_Surface *screen, array2D<int> &state_update, std::vector<int> &all_excited_coords, array2D<int> &excitation_frame, const int &frame, const int &RP, const int& GRIDSIZE, state_display &display, array2D<std::pair<int,int>> &excitedBy);
+void pacemaker(array2D<int> &state_update, std::vector<int> &all_excited_coords, array2D<int> &excitation_frame, const int &frame, const int &RP, const int& GRIDSIZE, array2D<std::pair<int,int>> &excitedBy);
 
 void init_Kishan(double*** inN, double*** inE, double*** inS, double*** inW, const int GRIDSIZE, double defect_density, double vert_conn, double firing_prob);
 

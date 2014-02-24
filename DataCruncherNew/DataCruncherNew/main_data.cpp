@@ -1,31 +1,19 @@
 #include "main_functions.h"
-#include "event_logic.h"
-#include "histogram.h"
-#include "state.h"
 #include "mtrand.h"
 #include "patch.h"
 #include "array2D.h"
 #include <ctime>
+#include <fstream>
 #include <unordered_map>
-//TO DO:
-//make experimental view when paused/beginning the program- use this view to set parameters for experiment.
-
-//CODE INFORMATION:
-//FREE MEMORY IN "exCoords" ARRAY
-//MEMORY OF EXCITED CELLS: define vector containing all excited coordinates within the frame storage limit. within each of these "frame" vectors is stored the coordinates of each excited cell during the frame. The format of this storage is a long list of ints, where the first int is the i coordinate of the first registered excited cell, the second coordinate is the j coordinate of the first registered excited cell. The pattern continues s.t. the coordinates of the nth registered excited cell are: i=exCoords[frame][(n-1)*2], j=exCoords[frame][(n*2)-1].
-//IF MEMLIMIT is reached then delete the oldest column. Find oldest column by making the erasure on the (frame%MEMLIMIT) frame.
-//"EXCITED SCAN" ALGORITHM
-//Note, always update the current frame= "FRAME" and always check the previous frame.
-//EXCITED CELL PRINTING PROCEDURE + STATE DE-EXCITATION PROCESS: Use iterator to iterate back through the exCoords array from "FRAME-1" all the way to "FRAME-RP" (where applicable). Use the "current frame" and the scanned FRAME to determine refractoriness and use this to colour the pixels accordingly.
-
-
-//NOTES ON ROTOR IDENTIFICATION
-
 
 using namespace std;
 
 int main(int argc, char** argv)
 {
+    //scan to look at rotor stability with different inheritence thresholds
+    //maybe look at proportion of cells which originate at a rotor on the screen.
+
+
     //******************************************Declarations and Initialization******************************************//
     //AF parameters
     const int SAP=210;//Sinoatrial period is measured in frames- not in "SI time"- SI time=SAP/FPS
@@ -38,19 +26,14 @@ int main(int argc, char** argv)
     
     //frame and memory variables
     const int MEMLIMIT=RP+1;
-    const int MAXFRAME=1000000;
+    const int MAXFRAME=100000;
     int FRAME=0;
     int cyclicNow=0;
     int cyclicOld=0;
     int cyclicBackRP=0;
-    int RWD_FRAME=FRAME;
-    int cyclicRwdNow=0;
-    int cyclicRwdOld=0;
-    int cyclicRwdBackRP=0;
     
     //other parameters
     MTRand drand(time(NULL));//seed rnd generator
-    Uint32 start;
     
     //AF matrix declarations
     array2D<double> inN (G_WIDTH,G_HEIGHT);
@@ -90,6 +73,7 @@ int main(int argc, char** argv)
     int maxFreq;//counts the maximum frequency rotor id within rotor
     int tempRotorId;//creates a temp rotor id variable.
     int maxRotorId=0;//global maximum rotor id counter.
+    vector<int> rotorIdDuration;
     
     array2D <pair <int,int> > excitedBy(G_WIDTH,G_HEIGHT); //Stores coords of cell which excited current cell
     for (int k=0;k<G_WIDTH;k++)
@@ -113,7 +97,6 @@ int main(int argc, char** argv)
     Spatch patch1 (size, 50, 50, S_WIDTH, S_HEIGHT, GRIDSIZE, inN, inS, inE, inW, nuIn);
     Spatch patch2 (size, 150, 150, S_WIDTH, S_HEIGHT, GRIDSIZE, inN, inS, inE, inW, nuIn);*/
     
-    
     //excited cell memory declaration + memory reservation
     vector<int> coords;
     coords.reserve(GRIDSIZE*GRIDSIZE);
@@ -128,21 +111,32 @@ int main(int argc, char** argv)
     int j_N;
     int j_S;
     
-    //measures of fibrillation
-    int HIGHDISC=SAP;
+    //ofstream
 
-    //setup to scan through different rotor id inheritence thresholds without any patches. Aim: to determine how to classify rotors.
+    ofstream excited_list_stream;
+    
 
-
-
+    //setup to look at rotor duration for different nu in order to measure dynamism.
     
     //******************************************AF Experimentation Loop******************************************//
-
+    
+    //Id inheritence threshold loop
+    for(rotorIdThresh=0.01; rotorIdThresh<=1.0; rotorIdThresh*=10)
+    {
+        
+    //Repeats
+    for(int repeat=0; repeat<10; ++repeat)
+    {
+        //set seed each time
+        drand.seed(time(NULL));
+        
+        
+        for(FRAME=0; FRAME<=MAXFRAME; FRAME++)
+        {
         //update frame and cyclic frame values
         cyclicNow = FRAME%MEMLIMIT;
         cyclicOld = (FRAME+MEMLIMIT-1)%MEMLIMIT;
         cyclicBackRP = (FRAME+MEMLIMIT-1-RP)%MEMLIMIT;
-        RWD_FRAME = FRAME;
             
         //free memory in exCoords and rotorCells arrays.
         if(FRAME>MEMLIMIT-1)
@@ -151,9 +145,7 @@ int main(int argc, char** argv)
             isRotor[cyclicNow] = isRotorInit;
             rotorCoords[cyclicNow].erase(rotorCoords[cyclicNow].begin(), rotorCoords[cyclicNow].end());
         }
-            
-         
-
+        
             //begin excited scan process to calculate new excited cells
             for(vector<int>::iterator it = exCoords[cyclicOld].begin(), it_end = exCoords[cyclicOld].end(); it != it_end; it+=2)
             {
@@ -270,6 +262,7 @@ int main(int argc, char** argv)
                             rotorCoords[cyclicNow].push_back(tempRotorId);
                             rotorId(i,j)=tempRotorId;
                             isRotor[cyclicNow](i,j)=true;
+                            rotorIdDuration[tempRotorId]++;  
                         }
                     }
                     
@@ -289,6 +282,7 @@ int main(int argc, char** argv)
                             rotorCoords[cyclicNow].push_back(maxRotorId);
                             rotorId(i,j)=maxRotorId;
                             isRotor[cyclicNow](i,j)=true;
+                            rotorIdDuration.push_back(1);
                         }
                     }
                 }
@@ -305,7 +299,6 @@ int main(int argc, char** argv)
             //de-excitation process for refractory cells AND printing process for all cells.
             for (int row = cyclicOld, rowEnd = cyclicBackRP; row != rowEnd; row=(row-1+MEMLIMIT)%MEMLIMIT)
             {
-                double RP_ratio=(double)(RP-(FRAME+MEMLIMIT-row)%MEMLIMIT)/RP;
                 for(vector<int>::iterator col = exCoords[row].begin(), col_end = exCoords[row].end(); col != col_end; col+=2)
                 {                
                     --state_update(*col,*(col+1));
@@ -315,17 +308,27 @@ int main(int argc, char** argv)
             //pacemaker algorithm.
             if(FRAME%SAP==0)
             {
-                pacemaker(screen, state_update, exCoords[cyclicNow], exFrameNew, FRAME, RP, GRIDSIZE, display, excitedBy);
+                pacemaker(state_update, exCoords[cyclicNow], exFrameNew, FRAME, RP, GRIDSIZE, excitedBy);
             }
             
             //update loop variables.
             state=state_update;
             exFrame=exFrameNew;
-            ++FRAME;
         }
+    }
+    
+    //send out data for a given repeat
+    
+    
         
+    //clear all arrays
+        
+        
+    }
     return 0;
 }
+        
+
 
 
 

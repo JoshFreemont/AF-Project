@@ -11,7 +11,6 @@
 
 #include <iostream>
 #include "array2D.h"
-#include <SDL/SDL.h>
 
 class Spatch
 {
@@ -27,9 +26,7 @@ class Spatch
     
 public:
     Spatch(const int &size, const int &x, const int &y, const int displayWidth, const int displayHeight, const int gridsize, array2D<double> &inN, array2D<double> &inS, array2D<double> &inE, array2D<double> &inW, double inNu);
-    void print (SDL_Surface* screen);
-    void ablate ();
-    void handleEvent(SDL_Event &event);
+    void ablate();
     
 };
 
@@ -45,8 +42,6 @@ class Cpatch
     
 public:
     Cpatch(const int &size, const int &x, const int &y, const int displayWidth, const int displayHeight, const int gridsize, array2D<double> &inN, array2D<double> &inS, double inNu);
-    void print (SDL_Surface* screen);
-    void handleEvent(SDL_Event &event);
 };
 
 

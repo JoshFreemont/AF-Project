@@ -69,8 +69,10 @@ int main(int argc, char** argv)
     MyFileNamer.setFileHeader("RotorIDTest");
 
     ofstream rotorIDstream;
+    ofstream rotorCountstream;
 
     //rotor variables
+    array2D <int> rotorCellFrequency (G_WIDTH,G_HEIGHT,0);
     const int rotorLengthLimit = 2*RP;
     array2D <bool> isRotorInit (G_WIDTH,G_HEIGHT,false);
     vector <array2D <bool> > isRotor (MEMLIMIT, isRotorInit);//Stores whether a cell is a "rotor" cell or not
@@ -147,6 +149,7 @@ int main(int argc, char** argv)
     {
 
         MyFileNamer.IDFile(rotorIDstream, nu, repeat, rotorIdThresh);
+        MyFileNamer.CountFile(rotorCountstream,nu,repeat,rotorIdThresh);
         //set seed each time
         drand.seed(time(NULL));
 
@@ -166,6 +169,7 @@ int main(int argc, char** argv)
             isRotorInit(k,l) = false;
             rotorId(k,l) = 0;
             excitedBy(k,l) = make_pair(k,l);
+            rotorCellFrequency(k,l) = 0;
         }
     }
 
@@ -322,6 +326,7 @@ int main(int argc, char** argv)
                             rotorCoords[cyclicNow].push_back(state);
                             rotorCoords[cyclicNow].push_back(tempRotorId);
                             rotorId(i,j)=tempRotorId;
+                            rotorCellFrequency(i,j)++;
                             isRotor[cyclicNow](i,j)=true;
                         }
                         rotorIdDuration[tempRotorId]++;
@@ -342,6 +347,7 @@ int main(int argc, char** argv)
                             rotorCoords[cyclicNow].push_back(state);
                             rotorCoords[cyclicNow].push_back(maxRotorId);
                             rotorId(i,j)=maxRotorId;
+                            rotorCellFrequency(i,j)++;
                             isRotor[cyclicNow](i,j)=true;
                         }
                         rotorIdDuration.push_back(1);
@@ -385,6 +391,15 @@ int main(int argc, char** argv)
     for (auto it=rotorIdDuration.begin();it!=rotorIdDuration.end();it++)
     {
         rotorIDstream << *it << "\n";
+    }
+
+    for(int l=0; l<G_HEIGHT; ++l)
+    {
+        for(int k=0; k<G_WIDTH; ++k)
+        {
+            rotorCountstream << rotorCellFrequency(k,l) << "\t";
+        }
+        rotorCountstream << "\n";
     }
 
     }//end repeat loop

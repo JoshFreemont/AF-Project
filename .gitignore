@@ -1,3 +1,13 @@
 *.txt
 
-DataCruncherNew/DataCruncherNew/Data/
+Data/
+
+bin/
+
+obj/
+
+*.dll
+*.depend
+*.layout
+*.cbp
+*.zip

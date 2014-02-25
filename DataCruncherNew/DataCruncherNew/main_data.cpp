@@ -28,11 +28,8 @@ int main(int argc, char** argv)
 
     //frame and memory variables
     const int MEMLIMIT=RP+1;
-    const int MAXFRAME=1000;
+    const int MAXFRAME=10000;
     int FRAME=0;
-    int cyclicNow=0;
-    int cyclicOld=0;
-    int cyclicBackRP=0;
 
     //other parameters
     MTRand drand(time(NULL));//seed rnd generator
@@ -122,11 +119,6 @@ int main(int argc, char** argv)
     int i_E;
     int j_N;
     int j_S;
-
-    //ofstream
-
-    ofstream excited_list_stream;
-
 
     //setup to look at rotor duration for different nu in order to measure dynamism.
     double nu;

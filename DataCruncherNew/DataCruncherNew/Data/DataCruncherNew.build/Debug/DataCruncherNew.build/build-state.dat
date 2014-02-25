@@ -1,0 +1,210 @@
+TDataCruncherNew
+v6
+r1
+cCheck dependencies
+cCompileC DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/Objects-normal/x86_64/main_functions.o /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/main_functions.cpp normal x86_64 c++ com.apple.compilers.llvm.clang.1_0.compiler
+cCompileC DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/Objects-normal/x86_64/mtrand.o /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/mtrand.cpp normal x86_64 c++ com.apple.compilers.llvm.clang.1_0.compiler
+cCompileC DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/Objects-normal/x86_64/main_data.o /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/main_data.cpp normal x86_64 c++ com.apple.compilers.llvm.clang.1_0.compiler
+cCompileC DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/Objects-normal/x86_64/patch.o /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/patch.cpp normal x86_64 c++ com.apple.compilers.llvm.clang.1_0.compiler
+cLd /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/Debug/DataCruncherNew normal x86_64
+
+N/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk
+c000000005130312F00000000000000AA
+t1362112815
+s170
+
+N/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/SDKSettings.plist
+c0000000052519C6C00000000000004B3
+t1381080172
+s1203
+
+N/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/CoreServices/SystemVersion.plist
+c0000000052519C6C00000000000001DE
+t1381080172
+s478
+
+N/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/Objects-normal/x86_64/DataCruncherNew.LinkFileList
+c00000000530BDAC00000000000000236
+t1393285824
+s566
+
+N/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/Objects-normal/x86_64/main_data.o
+t1393285827
+s546600
+
+N/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/Objects-normal/x86_64/main_functions.o
+t1393285826
+s64100
+
+N/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/Objects-normal/x86_64/mtrand.o
+t1393285825
+s7432
+
+N/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/Objects-normal/x86_64/patch.o
+t1393285827
+s8964
+
+N/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/Debug/DataCruncherNew
+t2
+s0
+
+N/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/main_data.cpp
+c00000000530BDABF0000000000003A34
+t1393285823
+s14900
+
+N/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/main_functions.cpp
+c00000000530B6483000000000000063C
+t1393255555
+s1596
+
+N/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/mtrand.cpp
+c00000000530B56980000000000000845
+t1393251992
+s2117
+
+N/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/patch.cpp
+c00000000530B699F0000000000000747
+t1393256863
+s1863
+
+CBuild AST from /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/main_data.cpp
+r0
+
+CBuild AST from /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/main_functions.cpp
+r0
+
+CBuild AST from /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/mtrand.cpp
+r0
+
+CBuild AST from /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/patch.cpp
+r0
+
+CCheck dependencies
+r0
+lSLF06#21%IDEActivityLogSection1@2#32"com.apple.dt.IDE.BuildLogSection18"Check dependencies18"Check dependenciesf1f5594012bcb841^e5ed704012bcb841^---0#1#1#--18"Check dependencies36"58557300-937A-40C4-A6C7-36DC413E319B-
+
+CCompileC DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/Objects-normal/x86_64/main_data.o /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/main_data.cpp normal x86_64 c++ com.apple.compilers.llvm.clang.1_0.compiler
+s414978625.537960
+e414978627.287960
+r1
+xCompileC
+xDataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/Objects-normal/x86_64/main_data.o
+x/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/main_data.cpp
+xnormal
+xx86_64
+xc++
+xcom.apple.compilers.llvm.clang.1_0.compiler
+d/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/main_data.cpp
+d/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/main_functions.h
+d/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/array2D.h
+d/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/mtrand.h
+d/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/patch.h
+d/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/filenamer.h
+lSLF06#21%IDEActivityLogSection1@2#32"com.apple.dt.IDE.BuildLogSection74"Compile /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/main_data.cpp205"CompileC DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/Objects-normal/x86_64/main_data.o DataCruncherNew/main_data.cpp normal x86_64 c++ com.apple.compilers.llvm.clang.1_0.compiler0ed8894112bcb841^bfbb494312bcb841^---0#0#1#-19%DVTDocumentLocation2@82"file://localhost/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/main_data.cpp0000000000000000^3042"CompileC DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/Objects-normal/x86_64/main_data.o DataCruncherNew/main_data.cpp normal x86_64 c++ com.apple.compilers.llvm.clang.1_0.compiler    cd /Users/josh/AF/AF/AF/DataCruncherNew    setenv LANG en_US.US-ASCII    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -x c++ -arch x86_64 -fmessage-length=0 -fdiagnostics-show-note-include-stack -fmacro-backtrace-limit=0 -std=gnu++11 -stdlib=libc++ -Wno-trigraphs -fpascal-strings -O0 -Wno-missing-field-initializers -Wno-missing-prototypes -Werror=return-type -Werror=deprecated-objc-isa-usage -Werror=objc-root-class -Wno-non-virtual-dtor -Wno-overloaded-virtual -Wno-exit-time-destructors -Wno-missing-braces -Wparentheses -Wswitch -Wunused-function -Wno-unused-label -Wno-unused-parameter -Wunused-variable -Wunused-value -Wempty-body -Wuninitialized -Wno-unknown-pragmas -Wno-shadow -Wno-four-char-constants -Wno-conversion -Wconstant-conversion -Wint-conversion -Wbool-conversion -Wenum-conversion -Wshorten-64-to-32 -Wno-newline-eof -Wno-c++11-extensions -DDEBUG=1 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk -fasm-blocks -fstrict-aliasing -Wdeprecated-declarations -Winvalid-offsetof -mmacosx-version-min=10.8 -g -fvisibility-inlines-hidden -Wno-sign-conversion -iquote /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/DataCruncherNew-generated-files.hmap -I/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/DataCruncherNew-own-target-headers.hmap -I/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/DataCruncherNew-all-target-headers.hmap -iquote /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/DataCruncherNew-project-headers.hmap -I/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/Debug/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -I/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/DerivedSources/x86_64 -I/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/DerivedSources -F/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/Debug -MMD -MT dependencies -MF /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/Objects-normal/x86_64/main_data.d --serialize-diagnostics /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/Objects-normal/x86_64/main_data.dia -c /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/main_data.cpp -o /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/Objects-normal/x86_64/main_data.o36"07462545-7578-4DB5-A44F-1FD7E3CDB015-
+b23718DA5-03C0-404F-8174-650A9BC6417B
+
+CCompileC DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/Objects-normal/x86_64/main_functions.o /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/main_functions.cpp normal x86_64 c++ com.apple.compilers.llvm.clang.1_0.compiler
+s414978624.569472
+e414978626.279253
+r1
+xCompileC
+xDataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/Objects-normal/x86_64/main_functions.o
+x/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/main_functions.cpp
+xnormal
+xx86_64
+xc++
+xcom.apple.compilers.llvm.clang.1_0.compiler
+d/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/main_functions.cpp
+d/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/main_functions.h
+d/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/array2D.h
+lSLF06#21%IDEActivityLogSection1@2#32"com.apple.dt.IDE.BuildLogSection79"Compile /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/main_functions.cpp215"CompileC DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/Objects-normal/x86_64/main_functions.o DataCruncherNew/main_functions.cpp normal x86_64 c++ com.apple.compilers.llvm.clang.1_0.compilere8f7914012bcb841^4a7b474212bcb841^---0#0#1#-19%DVTDocumentLocation2@87"file://localhost/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/main_functions.cpp0000000000000000^3072"CompileC DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/Objects-normal/x86_64/main_functions.o DataCruncherNew/main_functions.cpp normal x86_64 c++ com.apple.compilers.llvm.clang.1_0.compiler    cd /Users/josh/AF/AF/AF/DataCruncherNew    setenv LANG en_US.US-ASCII    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -x c++ -arch x86_64 -fmessage-length=0 -fdiagnostics-show-note-include-stack -fmacro-backtrace-limit=0 -std=gnu++11 -stdlib=libc++ -Wno-trigraphs -fpascal-strings -O0 -Wno-missing-field-initializers -Wno-missing-prototypes -Werror=return-type -Werror=deprecated-objc-isa-usage -Werror=objc-root-class -Wno-non-virtual-dtor -Wno-overloaded-virtual -Wno-exit-time-destructors -Wno-missing-braces -Wparentheses -Wswitch -Wunused-function -Wno-unused-label -Wno-unused-parameter -Wunused-variable -Wunused-value -Wempty-body -Wuninitialized -Wno-unknown-pragmas -Wno-shadow -Wno-four-char-constants -Wno-conversion -Wconstant-conversion -Wint-conversion -Wbool-conversion -Wenum-conversion -Wshorten-64-to-32 -Wno-newline-eof -Wno-c++11-extensions -DDEBUG=1 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk -fasm-blocks -fstrict-aliasing -Wdeprecated-declarations -Winvalid-offsetof -mmacosx-version-min=10.8 -g -fvisibility-inlines-hidden -Wno-sign-conversion -iquote /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/DataCruncherNew-generated-files.hmap -I/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/DataCruncherNew-own-target-headers.hmap -I/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/DataCruncherNew-all-target-headers.hmap -iquote /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/DataCruncherNew-project-headers.hmap -I/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/Debug/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -I/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/DerivedSources/x86_64 -I/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/DerivedSources -F/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/Debug -MMD -MT dependencies -MF /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/Objects-normal/x86_64/main_functions.d --serialize-diagnostics /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/Objects-normal/x86_64/main_functions.dia -c /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/main_functions.cpp -o /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/Objects-normal/x86_64/main_functions.o36"F7854291-341E-4CCE-B651-BE5BF1C377A9-
+b23718DA5-03C0-404F-8174-650A9BC6417B
+
+CCompileC DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/Objects-normal/x86_64/mtrand.o /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/mtrand.cpp normal x86_64 c++ com.apple.compilers.llvm.clang.1_0.compiler
+s414978624.570026
+e414978625.535645
+r1
+xCompileC
+xDataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/Objects-normal/x86_64/mtrand.o
+x/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/mtrand.cpp
+xnormal
+xx86_64
+xc++
+xcom.apple.compilers.llvm.clang.1_0.compiler
+d/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/mtrand.cpp
+d/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/mtrand.h
+lSLF06#21%IDEActivityLogSection1@2#32"com.apple.dt.IDE.BuildLogSection71"Compile /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/mtrand.cpp199"CompileC DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/Objects-normal/x86_64/mtrand.o DataCruncherNew/mtrand.cpp normal x86_64 c++ com.apple.compilers.llvm.clang.1_0.compilerda02924012bcb841^a81e894112bcb841^---0#0#1#-19%DVTDocumentLocation2@79"file://localhost/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/mtrand.cpp0000000000000000^3024"CompileC DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/Objects-normal/x86_64/mtrand.o DataCruncherNew/mtrand.cpp normal x86_64 c++ com.apple.compilers.llvm.clang.1_0.compiler    cd /Users/josh/AF/AF/AF/DataCruncherNew    setenv LANG en_US.US-ASCII    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -x c++ -arch x86_64 -fmessage-length=0 -fdiagnostics-show-note-include-stack -fmacro-backtrace-limit=0 -std=gnu++11 -stdlib=libc++ -Wno-trigraphs -fpascal-strings -O0 -Wno-missing-field-initializers -Wno-missing-prototypes -Werror=return-type -Werror=deprecated-objc-isa-usage -Werror=objc-root-class -Wno-non-virtual-dtor -Wno-overloaded-virtual -Wno-exit-time-destructors -Wno-missing-braces -Wparentheses -Wswitch -Wunused-function -Wno-unused-label -Wno-unused-parameter -Wunused-variable -Wunused-value -Wempty-body -Wuninitialized -Wno-unknown-pragmas -Wno-shadow -Wno-four-char-constants -Wno-conversion -Wconstant-conversion -Wint-conversion -Wbool-conversion -Wenum-conversion -Wshorten-64-to-32 -Wno-newline-eof -Wno-c++11-extensions -DDEBUG=1 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk -fasm-blocks -fstrict-aliasing -Wdeprecated-declarations -Winvalid-offsetof -mmacosx-version-min=10.8 -g -fvisibility-inlines-hidden -Wno-sign-conversion -iquote /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/DataCruncherNew-generated-files.hmap -I/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/DataCruncherNew-own-target-headers.hmap -I/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/DataCruncherNew-all-target-headers.hmap -iquote /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/DataCruncherNew-project-headers.hmap -I/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/Debug/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -I/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/DerivedSources/x86_64 -I/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/DerivedSources -F/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/Debug -MMD -MT dependencies -MF /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/Objects-normal/x86_64/mtrand.d --serialize-diagnostics /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/Objects-normal/x86_64/mtrand.dia -c /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/mtrand.cpp -o /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/Objects-normal/x86_64/mtrand.o36"A4A99580-BA87-4AB2-996B-78776FD9D7AE-
+b23718DA5-03C0-404F-8174-650A9BC6417B
+
+CCompileC DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/Objects-normal/x86_64/patch.o /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/patch.cpp normal x86_64 c++ com.apple.compilers.llvm.clang.1_0.compiler
+s414978626.280829
+e414978627.402884
+r1
+xCompileC
+xDataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/Objects-normal/x86_64/patch.o
+x/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/patch.cpp
+xnormal
+xx86_64
+xc++
+xcom.apple.compilers.llvm.clang.1_0.compiler
+d/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/patch.cpp
+d/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/patch.h
+d/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/array2D.h
+lSLF06#21%IDEActivityLogSection1@2#32"com.apple.dt.IDE.BuildLogSection70"Compile /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/patch.cpp197"CompileC DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/Objects-normal/x86_64/patch.o DataCruncherNew/patch.cpp normal x86_64 c++ com.apple.compilers.llvm.clang.1_0.compiler5001484212bcb841^3124674312bcb841^---0#0#1#-19%DVTDocumentLocation2@78"file://localhost/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/patch.cpp0000000000000000^3018"CompileC DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/Objects-normal/x86_64/patch.o DataCruncherNew/patch.cpp normal x86_64 c++ com.apple.compilers.llvm.clang.1_0.compiler    cd /Users/josh/AF/AF/AF/DataCruncherNew    setenv LANG en_US.US-ASCII    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -x c++ -arch x86_64 -fmessage-length=0 -fdiagnostics-show-note-include-stack -fmacro-backtrace-limit=0 -std=gnu++11 -stdlib=libc++ -Wno-trigraphs -fpascal-strings -O0 -Wno-missing-field-initializers -Wno-missing-prototypes -Werror=return-type -Werror=deprecated-objc-isa-usage -Werror=objc-root-class -Wno-non-virtual-dtor -Wno-overloaded-virtual -Wno-exit-time-destructors -Wno-missing-braces -Wparentheses -Wswitch -Wunused-function -Wno-unused-label -Wno-unused-parameter -Wunused-variable -Wunused-value -Wempty-body -Wuninitialized -Wno-unknown-pragmas -Wno-shadow -Wno-four-char-constants -Wno-conversion -Wconstant-conversion -Wint-conversion -Wbool-conversion -Wenum-conversion -Wshorten-64-to-32 -Wno-newline-eof -Wno-c++11-extensions -DDEBUG=1 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk -fasm-blocks -fstrict-aliasing -Wdeprecated-declarations -Winvalid-offsetof -mmacosx-version-min=10.8 -g -fvisibility-inlines-hidden -Wno-sign-conversion -iquote /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/DataCruncherNew-generated-files.hmap -I/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/DataCruncherNew-own-target-headers.hmap -I/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/DataCruncherNew-all-target-headers.hmap -iquote /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/DataCruncherNew-project-headers.hmap -I/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/Debug/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -I/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/DerivedSources/x86_64 -I/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/DerivedSources -F/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/Debug -MMD -MT dependencies -MF /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/Objects-normal/x86_64/patch.d --serialize-diagnostics /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/Objects-normal/x86_64/patch.dia -c /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/patch.cpp -o /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/Objects-normal/x86_64/patch.o36"174163CA-27EB-4239-B38B-6C203844DE94-
+b23718DA5-03C0-404F-8174-650A9BC6417B
+
+CLd /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/Debug/DataCruncherNew normal x86_64
+s414978627.412395
+e414978628.072271
+r0
+xLd
+x/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/Debug/DataCruncherNew
+xnormal
+xx86_64
+d/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/Objects-normal/x86_64/DataCruncherNew.LinkFileList
+d/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/Objects-normal/x86_64/main_functions.o
+d/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/Objects-normal/x86_64/mtrand.o
+d/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/Objects-normal/x86_64/main_data.o
+d/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/Objects-normal/x86_64/patch.o
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/usr/lib/libc++.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/usr/lib/libSystem.dylib
+d/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/5.0/lib/darwin/libclang_rt.osx.a
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/usr/lib/system/libcache.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/usr/lib/system/libcommonCrypto.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/usr/lib/system/libcompiler_rt.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/usr/lib/system/libcopyfile.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/usr/lib/system/libdispatch.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/usr/lib/system/libdnsinfo.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/usr/lib/system/libdyld.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/usr/lib/system/libkeymgr.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/usr/lib/system/liblaunch.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/usr/lib/system/libmacho.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/usr/lib/system/libquarantine.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/usr/lib/system/libremovefile.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/usr/lib/system/libsystem_blocks.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/usr/lib/system/libsystem_c.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/usr/lib/system/libsystem_dnssd.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/usr/lib/system/libsystem_info.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/usr/lib/system/libsystem_kernel.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/usr/lib/system/libsystem_m.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/usr/lib/system/libsystem_network.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/usr/lib/system/libsystem_notify.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/usr/lib/system/libsystem_sandbox.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/usr/lib/system/libunc.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/usr/lib/system/libunwind.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/usr/lib/system/libxpc.dylib
+oUndefined symbols for architecture x86_64:
+o  "FileNamer::setFileHeader(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&)", referenced from:
+o      _main in main_data.o
+o  "FileNamer::IDFile(std::__1::basic_ofstream<char, std::__1::char_traits<char> >&, double, double, double)", referenced from:
+o      _main in main_data.o
+o  "FileNamer::CountFile(std::__1::basic_ofstream<char, std::__1::char_traits<char> >&, double, double, double)", referenced from:
+o      _main in main_data.o
+o  "FileNamer::FileNamer(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&)", referenced from:
+o      _main in main_data.o
+old: symbol(s) not found for architecture x86_64
+oclang: error: linker command failed with exit code 1 (use -v to see invocation)
+lSLF06#21%IDEActivityLogSection1@2#32"com.apple.dt.IDE.BuildLogSection84"Link /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/Debug/DataCruncherNew59"Ld DataCruncherNew/Data/Debug/DataCruncherNew normal x86_64caa9694312bcb841^3d7f124412bcb841^-814"Undefined symbols for architecture x86_64:  "FileNamer::setFileHeader(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&)", referenced from:      _main in main_data.o  "FileNamer::IDFile(std::__1::basic_ofstream<char, std::__1::char_traits<char> >&, double, double, double)", referenced from:      _main in main_data.o  "FileNamer::CountFile(std::__1::basic_ofstream<char, std::__1::char_traits<char> >&, double, double, double)", referenced from:      _main in main_data.o  "FileNamer::FileNamer(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&)", referenced from:      _main in main_data.old: symbol(s) not found for architecture x86_64clang: error: linker command failed with exit code 1 (use -v to see invocation)10(21%IDEActivityLogMessage2@138""FileNamer::setFileHeader(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&)", referenced from:-414978628#43#141#-2#-23%DVTTextDocumentLocation3@-0000000000000000^18446744073709551615#18446744073709551615#18446744073709551615#18446744073709551615#18446744073709551615#0#30"Apple Mach-O Linker (ld) Error--2@20"_main in main_data.o-414978628#184#27#-0#-3@-0000000000000000^18446744073709551615#18446744073709551615#18446744073709551615#18446744073709551615#18446744073709551615#0#31"Apple Mach-O Linker (ld) Notice--2@124""FileNamer::IDFile(std::__1::basic_ofstream<char, std::__1::char_traits<char> >&, double, double, double)", referenced from:-414978628#211#127#-2#-3@-0000000000000000^18446744073709551615#18446744073709551615#18446744073709551615#18446744073709551615#18446744073709551615#0#30"Apple Mach-O Linker (ld) Error--2@20"_main in main_data.o-414978628#338#27#-0#-3@-0000000000000000^18446744073709551615#18446744073709551615#18446744073709551615#18446744073709551615#18446744073709551615#0#31"Apple Mach-O Linker (ld) Notice--2@127""FileNamer::CountFile(std::__1::basic_ofstream<char, std::__1::char_traits<char> >&, double, double, double)", referenced from:-414978628#365#130#-2#-3@-0000000000000000^18446744073709551615#18446744073709551615#18446744073709551615#18446744073709551615#18446744073709551615#0#30"Apple Mach-O Linker (ld) Error--2@20"_main in main_data.o-414978628#495#27#-0#-3@-0000000000000000^18446744073709551615#18446744073709551615#18446744073709551615#18446744073709551615#18446744073709551615#0#31"Apple Mach-O Linker (ld) Notice--2@134""FileNamer::FileNamer(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > const&)", referenced from:-414978628#522#137#-2#-3@-0000000000000000^18446744073709551615#18446744073709551615#18446744073709551615#18446744073709551615#18446744073709551615#0#30"Apple Mach-O Linker (ld) Error--2@20"_main in main_data.o-414978628#659#27#-0#-3@-0000000000000000^18446744073709551615#18446744073709551615#18446744073709551615#18446744073709551615#18446744073709551615#0#31"Apple Mach-O Linker (ld) Notice--2@43"Symbol(s) not found for architecture x86_64-414978628#686#48#-0#-3@-0000000000000000^18446744073709551615#18446744073709551615#18446744073709551615#18446744073709551615#18446744073709551615#0#31"Apple Mach-O Linker (ld) Notice--2@65"Linker command failed with exit code 1 (use -v to see invocation)-414978628#734#80#-2#-3@-0000000000000000^18446744073709551615#18446744073709551615#18446744073709551615#18446744073709551615#18446744073709551615#0#30"Apple Mach-O Linker (ld) Error--0#0#1#--992"Ld DataCruncherNew/Data/Debug/DataCruncherNew normal x86_64    cd /Users/josh/AF/AF/AF/DataCruncherNew    setenv MACOSX_DEPLOYMENT_TARGET 10.8    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++ -arch x86_64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk -L/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/Debug -F/Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/Debug -filelist /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/Objects-normal/x86_64/DataCruncherNew.LinkFileList -mmacosx-version-min=10.8 -stdlib=libc++ -Xlinker -dependency_info -Xlinker /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/DataCruncherNew.build/Debug/DataCruncherNew.build/Objects-normal/x86_64/DataCruncherNew_dependency_info.dat -o /Users/josh/AF/AF/AF/DataCruncherNew/DataCruncherNew/Data/Debug/DataCruncherNew36"2F50D5ED-5B2D-442E-8B67-4A1D2EA55E67-
+b23718DA5-03C0-404F-8174-650A9BC6417B
+

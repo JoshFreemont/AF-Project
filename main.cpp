@@ -28,8 +28,8 @@ int main(int argc, char** argv)
     //******************************************Declarations and Initialization******************************************//
     //surface parameters
 	const int FPS = 50;//initial frame rates
-    const int S_WIDTH=800;
-    const int S_HEIGHT=600;
+    const int S_WIDTH=1200;
+    const int S_HEIGHT=450;
     
     //AF parameters
     const int SAP=210;//Sinoatrial period is measured in frames- not in "SI time"- SI time=SAP/FPS
@@ -93,7 +93,8 @@ int main(int argc, char** argv)
     double rotorIdThresh = 0.01, tempRotorIdRatio;//threshold for rotor id inheritence. 1.0=100% of current rotor cells must have same id.
     int maxFreq;//counts the maximum frequency rotor id within rotor
     int tempRotorId;//creates a temp rotor id variable.
-    int maxRotorId=0;//global maximum rotor id counter.
+    int maxRotorId=-1;//global maximum rotor id counter.
+    vector<int> rotorIdDuration;
     
     array2D <pair <int,int> > excitedBy(G_WIDTH,G_HEIGHT); //Stores coords of cell which excited current cell
     for (int k=0;k<G_WIDTH;k++)
@@ -114,8 +115,8 @@ int main(int argc, char** argv)
     //Patches
     int size=40;
     double nuIn=0.05;
-    Spatch patch1 (size, 50, 50, S_WIDTH, S_HEIGHT, GRIDSIZE, inN, inS, inE, inW, nuIn);
-    Spatch patch2 (size, 150, 150, S_WIDTH, S_HEIGHT, GRIDSIZE, inN, inS, inE, inW, nuIn);
+    Spatch patch1 (size, 50, 50, 400, 400, GRIDSIZE, inN, inS, inE, inW, nuIn);
+    Spatch patch2 (size, 150, 150, 400, 400, GRIDSIZE, inN, inS, inE, inW, nuIn);
     
     
     //excited cell memory declaration + memory reservation
@@ -134,10 +135,12 @@ int main(int argc, char** argv)
     
     //measures of fibrillation
     int HIGHDISC=SAP;
-    
+    int HIGH_DURATION=700;
+
     //display + event classes *****make display controller class which automatically carries out positioning of elements on the screen.*****
+    histogram duration (450, 400, 700, 350, HIGH_DURATION, 50);
     histogram histo (0, 0, 100 , 100, HIGHDISC, 500);
-    state_display display(0, S_HEIGHT, GRIDSIZE, S_WIDTH, S_HEIGHT, GRIDSIZE, histo.getIsBinSelectArray(), histo.getIsAllSelect());
+    state_display display(0, S_HEIGHT, GRIDSIZE, 400, 400, GRIDSIZE, histo.getIsBinSelectArray(), histo.getIsAllSelect());
     general_logic logic(FPS);
     
     //Window initialization
@@ -307,6 +310,7 @@ int main(int argc, char** argv)
                             rotorId(i,j)=tempRotorId;
                             isRotor[cyclicNow](i,j)=true;
                         }
+                        rotorIdDuration[tempRotorId]++;
                     }
                     
                     else
@@ -326,6 +330,7 @@ int main(int argc, char** argv)
                             rotorId(i,j)=maxRotorId;
                             isRotor[cyclicNow](i,j)=true;
                         }
+                        rotorIdDuration.push_back(1);
                     }
                 }
             }
@@ -420,9 +425,22 @@ int main(int argc, char** argv)
             if(RWD_FRAME==FRAME-1)logic.GoLive();
         }
         
+        //add data to histogram
+        for(auto it=rotorIdDuration.begin(); it!=rotorIdDuration.end(); ++it) duration.add_point(*it);
+        
+        //print histo
+        
+        duration.print_axes(screen);
+        duration.print_histogram(screen);
+        duration.reset_frequency();
+        
+        
         //print patches
         patch1.print(screen);
         patch2.print(screen);
+        
+        
+       
 
         
         //buffer

@@ -109,7 +109,7 @@ void histogram::print_axes (SDL_Surface* screen)
     
     for(y=origY; y>=(origY-yLength); --y)//iterate along y axis and draw line accordingly (remember y axis is inverted)
     {
-        if((y-origY)%(int(yLabel+0.5)) == 0)//draw interval marker if at interval
+        if((y-origY)%(int(yLabel+1.0)) == 0)//draw interval marker if at interval
         {
             for(x=origX; x<=(origX + noBins*binInterval); ++x)
             {

@@ -15,6 +15,7 @@
 
 class Spatch
 {
+    bool isActive;
     int size;
     int x;
     int y;
@@ -26,7 +27,7 @@ class Spatch
     array2D<double>* inWAddress;
     
 public:
-    Spatch(const int &size, const int &x, const int &y, const int displayWidth, const int displayHeight, const int gridsize, array2D<double> &inN, array2D<double> &inS, array2D<double> &inE, array2D<double> &inW, double inNu);
+    Spatch(const int &size, const int &x, const int &y, const int displayWidth, const int displayHeight, const int gridsize, array2D<double> &inN, array2D<double> &inS, array2D<double> &inE, array2D<double> &inW, double inNu, bool isActiveInit);
     void print (SDL_Surface* screen);
     void ablate ();
     void handleEvent(SDL_Event &event);
@@ -35,6 +36,7 @@ public:
 
 class Cpatch
 {
+    bool isActive;
     int radius;
     int x;
     int y;
@@ -44,7 +46,7 @@ class Cpatch
     array2D<double>* inSAddress;
     
 public:
-    Cpatch(const int &size, const int &x, const int &y, const int displayWidth, const int displayHeight, const int gridsize, array2D<double> &inN, array2D<double> &inS, double inNu);
+    Cpatch(const int &size, const int &x, const int &y, const int displayWidth, const int displayHeight, const int gridsize, array2D<double> &inN, array2D<double> &inS, double inNu, bool isActiveInit);
     void print (SDL_Surface* screen);
     void handleEvent(SDL_Event &event);
 };

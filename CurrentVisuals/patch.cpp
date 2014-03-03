@@ -8,8 +8,9 @@
 
 #include "patch.h"
 
-Spatch::Spatch(const int &size_init, const int &x_init, const int &y_init, const int displayWidth, const int displayHeight, const int gridsize, array2D<double> &inN, array2D<double> &inS, array2D<double> &inE, array2D<double> &inW, double nuIn)
+Spatch::Spatch(const int &size_init, const int &x_init, const int &y_init, const int displayWidth, const int displayHeight, const int gridsize, array2D<double> &inN, array2D<double> &inS, array2D<double> &inE, array2D<double> &inW, double nuIn, bool isActiveInit)
 {
+    isActive = isActiveInit;
     x=x_init;
     y=y_init;
     size=size_init;
@@ -21,12 +22,15 @@ Spatch::Spatch(const int &size_init, const int &x_init, const int &y_init, const
     inWAddress=&inW;
     
     //initialize patch nuIn
-    for(int i=x_init-size/2; i<x_init+size/2; ++i)
+    if(isActive)
     {
-        for(int j=y_init-size/2; j<y_init+size/2; ++j)
+        for(int i=x_init-size/2; i<x_init+size/2; ++i)
         {
-            (*inNAddress)(i,j)=nuIn;
-            (*inSAddress)(i,j)=nuIn;
+            for(int j=y_init-size/2; j<y_init+size/2; ++j)
+            {
+                (*inNAddress)(i,j)=nuIn;
+                (*inSAddress)(i,j)=nuIn;
+            }
         }
     }
 }
@@ -34,26 +38,29 @@ Spatch::Spatch(const int &size_init, const int &x_init, const int &y_init, const
 
 void Spatch::print (SDL_Surface* screen)
 {
-    for(int i=x-size/2; i<=x+size/2; ++i)
+    if(isActive)
     {
-        for(int j=y-size/2; j<=y+size/2; j+=size)
+        for(int i=x-size/2; i<=x+size/2; ++i)
         {
-            Uint32* pixels = (Uint32*)screen->pixels;
-            Uint32* pixel = pixels + yScale*j*screen->pitch/4 + xScale*i; // offset of pointer
-            *pixel = SDL_MapRGB(screen->format, 100, 100, 100);
+            for(int j=y-size/2; j<=y+size/2; j+=size)
+            {
+                Uint32* pixels = (Uint32*)screen->pixels;
+                Uint32* pixel = pixels + yScale*j*screen->pitch/4 + xScale*i; // offset of pointer
+                *pixel = SDL_MapRGB(screen->format, 100, 100, 100);
+            }
         }
-    }
-    
-    for(int i=x-size/2; i<=x+size/2; i+=size)
-    {
-        for(int j=y-size/2; j<=y+size/2; ++j)
+        
+        for(int i=x-size/2; i<=x+size/2; i+=size)
         {
-            Uint32* pixels = (Uint32*)screen->pixels;
-            Uint32* pixel = pixels + yScale*j*screen->pitch/4 + xScale*i; // offset of pointer
-            *pixel = SDL_MapRGB(screen->format, 100, 100, 100);
+            for(int j=y-size/2; j<=y+size/2; ++j)
+            {
+                Uint32* pixels = (Uint32*)screen->pixels;
+                Uint32* pixel = pixels + yScale*j*screen->pitch/4 + xScale*i; // offset of pointer
+                *pixel = SDL_MapRGB(screen->format, 100, 100, 100);
+            }
         }
+        return;
     }
-    return;
 }
 
 
@@ -74,6 +81,7 @@ void Spatch::ablate()
 
 void Spatch::handleEvent(SDL_Event &event)
 {
+    if(!isActive)return;
     switch(event.type)
     {
         case SDL_KEYDOWN:
@@ -90,30 +98,38 @@ void Spatch::handleEvent(SDL_Event &event)
 }
 
 
-Cpatch::Cpatch(const int &radius_init, const int &x_init, const int &y_init, const int displayWidth, const int displayHeight, const int gridsize, array2D<double> &inN, array2D<double> &inS, double nuIn)
+Cpatch::Cpatch(const int &radius_init, const int &x_init, const int &y_init, const int displayWidth, const int displayHeight, const int gridsize, array2D<double> &inN, array2D<double> &inS, double nuIn, bool isActiveInit)
 {
-    x=x_init;
-    y=y_init;
-    radius=radius_init;
-    xScale=(int)displayWidth/gridsize;
-    yScale=(int)displayHeight/gridsize;
+    isActive = isActiveInit;
+    x = x_init;
+    y = y_init;
+    radius = radius_init;
+    xScale = (int)displayWidth/gridsize;
+    yScale = (int)displayHeight/gridsize;
     
-    for(int k=-radius; k<radius; ++k)
+    
+    
+    if(isActive)
     {
-        for(int l=-radius; l<radius; ++l)
+        for(int k=-radius; k<radius; ++k)
         {
-            int r2= k*k + l*l;
-            if(r2<=(radius*radius))
+            for(int l=-radius; l<radius; ++l)
             {
-                inN(k+x,l+y)=nuIn;
-                inS(k+x,l+y)=nuIn;
+                int r2= k*k + l*l;
+                if(r2<=(radius*radius))
+                {
+                    inN(k+x,l+y)=nuIn;
+                    inS(k+x,l+y)=nuIn;
+                }
             }
         }
     }
 }
+    
 
 void Cpatch::print (SDL_Surface* screen)
 {
+    if(!isActive)return;
     for(int i=x-radius; i<=x+radius; ++i)
     {
         for(int j=y-radius; j<=y+radius; ++j)

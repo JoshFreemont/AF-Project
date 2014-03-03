@@ -10,17 +10,20 @@
 #include "histogram.h"
 #include <cmath>
 
-histogram::histogram(int origXInit, int origYInit, int xLengthInit, int yLengthInit, int maxInputInit, int maxFreqInit)
+//breaks for bin_no!=length.
+
+histogram::histogram(int origXInit, int origYInit, int xLengthInit, int yLengthInit, int maxInputInit, int noBinsInit, int maxFreqInit)
 {
     origX=origXInit;
     origY=origYInit;
     xLength=xLengthInit;
     yLength=yLengthInit;
     yScale=(double)yLength/maxFreqInit;
+    xScale=(double)xLength/maxInputInit;
     labelSize=1;
-    noBins=maxInputInit;
-    binInterval=(xLength/noBins);
-    xLabel = 25;
+    noBins=noBinsInit;
+    binInterval=(maxInputInit/noBins);//this is the "numerical" bin interval not the "printed" bin interval.
+    xLabel = 25*xScale;
     yLabel=(double)0.1*maxFreqInit*yScale;
     frequency = new int[noBins];
     maxFreq=maxFreqInit;
@@ -62,12 +65,13 @@ void inline histogram::scale_frequency(int maxValue)
 
 void histogram::add_point(int data_value)
 {
-    frequency[data_value] += 1;
+    int bin_select = (int)(data_value/binInterval);
+    frequency[bin_select] += 1;
     
     //if frequency is more than 75% or the total axis height then rescale.
-    if(frequency[data_value]>int(((3*maxFreq)/4) + 0.5))
+    if(frequency[bin_select]>int(((3*maxFreq)/4) + 0.5))
     {
-        scale_frequency(frequency[data_value]);
+        scale_frequency(frequency[bin_select]);
     }
     return;
 }
@@ -76,9 +80,9 @@ void histogram::add_point(int data_value)
 void histogram::print_axes (SDL_Surface* screen)
 {
     int x, y;
-    for(x = origX; x<=(origX+noBins*binInterval); ++x)//iterate along x axis and draw line accordingly
+    for(x = origX; x<=(origX+(int)noBins*binInterval*xScale); ++x)//iterate along x axis and draw line accordingly
     {
-        if((x-origX)%(binInterval) == 0)//draw interval marker if at interval
+        if((x-origX)%(int((double)binInterval*xScale)) == 0)//draw interval marker if at interval
         {
             if((x-origX)%xLabel == 0)
             {
@@ -111,7 +115,7 @@ void histogram::print_axes (SDL_Surface* screen)
     {
         if((y-origY)%(int(yLabel+1.0)) == 0)//draw interval marker if at interval
         {
-            for(x=origX; x<=(origX + noBins*binInterval); ++x)
+            for(x=origX; x<=(origX + (int)noBins*binInterval*xScale); ++x)
             {
                 Uint32* pixels = (Uint32*)screen->pixels;
                 Uint32* pixel = pixels + y*screen->pitch/4 + x; // offset of pointer
@@ -136,10 +140,10 @@ void histogram::print_histogram(SDL_Surface* screen)
     for(int i=0; i<noBins; ++i)
     {
         y = origY - (int)(frequency[i]*yScale + 0.5);
-        x = origX + i*binInterval;
+        x = origX + (int)i*binInterval*xScale;
 
         //rectangle position on screen
-        SDL_Rect rect = {static_cast<Sint16>(x),static_cast<Sint16>(y),static_cast<Uint16>(binInterval),static_cast<Uint16>(origY-y)};
+        SDL_Rect rect = {static_cast<Sint16>(x),static_cast<Sint16>(y),static_cast<Uint16>((int)binInterval*xScale),static_cast<Uint16>(origY-y)};
        
         //colour white if selected, grey if not.
         if(IsAllSelect)SDL_FillRect(screen, &rect, SDL_MapRGB(screen->format, 200, 200, 200));
@@ -229,7 +233,7 @@ void histogram::handle_event(SDL_Event& event)
             
             if(click_x>origX && click_x<origX+xLength && click_y<origY && click_y>origY-yLength)
             {
-                int binSelect = int(((click_x-origX)/binInterval)+0.5);//round bin.
+                int binSelect = int(((click_x-origX)/((double)binInterval*xScale)+0.5));//round bin.
                 IsBinSelectArray[binSelect]=!IsBinSelectArray[binSelect];
                 for(int i=0; i<noBins; ++i)
                     {

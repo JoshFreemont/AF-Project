@@ -173,13 +173,23 @@ void state_display::rotor_putpixel(SDL_Surface* screen, int x, int y, double rat
 
 void state_display::rotor_id_putpixel(SDL_Surface* screen, int x, int y,const int &rotorId , double ratio)
 {
-    int r = int(255.0*manual_rand(rotorId, 992817652));
-    int g = int(255.0*manual_rand(rotorId, 12817612));
-    int b = int(255.0*manual_rand(rotorId, 33437652));
+    double r = 255.0*(double)manual_rand(rotorId, 992817652);
+    double g = 255.0*(double)manual_rand(rotorId, 12817612);
+    double b = 255.0*(double)manual_rand(rotorId, 33437652);
     
     SDL_Rect rect = {static_cast<Sint16>(xScale*x),static_cast<Sint16>(yScale*y),static_cast<Uint16>(xScale),static_cast<Uint16>(yScale)};
-    SDL_FillRect(screen, &rect, SDL_MapRGB(screen->format, r, g, b));
+    SDL_FillRect(screen, &rect, SDL_MapRGB(screen->format, (int)r*ratio, (int)g*ratio, (int)b*ratio));
     return;
 }
 
+void state_display::rotor_inherit_putpixel(SDL_Surface* screen, int x, int y, const int &rotorId, double RP_ratio)
+{
+    double r = 255.0*(double)manual_rand(rotorId, 992817652);
+    double g = 255.0*(double)manual_rand(rotorId, 12817612);
+    double b = 255.0*(double)manual_rand(rotorId, 33437652);
+    
+    SDL_Rect rect = {static_cast<Sint16>(xScale*x),static_cast<Sint16>(yScale*y),static_cast<Uint16>(xScale),static_cast<Uint16>(yScale)};
+    SDL_FillRect(screen, &rect, SDL_MapRGB(screen->format, (int)r*RP_ratio, (int)g*RP_ratio, (int)b*RP_ratio));
+    return;
+}
 

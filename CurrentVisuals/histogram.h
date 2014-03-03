@@ -21,6 +21,7 @@ class histogram
     int xLength;
     int yLength;
     double yScale;
+    double xScale;
     int labelSize;
     int noBins;
     int binInterval;
@@ -39,7 +40,7 @@ class histogram
 
     
 public:
-    histogram(int origXInit, int origYInit, int xLengthInit, int yLengthInit, int maxInputInit, int maxFreqInit);
+    histogram(int origXInit, int origYInit, int xLengthInit, int yLengthInit, int maxInputInit, int noBinsInit, int maxFreqInit);
     void add_point(int data_value);
     void scale_frequency(int max_value);
     void print_axes (SDL_Surface* screen);

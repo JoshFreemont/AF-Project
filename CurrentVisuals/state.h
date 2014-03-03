@@ -50,6 +50,7 @@ public:
     void break_putpixel(SDL_Surface* screen, int x, int y, const int &breakId);
     void rotor_putpixel(SDL_Surface* , int i , int j , double RP_ratio);
     void rotor_id_putpixel(SDL_Surface*, int i, int j, const int &rotorId, double RP_ratio);
+    void rotor_inherit_putpixel(SDL_Surface*, int i, int j, const int &rotorId, double RP_ratio);
     inline double manual_rand(int seed, int maximum);
     
     //state display logic methods

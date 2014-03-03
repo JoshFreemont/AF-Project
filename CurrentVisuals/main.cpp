@@ -5,10 +5,14 @@
 #include "mtrand.h"
 #include "patch.h"
 #include "array2D.h"
+#include "line.h"
+#include "network.h"
 #include <ctime>
 #include <unordered_map>
-//TO DO:
-//make experimental view when paused/beginning the program- use this view to set parameters for experiment.
+
+//Decide whether rotor edges should be formed on a probabilistic basis- ie. can a rotor be formed by two independent rotors?
+
+
 
 //CODE INFORMATION:
 //FREE MEMORY IN "exCoords" ARRAY
@@ -19,8 +23,6 @@
 //EXCITED CELL PRINTING PROCEDURE + STATE DE-EXCITATION PROCESS: Use iterator to iterate back through the exCoords array from "FRAME-1" all the way to "FRAME-RP" (where applicable). Use the "current frame" and the scanned FRAME to determine refractoriness and use this to colour the pixels accordingly.
 
 
-//NOTES ON ROTOR IDENTIFICATION
-
 using namespace std;
 
 int main(int argc, char** argv)
@@ -28,13 +30,13 @@ int main(int argc, char** argv)
     //******************************************Declarations and Initialization******************************************//
     //surface parameters
 	const int FPS = 50;//initial frame rates
-    const int S_WIDTH=1200;
+    const int S_WIDTH=1250;
     const int S_HEIGHT=450;
     
     //AF parameters
     const int SAP=210;//Sinoatrial period is measured in frames- not in "SI time"- SI time=SAP/FPS
     const int RP=50;//Refractory peiod is measured in frames - not in "SI time".
-    const double VER=0.35;//0.1477
+    const double VER=0.13;//0.1477
     const double HOR=0.985;//0.97
     const int GRIDSIZE=200;
     const int G_HEIGHT=GRIDSIZE;
@@ -88,13 +90,23 @@ int main(int argc, char** argv)
     vector <array2D <bool> > isRotor (MEMLIMIT, isRotorInit);//Stores whether a cell is a "rotor" cell or not
     
     //rotor id variables
-    array2D<int> rotorId (G_WIDTH, G_HEIGHT, 0);//stores all rotor ids for the state.*****MAYBE CHANGE THIS TO KEEP FRAME DATA****
+    array2D<int> activeRotorId (G_WIDTH, G_HEIGHT, 0);//stores all rotor ids for active rotors.
+    array2D<int> inheritedRotorId (G_WIDTH, G_HEIGHT, 0);//stores all rotor ids for all cells, whether in a rotor or not.
     unordered_map<int, int> tempRotorIdFrequency;//stores temp frequency count of ids
     double rotorIdThresh = 0.01, tempRotorIdRatio;//threshold for rotor id inheritence. 1.0=100% of current rotor cells must have same id.
     int maxFreq;//counts the maximum frequency rotor id within rotor
     int tempRotorId;//creates a temp rotor id variable.
     int maxRotorId=-1;//global maximum rotor id counter.
     vector<int> rotorIdDuration;
+    vector< pair <int,int> > rotorIdAverageCoords;
+    int iSum, jSum, iMean, jMean;
+    int maxIdNode = 10000;
+    network rotorIdNetwork(maxIdNode);
+    
+    //network data
+    //vector to store non-spatial id inheritence edge list in pairs [0]=i, [1]=j
+    vector<int> idInheritEdgeList;
+    //vector
     
     array2D <pair <int,int> > excitedBy(G_WIDTH,G_HEIGHT); //Stores coords of cell which excited current cell
     for (int k=0;k<G_WIDTH;k++)
@@ -105,8 +117,7 @@ int main(int argc, char** argv)
         }
     }
     
-    pair <int,int> tempCycleArray[rotorLengthLimit+1];//Temporary array to store values
-    //to detect rotors
+    pair <int,int> tempCycleArray[rotorLengthLimit+1];//Temporary array to store values to detect rotors
     int cycleStart = 0;
     int cycleLength = 0;
     int tortoise, hare;
@@ -115,8 +126,8 @@ int main(int argc, char** argv)
     //Patches
     int size=40;
     double nuIn=0.05;
-    Spatch patch1 (size, 50, 50, 400, 400, GRIDSIZE, inN, inS, inE, inW, nuIn);
-    Spatch patch2 (size, 150, 150, 400, 400, GRIDSIZE, inN, inS, inE, inW, nuIn);
+    Spatch patch1 (size, 50, 50, 400, 400, GRIDSIZE, inN, inS, inE, inW, nuIn, false);
+    Spatch patch2 (size, 150, 150, 400, 400, GRIDSIZE, inN, inS, inE, inW, nuIn, false);
     
     
     //excited cell memory declaration + memory reservation
@@ -135,14 +146,15 @@ int main(int argc, char** argv)
     
     //measures of fibrillation
     int HIGHDISC=SAP;
-    int HIGH_DURATION=700;
+    int HIGH_DURATION=1000;
 
     //display + event classes *****make display controller class which automatically carries out positioning of elements on the screen.*****
-    histogram duration (450, 400, 700, 350, HIGH_DURATION, 50);
-    histogram histo (0, 0, 100 , 100, HIGHDISC, 500);
+    histogram duration (450, 400, 750, 350, HIGH_DURATION, HIGH_DURATION/2, 50);
+    histogram histo (0, 0, 100 , 100, HIGHDISC, HIGHDISC, 500);
     state_display display(0, S_HEIGHT, GRIDSIZE, 400, 400, GRIDSIZE, histo.getIsBinSelectArray(), histo.getIsAllSelect());
     general_logic logic(FPS);
     
+
     //Window initialization
     SDL_Init(SDL_INIT_EVERYTHING);//initialize sdl
 	SDL_Surface *screen;//declare screen (sdl surface)
@@ -206,6 +218,7 @@ int main(int argc, char** argv)
                 {
                     update_arrays(state_update(i_W,j), exCoords[cyclicNow], exFrameNew(i_W,j), FRAME, RP, i_W, j);
                     excitedBy(i_W,j) = make_pair(i,j);
+                    inheritedRotorId(i_W, j)=inheritedRotorId(i,j);
                 }
                 
                 //east cell checks and excitation
@@ -213,6 +226,7 @@ int main(int argc, char** argv)
                 {
                     update_arrays(state_update(i_E,j), exCoords[cyclicNow], exFrameNew(i_E,j), FRAME, RP, i_E, j);
                     excitedBy(i_E,j) = make_pair(i,j);
+                    inheritedRotorId(i_E, j)=inheritedRotorId(i,j);
                 }
                 
                 //north cell checks and excitation
@@ -220,6 +234,7 @@ int main(int argc, char** argv)
                 {
                     update_arrays(state_update(i,j_N), exCoords[cyclicNow], exFrameNew(i,j_N), FRAME, RP, i, j_N);
                     excitedBy(i,j_N) = make_pair(i,j);
+                    inheritedRotorId(i, j_N)=inheritedRotorId(i,j);
                 }
                 
                 //south cell checks and excitation
@@ -227,6 +242,8 @@ int main(int argc, char** argv)
                 {
                     update_arrays(state_update(i,j_S), exCoords[cyclicNow], exFrameNew(i,j_S), FRAME, RP, i, j_S);
                     excitedBy(i,j_S) = make_pair(i,j);
+                    inheritedRotorId(i, j_S)=inheritedRotorId(i,j);
+
                 }
             }
             
@@ -235,9 +252,10 @@ int main(int argc, char** argv)
             {
                 for (auto col = exCoords[cyclicNow].begin(); col!= exCoords[cyclicNow].end(); col+=2)
                 {
-
                     //First, fill up temp array to check for cycles
                     tempCycleArray[0] = excitedBy(*col,*(col+1));
+                    int parentRotorId = inheritedRotorId(*col, *(col+1));
+                    
                     
                     for (int k=1; k<rotorLengthLimit; ++k)
                     {
@@ -277,7 +295,7 @@ int main(int argc, char** argv)
                     for (int m=cycleStart, k=0;k<cycleLength;++k)
                     {
                         int i = tempCycleArray[m+k].first, j = tempCycleArray[m+k].second;
-                        tempRotorIdFrequency[rotorId(i,j)]++;
+                        tempRotorIdFrequency[activeRotorId(i,j)]++;
                     }
                     
                     //now find highest rotor id frequency in map
@@ -292,11 +310,12 @@ int main(int argc, char** argv)
                     }
                     tempRotorIdFrequency.clear();//clear rotor id frequency map after use.
                     
-                    
-                    //now check if tempRotorIdRatio > rotorIdThresh if so then inherit id and put all rotor data in memory.
-                    // + create new id if all current ids are zeros.
+                    //now check if tempRotorIdRatio > rotorIdThresh if so then consider rotor the same as tempRotorIdRatio.
+                    //create new id if all current ids are zeros.
                     tempRotorIdRatio=(double)maxFreq/cycleLength;
-                    if(tempRotorIdRatio >= rotorIdThresh)
+                    iSum=0;
+                    jSum=0;
+                    if(tempRotorIdRatio >= rotorIdThresh && tempRotorId !=0)
                     {
                         //put data in memory, [0]=i, [1]=j, [2]=state, [3]=rotorid
                         for (int m=cycleStart, k=0;k<cycleLength;++k)
@@ -307,10 +326,21 @@ int main(int argc, char** argv)
                             rotorCoords[cyclicNow].push_back(j);
                             rotorCoords[cyclicNow].push_back(state);
                             rotorCoords[cyclicNow].push_back(tempRotorId);
-                            rotorId(i,j)=tempRotorId;
+                            activeRotorId(i,j)=tempRotorId;
                             isRotor[cyclicNow](i,j)=true;
+                            iSum += i;
+                            jSum += j;
+                            inheritedRotorId(i,j)=tempRotorId;
                         }
+                        //add one to id duration counter.
                         rotorIdDuration[tempRotorId]++;
+                        
+                        //calculate and update rotorIdAverageCoords array.
+                        /*iMean = (int)(iSum/cycleLength + 0.5);
+                        jMean = (int)(jSum/cycleLength + 0.5);
+                        rotorIdAverageCoords[tempRotorId] = make_pair(iMean, jMean);*/
+                        
+                        //do not add edge to rotorId network as this rotor is considered to be the same as tempRotorId.
                     }
                     
                     else
@@ -327,20 +357,40 @@ int main(int argc, char** argv)
                             rotorCoords[cyclicNow].push_back(j);
                             rotorCoords[cyclicNow].push_back(state);
                             rotorCoords[cyclicNow].push_back(maxRotorId);
-                            rotorId(i,j)=maxRotorId;
+                            activeRotorId(i,j)=maxRotorId;
                             isRotor[cyclicNow](i,j)=true;
+                            iSum += i;
+                            jSum += j;
+                            inheritedRotorId(i,j)=maxRotorId;
                         }
+                        //add one to id duration counter
                         rotorIdDuration.push_back(1);
+                        
+                        //calculate and update rotorIdAverageCoords array.
+                        /*iMean = (int)(iSum/cycleLength + 0.5);
+                        jMean = (int)(jSum/cycleLength + 0.5);
+                        rotorIdAverageCoords.push_back(make_pair(iMean, jMean));*/
+                        
+                        
+                        //Update rotorIdNetwork
+                        //add node at maxRotorId
+                        rotorIdNetwork.addNode(maxRotorId);
+                        
+                        //add edge between parentRotorId and inheritedRotorId if parentRotorId != 0.
+                        if(parentRotorId)
+                        {
+                            rotorIdNetwork.addEdge(parentRotorId, maxRotorId);
+                        }
                     }
                 }
             }
             
-            //update rotorid array.
+            //update activeRotorid array to contain data for active rotors.
             for(int i=0; i<G_WIDTH; ++i)
             {
                 for(int j=0; j<G_HEIGHT; ++j)
                 {
-                    if(!isRotor[cyclicNow](i,j)) rotorId(i,j) = 0;
+                    if(!isRotor[cyclicNow](i,j)) activeRotorId(i,j) = 0;
                 }
             }
             
@@ -353,13 +403,15 @@ int main(int argc, char** argv)
                     //do not de-excite if state has just been excited in frame=cyclicNow.
                     if(row!=cyclicNow)--state_update(*col,*(col+1));
                     display.state_putpixel(screen, *col, *(col+1), RP_ratio);
+                    //display.rotor_inherit_putpixel(screen, *col, *(col+1), inheritedRotorId(*col, *(col+1)), RP_ratio);
+                    
                 }
             }
             //printing for rotors
             for(vector<int>::iterator col = rotorCoords[cyclicNow].begin(), col_end = rotorCoords[cyclicNow].end(); col != col_end; col+=4)
             {
-                //display.rotor_putpixel(screen, *col, *(col+1), ((double)*(col+2)/(double)RP));
-                display.rotor_id_putpixel(screen, *col, *(col+1), *(col+3), ((double)*(col+2))/RP);
+                display.rotor_putpixel(screen, *col, *(col+1), ((double)*(col+2)/(double)RP));
+                //display.rotor_id_putpixel(screen, *col, *(col+1), *(col+3), ((double)*(col+2))/RP);
             }
             
             //pacemaker algorithm.
@@ -413,11 +465,12 @@ int main(int argc, char** argv)
                     display.state_putpixel(screen, *col, *(col+1), RP_ratio);
                 }
             }
+            
             //printing loop for rotor data
             for(vector<int>::iterator col = rotorCoords[cyclicRwdNow].begin(), col_end = rotorCoords[cyclicRwdNow].end(); col != col_end; col+=4)
             {
-                //display.rotor_putpixel(screen, *col, *(col+1), ((double)*(col+2)/RP));
-                display.rotor_id_putpixel(screen, *col, *(col+1), *(col+3), ((double)*(col+2))/RP);
+                display.rotor_putpixel(screen, *col, *(col+1), ((double)*(col+2)/RP));
+                //display.rotor_id_putpixel(screen, *col, *(col+1), *(col+3), ((double)*(col+2))/RP);
             }
             
             //logic update.
@@ -425,28 +478,20 @@ int main(int argc, char** argv)
             if(RWD_FRAME==FRAME-1)logic.GoLive();
         }
         
-        //add data to histogram
-        for(auto it=rotorIdDuration.begin(); it!=rotorIdDuration.end(); ++it) duration.add_point(*it);
-        
-        //print histo
-        
-        duration.print_axes(screen);
-        duration.print_histogram(screen);
-        duration.reset_frequency();
-        
-        
         //print patches
         patch1.print(screen);
         patch2.print(screen);
         
-        
-       
+        //add data, print and reset histogram
+        for(auto it=rotorIdDuration.begin(); it!=rotorIdDuration.end(); ++it) duration.add_point(*it);
+        duration.print_axes(screen);
+        duration.print_histogram(screen);
+        duration.reset_frequency();
 
         
-        //buffer
-        if(1000/logic.getFrameRate() > SDL_GetTicks()-start) {SDL_Delay(1000/logic.getFrameRate()-(SDL_GetTicks()-start));}
-        //render
-        SDL_Flip(screen);
+        if(1000/logic.getFrameRate() > SDL_GetTicks()-start) {SDL_Delay(1000/logic.getFrameRate()-(SDL_GetTicks()-start));}//buffer
+        SDL_Flip(screen);//render
+    
     }
     
     //exit SDL when complete

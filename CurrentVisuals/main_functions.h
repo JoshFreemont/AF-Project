@@ -18,7 +18,7 @@
 
 
 
-inline void update_arrays(int &state_update, std::vector<int> &all_excited_coords_cyclic, int &excitation_frame_update,  const int& frame, const int& RP, const int& i_coord, const int& j_coord)
+inline void update_arrays(int &state_update, std::vector<int> &all_excited_coords_cyclic, int &excitation_frame_update, const int& frame, const int& RP, const int& i_coord, const int& j_coord)
 {
     state_update=RP;
     excitation_frame_update=frame;

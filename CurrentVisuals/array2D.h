@@ -64,6 +64,7 @@ public:
     {
         return array1D[x*m_Height+y];
     }
+    
 };
 
 #endif // ARRAY2D_H

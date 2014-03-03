@@ -13,19 +13,27 @@ network::network(const int maxNodeInit)
     maxNode=maxNodeInit;
     for(int i=0; i<maxNodeInit; ++i)
     {
-        nodeEdgeList.push_back(new std::vector<int>);
+        edgeList.push_back(new std::vector<int>);
+        isNode.push_back(new bool);
+        *(isNode[i]) = false;
     }
 }
 
 void network::addEdge(int startNode, int endNode)
 {
-    nodeEdgeList[startNode]->push_back(endNode);
+    edgeList[startNode]->push_back(endNode);
     return;
 }
 
-std::vector<std::vector<int> * > network::getNodeEdgeList()
+void network::addNode(int nodeIdValue)
 {
-    return nodeEdgeList;
+    *(isNode[nodeIdValue]) = true;
+    return;
+}
+
+std::vector<std::vector<int> * > network::getEdgeList()
+{
+    return edgeList;
 }
 
 

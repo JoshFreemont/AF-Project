@@ -74,9 +74,8 @@ int main(int argc, char** argv)
     const int rotorLengthLimit = 2*RP;
     array2D <bool> isRotorInit (G_WIDTH,G_HEIGHT,false);
     vector <array2D <bool> > isRotor (MEMLIMIT, isRotorInit);//Stores whether a cell is a "rotor" cell or not
-    vector<bool> isDead;
-    isDead.reserve(MAXFRAME);
-    vector <vector<bool> > isRotorIdAlive (MEMLIMIT, isDead);
+    //vector<bool> isDead(1000, false);
+    //vector <vector<bool> > isRotorIdAlive (MEMLIMIT, isDead);
 
     //rotor id variables
     array2D<int> activeRotorId (G_WIDTH, G_HEIGHT, 0);//stores all rotor ids for the state.
@@ -186,7 +185,6 @@ int main(int argc, char** argv)
     rotorIdDuration.clear();
     tempRotorIdFrequency.clear();
     rotorIdAverageCoords.clear();
-    isRotorIdAlive.clear();
     maxRotorId=-1;
 
     exCoords = emptyCoords;
@@ -207,6 +205,7 @@ int main(int argc, char** argv)
             exCoords[cyclicNow].erase(exCoords[cyclicNow].begin(), exCoords[cyclicNow].end());
             isRotor[cyclicNow] = isRotorInit;
             rotorCoords[cyclicNow].erase(rotorCoords[cyclicNow].begin(), rotorCoords[cyclicNow].end());
+            //isRotorIdAlive[cyclicNow].erase(isRotorIdAlive[cyclicNow].begin(), isRotorIdAlive[cyclicNow].end());
         }
 
             //begin excited scan process to calculate new excited cells
@@ -341,7 +340,7 @@ int main(int argc, char** argv)
                             jSum += j;
                         }
                         rotorIdDuration[tempRotorId]++;//add one to rotor id duration timer at index=rotorId
-                        isRotorIdAlive[cyclicNow][tempRotorId]=true;//store if given rotor is alive in current frame
+                        //isRotorIdAlive[cyclicNow][tempRotorId]=true;//store if given rotor is alive in current frame
                         
                         //calculate and update rotorIdAverageCoords array.
                         iMean = (int)(iSum/cycleLength + 0.5);
@@ -374,7 +373,7 @@ int main(int argc, char** argv)
                             jSum += j;
                         }
                         rotorIdDuration.push_back(1);//add one to rotor id duration timer at index= rotorId
-                        isRotorIdAlive[cyclicNow][maxRotorId]=true;
+                        //isRotorIdAlive[cyclicNow][maxRotorId]=true;
                         
                         //calculate and update rotorIdAverageCoords array.
                         iMean = (int)(iSum/cycleLength + 0.5);
@@ -389,8 +388,8 @@ int main(int argc, char** argv)
                         rotorIdNetwork.addNodeFrame(FRAME, maxRotorId);
                         
                         //add edge between parentRotorId and inheritedRotorId if parentRotorId != 0.
-                        //also enfoce condition that parentRotor must "be alive" in frame=cyclicOld (rotor can not give birth when dead.)
-                        if(parentRotorId && isRotorIdAlive[cyclicOld][parentRotorId])
+                        //also enfoce condition that parentRotor must "be alive" in frame=cyclicOld (rotor can not give birth when dead).
+                        if(parentRotorId /*&& isRotorIdAlive[cyclicOld][parentRotorId]*/)
                         {
                             rotorIdNetwork.addEdge(parentRotorId, maxRotorId);
                             rotorIdNetwork.addEdgeFrame(FRAME, parentRotorId);

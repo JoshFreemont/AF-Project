@@ -2,11 +2,12 @@
 #include "mtrand.h"
 #include "patch.h"
 #include "array2D.h"
+#include "filenamer.h"
+#include "network.h"
 #include <ctime>
 #include <fstream>
 #include <unordered_map>
 #include <cmath>
-#include "filenamer.h"
 
 using namespace std;
 
@@ -20,7 +21,7 @@ int main(int argc, char** argv)
     //AF parameters
     const int SAP=210;//Sinoatrial period is measured in frames- not in "SI time"- SI time=SAP/FPS
     const int RP=50;//Refractory peiod is measured in frames - not in "SI time".
-    const double VER=0.35;//0.1477
+    const double VER=0.1;//0.1477
     const double HOR=0.985;//0.97
     const int GRIDSIZE=200;
     const int G_HEIGHT=GRIDSIZE;
@@ -43,6 +44,7 @@ int main(int argc, char** argv)
     array2D<int> state_update (G_WIDTH,G_HEIGHT);
     array2D<int> exFrame (G_WIDTH,G_HEIGHT);
     array2D<int> exFrameNew (G_WIDTH,G_HEIGHT);
+    array2D <pair <int,int> > excitedBy(G_WIDTH,G_HEIGHT); //Stores coords of cell which excited current cell
 
     //AF matrix initialization
     for(int k=0; k<G_WIDTH; ++k)
@@ -57,16 +59,15 @@ int main(int argc, char** argv)
             state_update(k,l)=0;
             exFrame(k,l)=9999999;
             exFrameNew(k,l)=9999999;
+            excitedBy(k,l) = make_pair(k,l);
         }
     }
 
     //file namer
-
     FileNamer MyFileNamer;
-    MyFileNamer.setFileHeader("RotorIDTest");
+    MyFileNamer.setFileHeader("RotorID");
 
-    ofstream rotorIDstream;
-    ofstream rotorCountstream;
+    ofstream rotorIDInheritenceNetwork, rotorCountStream;
 
     //rotor variables
     array2D <int> rotorCellFrequency (G_WIDTH,G_HEIGHT,0);
@@ -75,25 +76,19 @@ int main(int argc, char** argv)
     vector <array2D <bool> > isRotor (MEMLIMIT, isRotorInit);//Stores whether a cell is a "rotor" cell or not
 
     //rotor id variables
-    array2D<int> rotorId (G_WIDTH, G_HEIGHT, 0);//stores all rotor ids for the state.*****MAYBE CHANGE THIS TO KEEP FRAME DATA****
+    array2D<int> activeRotorId (G_WIDTH, G_HEIGHT, 0);//stores all rotor ids for the state.
+    array2D<int> inheritedRotorId (G_WIDTH, G_HEIGHT, 0);//stores all rotor ids for all cells, whether in a rotor or not.
     unordered_map<int, int> tempRotorIdFrequency;//stores temp frequency count of ids
     double rotorIdThresh = 0.01, tempRotorIdRatio;//threshold for rotor id inheritence. 1.0=100% of current rotor cells must have same id.
     int maxFreq;//counts the maximum frequency rotor id within rotor
     int tempRotorId;//creates a temp rotor id variable.
     int maxRotorId=-1;//global maximum rotor id counter.
     vector<int> rotorIdDuration;
+    vector< pair <int,int> > rotorIdAverageCoords;
+    int iSum, jSum, iMean, jMean;
 
-    array2D <pair <int,int> > excitedBy(G_WIDTH,G_HEIGHT); //Stores coords of cell which excited current cell
-    for (int k=0;k<G_WIDTH;k++)
-    {
-        for (int l=0;l<G_HEIGHT;l++)
-        {
-            excitedBy(k,l) = make_pair(k,l);
-        }
-    }
-
+    //cycle data variables
     pair <int,int> tempCycleArray[rotorLengthLimit+1];//Temporary array to store values
-    //to detect rotors
     int cycleStart = 0;
     int cycleLength = 0;
     int tortoise, hare;
@@ -111,6 +106,10 @@ int main(int argc, char** argv)
     vector<vector<int> >exCoords(MEMLIMIT, coords);
     vector<vector<int> >rotorCoords(MEMLIMIT, coords);
     vector<vector<int> >emptyCoords(MEMLIMIT, coords);
+    
+    //rotorIdNetwork
+    int maxIdNode = 10000;
+    network rotorIdNetwork(maxIdNode);
 
     //cell coordinates
     int i;
@@ -140,12 +139,13 @@ int main(int argc, char** argv)
     for(int repeat=0; repeat<repeatMAX; ++repeat)
     {
 
-        MyFileNamer.IDFile(rotorIDstream, nu, repeat, rotorIdThresh);
-        MyFileNamer.CountFile(rotorCountstream,nu,repeat,rotorIdThresh);
+        MyFileNamer.EdgeList(rotorIDInheritenceNetwork, nu, repeat, rotorIdThresh);
+        MyFileNamer.CountFile(rotorCountStream, nu, repeat, rotorIdThresh);
+
         //set seed each time
         drand.seed(time(NULL));
 
-        //Reset everything
+    //Reset everything
     for(int k=0; k<G_WIDTH; ++k)
     {
         for(int l=0; l<G_HEIGHT; ++l)
@@ -159,7 +159,7 @@ int main(int argc, char** argv)
             exFrame(k,l)=9999999;
             exFrameNew(k,l)=9999999;
             isRotorInit(k,l) = false;
-            rotorId(k,l) = 0;
+            activeRotorId(k,l) = 0;
             excitedBy(k,l) = make_pair(k,l);
             rotorCellFrequency(k,l) = 0;
         }
@@ -218,6 +218,7 @@ int main(int argc, char** argv)
                 {
                     update_arrays(state_update(i_W,j), exCoords[cyclicNow], exFrameNew(i_W,j), FRAME, RP, i_W, j);
                     excitedBy(i_W,j) = make_pair(i,j);
+                    inheritedRotorId(i_W, j)=inheritedRotorId(i,j);
                 }
 
                 //east cell checks and excitation
@@ -225,13 +226,16 @@ int main(int argc, char** argv)
                 {
                     update_arrays(state_update(i_E,j), exCoords[cyclicNow], exFrameNew(i_E,j), FRAME, RP, i_E, j);
                     excitedBy(i_E,j) = make_pair(i,j);
+                    inheritedRotorId(i_E, j)=inheritedRotorId(i,j);
                 }
+                
 
                 //north cell checks and excitation
                 if(state(i,j_N)==0 && state_update(i,j_N) != RP && inS(i,j_N)>drand())
                 {
                     update_arrays(state_update(i,j_N), exCoords[cyclicNow], exFrameNew(i,j_N), FRAME, RP, i, j_N);
                     excitedBy(i,j_N) = make_pair(i,j);
+                    inheritedRotorId(i, j_N)=inheritedRotorId(i,j);
                 }
 
                 //south cell checks and excitation
@@ -239,6 +243,7 @@ int main(int argc, char** argv)
                 {
                     update_arrays(state_update(i,j_S), exCoords[cyclicNow], exFrameNew(i,j_S), FRAME, RP, i, j_S);
                     excitedBy(i,j_S) = make_pair(i,j);
+                    inheritedRotorId(i, j_S)=inheritedRotorId(i,j);
                 }
             }
 
@@ -248,6 +253,7 @@ int main(int argc, char** argv)
 
                     //First, fill up temp array to check for cycles
                     tempCycleArray[0] = excitedBy(*col,*(col+1));
+                    int parentRotorId = inheritedRotorId(*col, *(col+1));
 
                     for (int k=1; k<rotorLengthLimit; ++k)
                     {
@@ -287,7 +293,7 @@ int main(int argc, char** argv)
                     for (int m=cycleStart, k=0;k<cycleLength;++k)
                     {
                         int i = tempCycleArray[m+k].first, j = tempCycleArray[m+k].second;
-                        tempRotorIdFrequency[rotorId(i,j)]++;
+                        tempRotorIdFrequency[activeRotorId(i,j)]++;
                     }
 
                     //now find highest rotor id frequency in map
@@ -306,7 +312,11 @@ int main(int argc, char** argv)
                     //now check if tempRotorIdRatio > rotorIdThresh if so then inherit id and put all rotor data in memory.
                     // + create new id if all current ids are zeros.
                     tempRotorIdRatio=(double)maxFreq/cycleLength;
-                    if(tempRotorIdRatio >= rotorIdThresh)
+                    iSum = 0;
+                    jSum = 0;
+                    
+                    //inherit if threshold fulfilled
+                    if(tempRotorIdRatio >= rotorIdThresh && tempRotorId != 0)
                     {
                         //put data in memory, [0]=i, [1]=j, [2]=state, [3]=rotorid
                         for (int m=cycleStart, k=0;k<cycleLength;++k)
@@ -317,13 +327,24 @@ int main(int argc, char** argv)
                             rotorCoords[cyclicNow].push_back(j);
                             rotorCoords[cyclicNow].push_back(state);
                             rotorCoords[cyclicNow].push_back(tempRotorId);
-                            rotorId(i,j)=tempRotorId;
+                            activeRotorId(i,j)=tempRotorId;
+                            inheritedRotorId(i,j)=tempRotorId;
                             rotorCellFrequency(i,j)++;
                             isRotor[cyclicNow](i,j)=true;
+                            iSum += i;
+                            jSum += j;
                         }
                         rotorIdDuration[tempRotorId]++;
+                        
+                        //calculate and update rotorIdAverageCoords array.
+                        iMean = (int)(iSum/cycleLength + 0.5);
+                        jMean = (int)(jSum/cycleLength + 0.5);
+                        rotorIdAverageCoords[tempRotorId] = make_pair(iMean, jMean);
+                        
+                        //do not add edge to rotorId network as this rotor is considered to be the same as tempRotorId.
                     }
 
+                    //otherwise new node is created.
                     else
                     {
                         //add to max rotor id counter and assign this new id to rotor.
@@ -338,20 +359,42 @@ int main(int argc, char** argv)
                             rotorCoords[cyclicNow].push_back(j);
                             rotorCoords[cyclicNow].push_back(state);
                             rotorCoords[cyclicNow].push_back(maxRotorId);
-                            rotorId(i,j)=maxRotorId;
+                            activeRotorId(i,j)=maxRotorId;
+                            inheritedRotorId(i,j)=maxRotorId;
                             rotorCellFrequency(i,j)++;
                             isRotor[cyclicNow](i,j)=true;
+                            iSum += i;
+                            jSum += j;
                         }
                         rotorIdDuration.push_back(1);
+                        
+                        //calculate and update rotorIdAverageCoords array.
+                        iMean = (int)(iSum/cycleLength + 0.5);
+                        jMean = (int)(jSum/cycleLength + 0.5);
+                        rotorIdAverageCoords.push_back(make_pair(iMean, jMean));
+                        
+                        
+                        //Update rotorIdNetwork
+                        //add node at maxRotorId
+                        rotorIdNetwork.addNode(maxRotorId);
+                        //add frame which node is created.
+                        rotorIdNetwork.addNodeFrame(FRAME, maxRotorId);
+                        
+                        //add edge between parentRotorId and inheritedRotorId if parentRotorId != 0.
+                        if(parentRotorId)
+                        {
+                            rotorIdNetwork.addEdge(parentRotorId, maxRotorId);
+                            rotorIdNetwork.addEdgeFrame(FRAME, parentRotorId);
+                        }
                     }
                 }
 
-            //update rotorid array.
+            //update activeRotorId array.
             for(int i=0; i<G_WIDTH; ++i)
             {
                 for(int j=0; j<G_HEIGHT; ++j)
                 {
-                    if(!isRotor[cyclicNow](i,j)) rotorId(i,j) = 0;
+                    if(!isRotor[cyclicNow](i,j)) activeRotorId(i,j) = 0;
                 }
             }
 
@@ -375,24 +418,12 @@ int main(int argc, char** argv)
             exFrame=exFrameNew;
         }//end first repeat
 
-        //send out data for a given repeat
+    //send out data for a given repeat
     cout << iterationcount << " out of " << repeatMAX*100*((nuMAX-nuSTART)/nuSTEP) << " complete.\n";
     iterationcount++;
-
-    //OUTPUT TO ROTOR ID FILE
-    for (auto it=rotorIdDuration.begin();it!=rotorIdDuration.end();it++)
-    {
-        rotorIDstream << *it << "\n";
-    }
-
-    for(int l=0; l<G_HEIGHT; ++l)
-    {
-        for(int k=0; k<G_WIDTH; ++k)
-        {
-            rotorCountstream << rotorCellFrequency(k,l) << "\t";
-        }
-        rotorCountstream << "\n";
-    }
+        
+    //output rotorNetwork data
+    rotorIdNetwork.outputTemporalEdgeList(rotorIDInheritenceNetwork);
 
     }//end repeat loop
 

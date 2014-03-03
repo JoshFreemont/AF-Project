@@ -15,12 +15,15 @@
 class network
 {
     int maxNode;
-    std::vector<std::vector<int> * > nodeEdgeList;
+    std::vector<std::vector<int> * > edgeList;
+    std::vector<bool*> isNode;
+    
     
 public:
     network(const int maxNodeInit);//network with max node preassigned.
     void addEdge(int startNode, int endNode);
-    std::vector<std::vector<int> * > getNodeEdgeList();
+    void addNode(int nodeId);
+    std::vector<std::vector<int> * > getEdgeList();
 };
 
 

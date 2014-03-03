@@ -7,6 +7,7 @@
 #include "array2D.h"
 #include "line.h"
 #include "network.h"
+#include "data_structs.h"
 #include <ctime>
 #include <unordered_map>
 
@@ -56,17 +57,18 @@ int main(int argc, char** argv)
     
     //other parameters
     MTRand drand(time(NULL));//seed rnd generator
-    Uint32 start;
+    Uint32 start;//timer.
     
     //AF matrix declarations
     array2D<double> inN (G_WIDTH,G_HEIGHT);
     array2D<double> inE (G_WIDTH,G_HEIGHT);
     array2D<double> inS (G_WIDTH,G_HEIGHT);
     array2D<double> inW (G_WIDTH,G_HEIGHT);
-    array2D<int> state (G_WIDTH,G_HEIGHT);
-    array2D<int> state_update (G_WIDTH,G_HEIGHT);
-    array2D<int> exFrame (G_WIDTH,G_HEIGHT);
-    array2D<int> exFrameNew (G_WIDTH,G_HEIGHT);
+    array2D<int> state (G_WIDTH,G_HEIGHT);//stores state of cell in old frame
+    array2D<int> state_update (G_WIDTH,G_HEIGHT);//stores update of state of cell.
+    array2D<int> exFrame (G_WIDTH,G_HEIGHT);//stores frame when state was last excited in old frame
+    array2D<int> exFrameNew (G_WIDTH,G_HEIGHT);//stores update of frame when state was last excited.
+    array2D <pair <int,int> > excitedBy(G_WIDTH,G_HEIGHT); //Stores coords of cell which excited current cell
     
     //AF matrix initialization
     for(int k=0; k<G_WIDTH; ++k)
@@ -81,6 +83,7 @@ int main(int argc, char** argv)
             state_update(k,l)=0;
             exFrame(k,l)=9999999;
             exFrameNew(k,l)=9999999;
+            excitedBy(k,l) = make_pair(k,l);
         }
     }
     
@@ -101,22 +104,13 @@ int main(int argc, char** argv)
     vector< pair <int,int> > rotorIdAverageCoords;
     int iSum, jSum, iMean, jMean;
     int maxIdNode = 10000;
+    
+    //rotorIdNetwork
     network rotorIdNetwork(maxIdNode);
     
-    //network data
-    //vector to store non-spatial id inheritence edge list in pairs [0]=i, [1]=j
-    vector<int> idInheritEdgeList;
-    //vector
     
-    array2D <pair <int,int> > excitedBy(G_WIDTH,G_HEIGHT); //Stores coords of cell which excited current cell
-    for (int k=0;k<G_WIDTH;k++)
-    {
-        for (int l=0;l<G_HEIGHT;l++)
-        {
-            excitedBy(k,l) = make_pair(k,l);
-        }
-    }
     
+    //cycle data variables.
     pair <int,int> tempCycleArray[rotorLengthLimit+1];//Temporary array to store values to detect rotors
     int cycleStart = 0;
     int cycleLength = 0;

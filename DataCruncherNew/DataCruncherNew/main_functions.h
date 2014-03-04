@@ -12,6 +12,7 @@
 #include <vector>
 #include "array2D.h"
 #include <utility>
+#include <string>
 
 
 
@@ -24,6 +25,8 @@ inline void update_arrays(int &state_update, std::vector<int> &all_excited_coord
     all_excited_coords_cyclic.push_back(j_coord);
     return;
 }
+
+const std::string currentDateTime() ;
 
 void pacemaker(array2D<int> &state_update, std::vector<int> &all_excited_coords, array2D<int> &excitation_frame, const int &frame, const int &RP, const int& GRIDSIZE, array2D<std::pair<int,int>> &excitedBy);
 

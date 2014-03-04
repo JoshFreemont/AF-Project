@@ -13,7 +13,7 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
-    //scan to look at rotor stability with different inheritence thresholds
+    //scan to look at rotor stability with different inheritance thresholds
     //maybe look at proportion of cells which originate at a rotor on the screen.
     int iterationcount = 1;
 
@@ -67,7 +67,7 @@ int main(int argc, char** argv)
     FileNamer MyFileNamer;
     MyFileNamer.setFileHeader("RotorID");
 
-    ofstream rotorIDInheritenceNetwork, rotorCountStream;
+    ofstream rotorIDInheritanceNetwork, rotorCountStream;
 
     //rotor variables
     array2D <int> rotorCellFrequency (G_WIDTH,G_HEIGHT,0);
@@ -81,7 +81,7 @@ int main(int argc, char** argv)
     array2D<int> activeRotorId (G_WIDTH, G_HEIGHT, 0);//stores all rotor ids for the state.
     array2D<int> inheritedRotorId (G_WIDTH, G_HEIGHT, 0);//stores all rotor ids for all cells, whether in a rotor or not.
     unordered_map<int, int> tempRotorIdFrequency;//stores temp frequency count of ids
-    double rotorIdThresh = 0.01, tempRotorIdRatio;//threshold for rotor id inheritence. 1.0=100% of current rotor cells must have same id.
+    double rotorIdThresh = 0.01, tempRotorIdRatio;//threshold for rotor id inheritance. 1.0=100% of current rotor cells must have same id.
     int maxFreq;//counts the maximum frequency rotor id within rotor
     int tempRotorId;//creates a temp rotor id variable.
     int maxRotorId=-1;//global maximum rotor id counter.
@@ -89,7 +89,7 @@ int main(int argc, char** argv)
     vector< pair <int,int> > rotorIdAverageCoords;
     int iSum, jSum, iMean, jMean;
 
-    
+
     //cycle data variables
     pair <int,int> tempCycleArray[rotorLengthLimit+1];//Temporary array to store values
     int cycleStart = 0;
@@ -109,7 +109,7 @@ int main(int argc, char** argv)
     vector<vector<int> >exCoords(MEMLIMIT, coords);
     vector<vector<int> >rotorCoords(MEMLIMIT, coords);
     vector<vector<int> >emptyCoords(MEMLIMIT, coords);
-    
+
     //rotorIdNetwork
     int maxIdNode = 10000;
     network rotorIdNetwork(maxIdNode);
@@ -133,7 +133,7 @@ int main(int argc, char** argv)
 
     //******************************************AF Experimentation Loop******************************************//
 
-    //Id inheritence threshold loop
+    //Id inheritance threshold loop
     for(rotorIdThresh=0.01; rotorIdThresh<=1.0; rotorIdThresh*=10)
     {
 
@@ -142,7 +142,7 @@ int main(int argc, char** argv)
     for(int repeat=0; repeat<repeatMAX; ++repeat)
     {
 
-        MyFileNamer.EdgeList(rotorIDInheritenceNetwork, nu, repeat, rotorIdThresh);
+        MyFileNamer.EdgeList(rotorIDInheritanceNetwork, nu, repeat, rotorIdThresh);
         MyFileNamer.CountFile(rotorCountStream, nu, repeat, rotorIdThresh);
 
         //set seed each time
@@ -190,6 +190,8 @@ int main(int argc, char** argv)
     exCoords = emptyCoords;
     rotorCoords = emptyCoords;
 
+    rotorIdNetwork.reset();
+
     //------Everything reset, start simulation---------//
 
         for(FRAME=0; FRAME<=MAXFRAME; FRAME++)
@@ -233,7 +235,7 @@ int main(int argc, char** argv)
                     excitedBy(i_E,j) = make_pair(i,j);
                     inheritedRotorId(i_E, j)=inheritedRotorId(i,j);
                 }
-                
+
 
                 //north cell checks and excitation
                 if(state(i,j_N)==0 && state_update(i,j_N) != RP && inS(i,j_N)>drand())
@@ -319,7 +321,7 @@ int main(int argc, char** argv)
                     tempRotorIdRatio=(double)maxFreq/cycleLength;
                     iSum = 0;
                     jSum = 0;
-                    
+
                     //inherit if threshold fulfilled
                     if(tempRotorIdRatio >= rotorIdThresh && tempRotorId != 0)
                     {
@@ -341,12 +343,12 @@ int main(int argc, char** argv)
                         }
                         rotorIdDuration[tempRotorId]++;//add one to rotor id duration timer at index=rotorId
                         //isRotorIdAlive[cyclicNow][tempRotorId]=true;//store if given rotor is alive in current frame
-                        
+
                         //calculate and update rotorIdAverageCoords array.
                         iMean = (int)(iSum/cycleLength + 0.5);
                         jMean = (int)(jSum/cycleLength + 0.5);
                         rotorIdAverageCoords[tempRotorId] = make_pair(iMean, jMean);
-                        
+
                         //do not add edge to rotorId network as this rotor is considered to be the same as tempRotorId.
                     }
 
@@ -374,19 +376,19 @@ int main(int argc, char** argv)
                         }
                         rotorIdDuration.push_back(1);//add one to rotor id duration timer at index= rotorId
                         //isRotorIdAlive[cyclicNow][maxRotorId]=true;
-                        
+
                         //calculate and update rotorIdAverageCoords array.
                         iMean = (int)(iSum/cycleLength + 0.5);
                         jMean = (int)(jSum/cycleLength + 0.5);
                         rotorIdAverageCoords.push_back(make_pair(iMean, jMean));
-                        
-                        
+
+
                         //Update rotorIdNetwork
                         //add node at maxRotorId
                         rotorIdNetwork.addNode(maxRotorId);
                         //add frame which node is created.
                         rotorIdNetwork.addNodeFrame(FRAME, maxRotorId);
-                        
+
                         //add edge between parentRotorId and inheritedRotorId if parentRotorId != 0.
                         //also enfoce condition that parentRotor must "be alive" in frame=cyclicOld (rotor can not give birth when dead).
                         if(parentRotorId /*&& isRotorIdAlive[cyclicOld][parentRotorId]*/)
@@ -427,11 +429,12 @@ int main(int argc, char** argv)
         }//end first repeat
 
     //send out data for a given repeat
-    cout << iterationcount << " out of " << repeatMAX*100*((nuMAX-nuSTART)/nuSTEP) << " complete.\n";
+    cout << iterationcount << " out of " << repeatMAX*3*((nuMAX-nuSTART)/nuSTEP+1) << " complete";
+    cout << " at time " << currentDateTime() << ".\n";
     iterationcount++;
-        
+
     //output rotorNetwork data
-    rotorIdNetwork.outputTemporalEdgeList(rotorIDInheritenceNetwork);
+    rotorIdNetwork.outputEdgeList(rotorIDInheritanceNetwork);
 
     }//end repeat loop
 

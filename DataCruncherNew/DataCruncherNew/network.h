@@ -16,22 +16,23 @@
 class network
 {
     int maxNode;
-    std::vector<std::vector<int> * > edgeList;
-    std::vector<bool*> isNode;
+    std::vector<std::vector<int> > edgeList;
+    std::vector<bool> isNode;
     std::vector<int> nodeFrameCreate;
-    std::vector<std::vector<int> * > edgeFrameCreateList;
-    
-    
+    std::vector<std::vector<int> > edgeFrameCreateList;
+
+
 public:
     network(const int maxNodeInit);//network with max node preassigned.
     void addEdge(int startNode, int endNode);
     void addEdgeFrame(int frame, int nodeId);
     void addNode(int nodeId);
     void addNodeFrame(int frame, int nodeId);
-    std::vector<std::vector<int> * > getEdgeList();
-    std::vector<bool*> getIsNode();
+    std::vector<std::vector<int> > getEdgeList();
+    std::vector<bool> getIsNode();
     void outputEdgeList (std::ofstream& aStream);
     void outputTemporalEdgeList (std::ofstream& aStream);
+    void reset();
 };
 
 

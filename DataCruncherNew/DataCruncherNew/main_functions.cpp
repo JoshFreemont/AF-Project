@@ -7,6 +7,8 @@
 //
 
 #include "main_functions.h"
+#include <ctime>
+#include <stdio.h>
 
 
 void pacemaker(array2D<int> &state_update, std::vector<int> &all_excited_coords, array2D<int> &excitation_frame, const int &frame, const int& RP, const int& GRIDSIZE, array2D<std::pair<int,int>> &excitedBy)
@@ -21,6 +23,18 @@ void pacemaker(array2D<int> &state_update, std::vector<int> &all_excited_coords,
             excitation_frame(0,j)=frame;
         }
     return;
+}
+
+const std::string currentDateTime() {
+    time_t     now = time(0);
+    struct tm  tstruct;
+    char       buf[80];
+    tstruct = *localtime(&now);
+    // Visit http://en.cppreference.com/w/cpp/chrono/c/strftime
+    // for more information about date/time format
+    strftime(buf, sizeof(buf), "%Y-%m-%d %X", &tstruct);
+
+    return buf;
 }
 
 /*void init_Kishan(double*** inN, double*** inE, double*** inS, double*** inW, const int GRIDSIZE, double defect_density, double vert_conn, double firing_prob)
@@ -42,7 +56,7 @@ void pacemaker(array2D<int> &state_update, std::vector<int> &all_excited_coords,
  }
  }
  }
- 
+
  for(int i=1; i<(GRIDSIZE+1); i++)
  {
  for(int j=0; j<GRIDSIZE; j++)

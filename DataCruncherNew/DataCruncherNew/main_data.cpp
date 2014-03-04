@@ -2,8 +2,8 @@
 #include "mtrand.h"
 #include "patch.h"
 #include "array2D.h"
-#include <ctime>
 #include <fstream>
+#include <ctime>
 #include <unordered_map>
 #include <cmath>
 #include "filenamer.h"
@@ -397,7 +397,10 @@ int main(int argc, char** argv)
         }//end first repeat
 
         //send out data for a given repeat
-    cout << iterationcount << " out of " << repeatMAX*3*((nuMAX-nuSTART)/nuSTEP+1) << " complete.\n";
+    cout << iterationcount << " out of " << repeatMAX*3*((nuMAX-nuSTART)/nuSTEP+1) << " complete ";
+    cout << "at " << currentDateTime() << endl;
+
+
     iterationcount++;
 
     //OUTPUT TO ROTOR ID FILE

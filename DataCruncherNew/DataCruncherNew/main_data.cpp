@@ -434,7 +434,7 @@ int main(int argc, char** argv)
     iterationcount++;
 
     //output rotorNetwork data
-    rotorIdNetwork.outputEdgeList(rotorIDInheritanceNetwork);
+    rotorIdNetwork.outputGMLEdgeList(rotorIDInheritanceNetwork);
 
     }//end repeat loop
 

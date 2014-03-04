@@ -87,6 +87,39 @@ void network::outputEdgeList (std::ofstream& aStream)
     }
 }
 
+void network::outputGMLEdgeList (std::ofstream& aStream)
+{
+    aStream<<"graph\n[\n";
+    for(int i=0; i<maxNode; ++i)
+    {
+        if((isNode[i]))
+        {
+
+            aStream<<"\tnode\n\t[\n\tid "<<i<<std::endl;
+            aStream<<"\tlabel \"" << i << "\"\n\t]\n";
+        }
+        else break;
+    }
+
+    for(int i=0; i<maxNode; ++i)
+    {
+        if((isNode[i]))
+        {
+            for(auto it = ((edgeList[i])).begin(); it != ((edgeList[i])).end(); ++it)
+            {
+                aStream<<"\tedge\n\t[\n\tsource "<<i<<std::endl;
+                aStream<<"\ttarget " << *it << "\n\t]\n";
+            }
+        }
+
+        else
+        {
+            aStream << "]";
+            return;
+        }
+    }
+}
+
 void network::outputTemporalEdgeList(std::ofstream& aStream)
 {
     aStream<<"Start Node Creation Time"<<"\t"<<"End Node Creation Time"<<std::endl;

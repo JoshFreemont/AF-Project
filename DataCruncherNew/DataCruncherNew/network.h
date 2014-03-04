@@ -32,6 +32,7 @@ public:
     std::vector<bool> getIsNode();
     void outputEdgeList (std::ofstream& aStream);
     void outputTemporalEdgeList (std::ofstream& aStream);
+    void outputGMLEdgeList (std::ofstream& aStream);
     void reset();
 };
 

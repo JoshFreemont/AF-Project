@@ -28,8 +28,11 @@ int main(int argc, char** argv)
 
     //frame and memory variables
     const int MEMLIMIT=RP+1;
-    const int MAXFRAME=10000;
+    const int MAXFRAME=1000000;
     int FRAME=0;
+    int cyclicNow=0;
+    int cyclicOld=0;
+    int cyclicBackRP=0;
 
     //other parameters
     MTRand drand(time(NULL));//seed rnd generator
@@ -63,10 +66,11 @@ int main(int argc, char** argv)
     //file namer
 
     FileNamer MyFileNamer;
-    MyFileNamer.setFileHeader("RotorIDTest");
+    MyFileNamer.setFileHeader("10pow6run_nu0.14");
 
     ofstream rotorIDstream;
-    ofstream rotorCountstream;
+    ofstream rotorExCountstream;//Counts number of times has been a rotor cell
+    ofstream rotorCountstream;//Counts number of rotors at a given time
 
     //rotor variables
     array2D <int> rotorCellFrequency (G_WIDTH,G_HEIGHT,0);
@@ -99,6 +103,9 @@ int main(int argc, char** argv)
     int tortoise, hare;
     bool isCycle;
 
+    //rotor count variables
+    int rotorCount=0;
+
     //Patches
     /*int size=40;
     double nuIn=0.08;
@@ -120,13 +127,18 @@ int main(int argc, char** argv)
     int j_N;
     int j_S;
 
+    //ofstream
+
+    ofstream excited_list_stream;
+
+
     //setup to look at rotor duration for different nu in order to measure dynamism.
     double nu;
-    double nuSTART = 0.02;
-    const double nuMAX = 0.4;
-    const double nuSTEP = 0.02;
-    const int repeatMAX = 10;
-    for (nu =nuSTART;nu<nuMAX;nu+=nuSTEP)
+    double nuSTART = 0.14;
+    const double nuMAX = 0.14;
+    const double nuSTEP = 0.01;
+    const int repeatMAX = 5;
+    for (nu =nuSTART;nu<=nuMAX;nu+=nuSTEP)
     {
 
     //******************************************AF Experimentation Loop******************************************//
@@ -141,7 +153,8 @@ int main(int argc, char** argv)
     {
 
         MyFileNamer.IDFile(rotorIDstream, nu, repeat, rotorIdThresh);
-        MyFileNamer.CountFile(rotorCountstream,nu,repeat,rotorIdThresh);
+        MyFileNamer.RotorExCountFile(rotorExCountstream,nu,repeat,rotorIdThresh);
+        MyFileNamer.RotorCountFile(rotorCountstream,nu,repeat,rotorIdThresh);
         //set seed each time
         drand.seed(time(NULL));
 
@@ -194,6 +207,7 @@ int main(int argc, char** argv)
         cyclicNow = FRAME%MEMLIMIT;
         cyclicOld = (FRAME+MEMLIMIT-1)%MEMLIMIT;
         cyclicBackRP = (FRAME+MEMLIMIT-1-RP)%MEMLIMIT;
+        rotorCount = 0;
 
         //free memory in exCoords and rotorCells arrays.
         if(FRAME>MEMLIMIT-1)
@@ -281,6 +295,9 @@ int main(int argc, char** argv)
 
                     //if no cycle then continue through next iteration.
                     if(!isCycle)continue;
+
+                    //if (new) rotor, add to rotor count
+                    rotorCount++;
 
                     //Rotor Id allocation
                     //fill rotor frequency map with previous rotor ids for rotor cells
@@ -373,10 +390,14 @@ int main(int argc, char** argv)
             //update loop variables.
             state=state_update;
             exFrame=exFrameNew;
+
+            //rotor count vs time output
+            rotorCountstream << FRAME << "\t" << rotorCount << "\n";
+
         }//end first repeat
 
         //send out data for a given repeat
-    cout << iterationcount << " out of " << repeatMAX*100*((nuMAX-nuSTART)/nuSTEP) << " complete.\n";
+    cout << iterationcount << " out of " << repeatMAX*3*((nuMAX-nuSTART)/nuSTEP+1) << " complete.\n";
     iterationcount++;
 
     //OUTPUT TO ROTOR ID FILE
@@ -389,9 +410,9 @@ int main(int argc, char** argv)
     {
         for(int k=0; k<G_WIDTH; ++k)
         {
-            rotorCountstream << rotorCellFrequency(k,l) << "\t";
+            rotorExCountstream << rotorCellFrequency(k,l) << "\t";
         }
-        rotorCountstream << "\n";
+        rotorExCountstream << "\n";
     }
 
     }//end repeat loop

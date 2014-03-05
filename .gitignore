@@ -1,4 +1,5 @@
 *.txt
+*.exe
 
 Data/
 
@@ -11,3 +12,6 @@ obj/
 *.layout
 *.cbp
 *.zip
+*.o
+
+MAKEFILE

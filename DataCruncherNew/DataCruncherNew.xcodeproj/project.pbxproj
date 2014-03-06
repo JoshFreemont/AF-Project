@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		031F74AD18C8C248002BF2C3 /* analysisfunctions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 031F74AB18C8C248002BF2C3 /* analysisfunctions.cpp */; };
+		031F74B118C922A3002BF2C3 /* network.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 031F74AF18C922A3002BF2C3 /* network.cpp */; };
 		03BD267818BB9B5E005511EA /* DataCruncherNew.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 03BD267718BB9B5E005511EA /* DataCruncherNew.1 */; };
 		03BD268518BB9B74005511EA /* main_data.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 03BD267E18BB9B74005511EA /* main_data.cpp */; };
 		03BD268618BB9B74005511EA /* main_functions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 03BD267F18BB9B74005511EA /* main_functions.cpp */; };
@@ -32,6 +33,9 @@
 /* Begin PBXFileReference section */
 		031F74AB18C8C248002BF2C3 /* analysisfunctions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = analysisfunctions.cpp; sourceTree = "<group>"; };
 		031F74AC18C8C248002BF2C3 /* analysisfunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = analysisfunctions.h; sourceTree = "<group>"; };
+		031F74AE18C8C250002BF2C3 /* rotorIDstruct.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rotorIDstruct.h; sourceTree = "<group>"; };
+		031F74AF18C922A3002BF2C3 /* network.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = network.cpp; sourceTree = "<group>"; };
+		031F74B018C922A3002BF2C3 /* network.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = network.h; sourceTree = "<group>"; };
 		03BD267218BB9B5E005511EA /* DataCruncherNew */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = DataCruncherNew; sourceTree = BUILT_PRODUCTS_DIR; };
 		03BD267718BB9B5E005511EA /* DataCruncherNew.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = DataCruncherNew.1; sourceTree = "<group>"; };
 		03BD267E18BB9B74005511EA /* main_data.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main_data.cpp; sourceTree = "<group>"; };
@@ -76,18 +80,21 @@
 		03BD267418BB9B5E005511EA /* DataCruncherNew */ = {
 			isa = PBXGroup;
 			children = (
-				03D5F3EB18BC126200D9F277 /* filenamer.cpp */,
-				03D5F3EC18BC126200D9F277 /* filenamer.h */,
-				031F74AB18C8C248002BF2C3 /* analysisfunctions.cpp */,
-				031F74AC18C8C248002BF2C3 /* analysisfunctions.h */,
 				03BD267E18BB9B74005511EA /* main_data.cpp */,
+				031F74AF18C922A3002BF2C3 /* network.cpp */,
+				031F74B018C922A3002BF2C3 /* network.h */,
+				03D5F3EC18BC126200D9F277 /* filenamer.h */,
+				03D5F3EB18BC126200D9F277 /* filenamer.cpp */,
+				031F74AE18C8C250002BF2C3 /* rotorIDstruct.h */,
+				031F74AC18C8C248002BF2C3 /* analysisfunctions.h */,
+				031F74AB18C8C248002BF2C3 /* analysisfunctions.cpp */,
+				03BD268018BB9B74005511EA /* main_functions.h */,
 				03BD267F18BB9B74005511EA /* main_functions.cpp */,
 				03BD268918BB9BBC005511EA /* array2D.h */,
-				03BD268018BB9B74005511EA /* main_functions.h */,
-				03BD268118BB9B74005511EA /* mtrand.cpp */,
 				03BD268218BB9B74005511EA /* mtrand.h */,
-				03BD268318BB9B74005511EA /* patch.cpp */,
+				03BD268118BB9B74005511EA /* mtrand.cpp */,
 				03BD268418BB9B74005511EA /* patch.h */,
+				03BD268318BB9B74005511EA /* patch.cpp */,
 				03BD267718BB9B5E005511EA /* DataCruncherNew.1 */,
 			);
 			path = DataCruncherNew;
@@ -147,6 +154,7 @@
 				03BD268618BB9B74005511EA /* main_functions.cpp in Sources */,
 				03D5F3ED18BC126200D9F277 /* filenamer.cpp in Sources */,
 				03BD268718BB9B74005511EA /* mtrand.cpp in Sources */,
+				031F74B118C922A3002BF2C3 /* network.cpp in Sources */,
 				03BD268518BB9B74005511EA /* main_data.cpp in Sources */,
 				03BD268818BB9B74005511EA /* patch.cpp in Sources */,
 				031F74AD18C8C248002BF2C3 /* analysisfunctions.cpp in Sources */,

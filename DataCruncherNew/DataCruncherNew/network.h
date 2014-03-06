@@ -30,9 +30,9 @@ public:
     void addNodeFrame(int frame, int nodeId);
     std::vector<std::vector<int> > getEdgeList();
     std::vector<bool> getIsNode();
-    void outputEdgeList (std::ofstream& aStream);
-    void outputTemporalEdgeList (std::ofstream& aStream);
-    void outputGMLEdgeList (std::ofstream& aStream);
+    void FOutEdgeList (std::ofstream& aStream);
+    void FOutTemporalEdgeList (std::ofstream& aStream);
+    void FOutGMLEdgeList (std::ofstream& aStream);
     void reset();
 };
 

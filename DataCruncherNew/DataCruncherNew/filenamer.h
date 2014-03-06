@@ -4,6 +4,7 @@
 #include <string>
 #include <sstream>
 #include <fstream>
+#include <vector>
 
 class FileNamer
 {
@@ -33,5 +34,10 @@ public:
     void RotorCountFile(std::ofstream& aStream, double nu, double iteration, double rotorIDthreshold);
 	
 	void EdgeList(std::ofstream& aStream, double nu, double iteration, double rotorIDThreshold);
+    
 };
+
+
+
+
 #endif // __FILENAMER__H__

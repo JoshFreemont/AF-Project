@@ -1,6 +1,4 @@
 #include "analysisfunctions.h"
-#include <vector>
-#include <algorithm>
 
 double mean(std::vector<int>& someVector)
 {

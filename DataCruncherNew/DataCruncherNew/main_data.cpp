@@ -79,8 +79,9 @@ int main(int argc, char** argv)
     const int rotorLengthLimit = 2*RP;
     array2D <bool> isRotorInit (G_WIDTH,G_HEIGHT,false);
     vector <array2D <bool> > isRotor (MEMLIMIT, isRotorInit);//Stores whether a cell is a "rotor" cell or not
-    //vector<bool> isDead(1000, false);
-    //vector <vector<bool> > isRotorIdAlive (MEMLIMIT, isDead);
+    unordered_map<int, bool> isRotorAlive;
+    unordered_map<int, bool> isRotorAliveNew;
+    
 
     //rotor id variables
     array2D<int> activeRotorId (G_WIDTH, G_HEIGHT, -1);//stores all rotor ids for the state.
@@ -92,7 +93,6 @@ int main(int argc, char** argv)
     int maxRotorId=-1;//global maximum rotor id counter.
     vector<rotorIDstruct> rotorIDdata;
     vector< pair <int,int> > rotorIdAverageCoords;
-    int iSum, jSum, iMean, jMean;
 
 
     //cycle data variables
@@ -404,7 +404,9 @@ int main(int argc, char** argv)
 						rotorIDdata[tempRotorId].length.push_back(cycleLength);
 						rotorIDdata[tempRotorId].deathX = averageX;
 						rotorIDdata[tempRotorId].deathY = averageY;//add one to rotor id duration timer at index=rotorId
-                        //isRotorIdAlive[cyclicNow][tempRotorId]=true;//store if given rotor is alive in current frame
+                        
+                        //set rotor as being alive.
+                        isRotorAliveNew[tempRotorId] = true;
 
                         //do not add edge to rotorId network as this rotor is considered to be the same as tempRotorId.
                     }
@@ -430,9 +432,8 @@ int main(int argc, char** argv)
                             isRotor[cyclicNow](i,j)=true;
                         }
                         rotorIDdata.push_back(rotorIDstruct(FRAME,cycleLength,averageX,averageY));//add one to rotor id duration timer at index= rotorId
-                        //isRotorIdAlive[cyclicNow][maxRotorId]=true;
-
-
+                        
+                        isRotorAliveNew[maxRotorId] = true;
                         //Update rotorIdNetwork
                         //add node at maxRotorId
                         rotorIdNetwork.addNode(maxRotorId);
@@ -441,7 +442,7 @@ int main(int argc, char** argv)
 
                         //add edge between parentRotorId and inheritedRotorId if parentRotorId != 0.
                         //also enfoce condition that parentRotor must "be alive" in frame=cyclicOld (rotor can not give birth when dead).
-                        if(parentRotorId /*&& isRotorIdAlive[cyclicOld][parentRotorId]*/)
+                        if(parentRotorId && isRotorAlive[parentRotorId])
                         {
                             rotorIdNetwork.addEdge(parentRotorId, maxRotorId);
                             rotorIdNetwork.addEdgeFrame(FRAME, parentRotorId);
@@ -457,6 +458,7 @@ int main(int argc, char** argv)
                     if(!isRotor[cyclicNow](i,j)) activeRotorId(i,j) = -1;
                 }
             }
+            
 
             //de-excitation process for refractory cells AND printing process for all cells.
             for (int row = cyclicOld, rowEnd = cyclicBackRP; row != rowEnd; row=(row-1+MEMLIMIT)%MEMLIMIT)
@@ -476,8 +478,9 @@ int main(int argc, char** argv)
             //update loop variables.
             state=state_update;
             exFrame=exFrameNew;
-			
-			
+            isRotorAlive=isRotorAliveNew;
+
+            
             //rotor count vs time output
             rotorCountstream << FRAME << "\t" << rotorCount << "\n";
 			
@@ -488,7 +491,10 @@ int main(int argc, char** argv)
     cout << " at time " << currentDateTime() << ".\n";
     iterationcount++;
 	
-	 //OUTPUT TO ROTOR ID FILE
+	 
+    //OUTPUT TO ROTOR ID FILE
+    //function(ofstream rotorIDstream, vector<struct> &rotorIDdata) **perhaps make some of these into functions**
+        
 	int rotorCounter = 0;
     for (auto it=rotorIDdata.begin();it!=rotorIDdata.end();it++)
     {

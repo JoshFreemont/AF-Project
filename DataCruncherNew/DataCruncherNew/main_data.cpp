@@ -30,7 +30,7 @@ int main(int argc, char** argv)
 
     //frame and memory variables
     const int MEMLIMIT=RP+1;
-    const int MAXFRAME=10000;
+    const int MAXFRAME=1000000;
     int FRAME=0;
     int cyclicNow=0;
     int cyclicOld=0;
@@ -135,10 +135,10 @@ int main(int argc, char** argv)
 
     //setup to look at rotor duration for different nu in order to measure dynamism.
     double nu;
-    double nuSTART = 0.14;
-    const double nuMAX = 0.14;
-    const double nuSTEP = 0.01;
-    const int repeatMAX = 5;
+    double nuSTART = 0.05;
+    const double nuMAX = 0.25;
+    const double nuSTEP = 0.05;
+    const int repeatMAX = 2;
     for (nu =nuSTART;nu<=nuMAX;nu+=nuSTEP)
     {
 

@@ -10,7 +10,7 @@ struct rotorIDstruct
 	int deathX, deathY;
 	std::vector<int> length;
 	rotorIDstruct(int frame,int currentlength, int x, int y):
-	lifetime(0), birthframe(frame), birthX(x), birthY(y),
+	lifetime(1), birthframe(frame), birthX(x), birthY(y),
 	deathX(x), deathY(y)
 	{
 		length.reserve(50);

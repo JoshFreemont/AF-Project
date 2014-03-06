@@ -8,6 +8,9 @@
 #include <fstream>
 #include <unordered_map>
 #include <cmath>
+#include "rotorIDstruct.h"
+#include "analysisfunctions.h"
+#include <algorithm>
 
 using namespace std;
 
@@ -65,9 +68,11 @@ int main(int argc, char** argv)
 
     //file namer
     FileNamer MyFileNamer;
-    MyFileNamer.setFileHeader("RotorID");
+    MyFileNamer.setFileHeader("test");
 
-    ofstream rotorIDInheritanceNetwork, rotorCountStream;
+    ofstream rotorIDInheritanceNetwork, rotorExCountstream;
+	ofstream rotorCountstream;
+	ofstream rotorIDstream;
 
     //rotor variables
     array2D <int> rotorCellFrequency (G_WIDTH,G_HEIGHT,0);
@@ -78,14 +83,14 @@ int main(int argc, char** argv)
     //vector <vector<bool> > isRotorIdAlive (MEMLIMIT, isDead);
 
     //rotor id variables
-    array2D<int> activeRotorId (G_WIDTH, G_HEIGHT, 0);//stores all rotor ids for the state.
+    array2D<int> activeRotorId (G_WIDTH, G_HEIGHT, -1);//stores all rotor ids for the state.
     array2D<int> inheritedRotorId (G_WIDTH, G_HEIGHT, 0);//stores all rotor ids for all cells, whether in a rotor or not.
     unordered_map<int, int> tempRotorIdFrequency;//stores temp frequency count of ids
     double rotorIdThresh = 0.01, tempRotorIdRatio;//threshold for rotor id inheritance. 1.0=100% of current rotor cells must have same id.
     int maxFreq;//counts the maximum frequency rotor id within rotor
     int tempRotorId;//creates a temp rotor id variable.
     int maxRotorId=-1;//global maximum rotor id counter.
-    vector<int> rotorIdDuration;
+    vector<rotorIDstruct> rotorIDdata;
     vector< pair <int,int> > rotorIdAverageCoords;
     int iSum, jSum, iMean, jMean;
 
@@ -97,7 +102,10 @@ int main(int argc, char** argv)
     int tortoise, hare;
     bool isCycle;
 
-    //Patches
+	//rotor count variables
+    int rotorCount=0;
+    
+	//Patches
     /*int size=40;
     double nuIn=0.08;
     Spatch patch1 (size, 50, 50, S_WIDTH, S_HEIGHT, GRIDSIZE, inN, inS, inE, inW, nuIn);
@@ -141,9 +149,22 @@ int main(int argc, char** argv)
     //---------------------------------------------------------------------------
     for(int repeat=0; repeat<repeatMAX; ++repeat)
     {
+		MyFileNamer.IDFile(rotorIDstream, nu, repeat, rotorIdThresh);
+		{//Name columns
+		rotorIDstream << "Rotor ID" << "\t";
+		rotorIDstream << "Birth Frame" << "\t";
+		rotorIDstream << "Lifetime" << "\t";
+		rotorIDstream << "Mean length" << "\t";
+		rotorIDstream << "Length.stddev" << "\t";
+		rotorIDstream << "Min Length" << "\t";
+		rotorIDstream << "Max Length" << "\t";
+		rotorIDstream << "BirthX" << "\t" << "BirthY" << "\t";
+		rotorIDstream << "DeathX" << "\t" << "DeathY" << "\n";
+        }
 
         MyFileNamer.EdgeList(rotorIDInheritanceNetwork, nu, repeat, rotorIdThresh);
-        MyFileNamer.CountFile(rotorCountStream, nu, repeat, rotorIdThresh);
+        MyFileNamer.RotorExCountFile(rotorExCountstream,nu,repeat,rotorIdThresh);
+        MyFileNamer.RotorCountFile(rotorCountstream,nu,repeat,rotorIdThresh);
 
         //set seed each time
         drand.seed(time(NULL));
@@ -162,7 +183,7 @@ int main(int argc, char** argv)
             exFrame(k,l)=9999999;
             exFrameNew(k,l)=9999999;
             isRotorInit(k,l) = false;
-            activeRotorId(k,l) = 0;
+            activeRotorId(k,l) = -1;
             excitedBy(k,l) = make_pair(k,l);
             rotorCellFrequency(k,l) = 0;
         }
@@ -182,7 +203,7 @@ int main(int argc, char** argv)
         }
     }
     }
-    rotorIdDuration.clear();
+    rotorIDdata.clear();
     tempRotorIdFrequency.clear();
     rotorIdAverageCoords.clear();
     maxRotorId=-1;
@@ -200,6 +221,7 @@ int main(int argc, char** argv)
         cyclicNow = FRAME%MEMLIMIT;
         cyclicOld = (FRAME+MEMLIMIT-1)%MEMLIMIT;
         cyclicBackRP = (FRAME+MEMLIMIT-1-RP)%MEMLIMIT;
+		rotorCount=0;
 
         //free memory in exCoords and rotorCells arrays.
         if(FRAME>MEMLIMIT-1)
@@ -294,14 +316,55 @@ int main(int argc, char** argv)
 
                     //if no cycle then continue through next iteration.
                     if(!isCycle)continue;
+					
+					//if (new) rotor, add to rotor count
+                    rotorCount++;
 
                     //Rotor Id allocation
                     //fill rotor frequency map with previous rotor ids for rotor cells
+					//also find average X and Y coordinates
+					double averageX = 0;
+					double averageY = 0;
+					int minY=199;
+					int maxY=0;
+					
                     for (int m=cycleStart, k=0;k<cycleLength;++k)
                     {
                         int i = tempCycleArray[m+k].first, j = tempCycleArray[m+k].second;
                         tempRotorIdFrequency[activeRotorId(i,j)]++;
+						if(j>maxY)
+						maxY = j;
+						if(j<minY)
+						minY = j;
+						averageX += i;
                     }
+					averageX /= (double)(cycleLength);
+					
+					//This checks if the loop is at the 0/200 boundary
+					//and deals with it accordingly
+					if(minY<40 && maxY>160)
+					{
+					for (int m=cycleStart, k=0;k<cycleLength;++k)
+                    {
+						int j = tempCycleArray[m+k].second;
+						if(j<40)
+						averageY+=j+200;
+						else
+						averageY+=j;
+                    }
+					if(averageY>=G_HEIGHT) //If average is out of bounds
+					averageY -= 200;	//subtract 200
+					averageY /= (double)(cycleLength);
+					}
+					else
+					{
+						for (int m=cycleStart, k=0;k<cycleLength;++k)
+                    {
+						int j = tempCycleArray[m+k].second;
+						averageY+=j;
+                    }
+					averageY /= (double)(cycleLength);
+					}
 
                     //now find highest rotor id frequency in map
                     maxFreq=0;
@@ -319,11 +382,9 @@ int main(int argc, char** argv)
                     //now check if tempRotorIdRatio > rotorIdThresh if so then inherit id and put all rotor data in memory.
                     // + create new id if all current ids are zeros.
                     tempRotorIdRatio=(double)maxFreq/cycleLength;
-                    iSum = 0;
-                    jSum = 0;
 
                     //inherit if threshold fulfilled
-                    if(tempRotorIdRatio >= rotorIdThresh && tempRotorId != 0)
+                    if(tempRotorIdRatio >= rotorIdThresh && tempRotorId != -1)
                     {
                         //put data in memory, [0]=i, [1]=j, [2]=state, [3]=rotorid
                         for (int m=cycleStart, k=0;k<cycleLength;++k)
@@ -338,16 +399,12 @@ int main(int argc, char** argv)
                             inheritedRotorId(i,j)=tempRotorId;
                             rotorCellFrequency(i,j)++;
                             isRotor[cyclicNow](i,j)=true;
-                            iSum += i;
-                            jSum += j;
                         }
-                        rotorIdDuration[tempRotorId]++;//add one to rotor id duration timer at index=rotorId
+						rotorIDdata[tempRotorId].lifetime++;
+						rotorIDdata[tempRotorId].length.push_back(cycleLength);
+						rotorIDdata[tempRotorId].deathX = averageX;
+						rotorIDdata[tempRotorId].deathY = averageY;//add one to rotor id duration timer at index=rotorId
                         //isRotorIdAlive[cyclicNow][tempRotorId]=true;//store if given rotor is alive in current frame
-
-                        //calculate and update rotorIdAverageCoords array.
-                        iMean = (int)(iSum/cycleLength + 0.5);
-                        jMean = (int)(jSum/cycleLength + 0.5);
-                        rotorIdAverageCoords[tempRotorId] = make_pair(iMean, jMean);
 
                         //do not add edge to rotorId network as this rotor is considered to be the same as tempRotorId.
                     }
@@ -371,16 +428,9 @@ int main(int argc, char** argv)
                             inheritedRotorId(i,j)=maxRotorId;
                             rotorCellFrequency(i,j)++;
                             isRotor[cyclicNow](i,j)=true;
-                            iSum += i;
-                            jSum += j;
                         }
-                        rotorIdDuration.push_back(1);//add one to rotor id duration timer at index= rotorId
+                        rotorIDdata.push_back(rotorIDstruct(FRAME,cycleLength,averageX,averageY));//add one to rotor id duration timer at index= rotorId
                         //isRotorIdAlive[cyclicNow][maxRotorId]=true;
-
-                        //calculate and update rotorIdAverageCoords array.
-                        iMean = (int)(iSum/cycleLength + 0.5);
-                        jMean = (int)(jSum/cycleLength + 0.5);
-                        rotorIdAverageCoords.push_back(make_pair(iMean, jMean));
 
 
                         //Update rotorIdNetwork
@@ -404,7 +454,7 @@ int main(int argc, char** argv)
             {
                 for(int j=0; j<G_HEIGHT; ++j)
                 {
-                    if(!isRotor[cyclicNow](i,j)) activeRotorId(i,j) = 0;
+                    if(!isRotor[cyclicNow](i,j)) activeRotorId(i,j) = -1;
                 }
             }
 
@@ -426,12 +476,52 @@ int main(int argc, char** argv)
             //update loop variables.
             state=state_update;
             exFrame=exFrameNew;
+			
+			
+            //rotor count vs time output
+            rotorCountstream << FRAME << "\t" << rotorCount << "\n";
+			
         }//end first repeat
 
     //send out data for a given repeat
     cout << iterationcount << " out of " << repeatMAX*3*((nuMAX-nuSTART)/nuSTEP+1) << " complete";
     cout << " at time " << currentDateTime() << ".\n";
     iterationcount++;
+	
+	 //OUTPUT TO ROTOR ID FILE
+	int rotorCounter = 0;
+    for (auto it=rotorIDdata.begin();it!=rotorIDdata.end();it++)
+    {
+		rotorIDstream << rotorCounter << "\t";
+		rotorIDstream << it->birthframe << "\t";
+        rotorIDstream << it->lifetime << "\t";
+		
+		double m = mean(it->length); //std dev of lengths
+		double accum = 0.0;
+		std::for_each (std::begin(it->length), std::end(it->length), [&](const double d)
+		{
+			accum += (d - m) * (d - m);
+		});
+
+		double stdev = sqrt(accum / (it->length.size())); //std dev of lengths
+		rotorIDstream << m << "\t";
+		rotorIDstream << stdev << "\t";
+		rotorIDstream << *min_element(it->length.begin(),it->length.end()) << "\t"; //Min length
+		rotorIDstream << *max_element(it->length.begin(),it->length.end()) << "\t"; //Max length
+		rotorIDstream << it->birthX << "\t" << it->birthY << "\t"; //rotor birth locations
+		rotorIDstream << it->deathX << "\t" << it->deathY << "\n"; //rotor death locations
+		
+		rotorCounter++;
+    }
+
+    for(int l=0; l<G_HEIGHT; ++l)
+    {
+        for(int k=0; k<G_WIDTH; ++k)
+        {
+            rotorExCountstream << rotorCellFrequency(k,l) << "\t";
+        }
+        rotorExCountstream << "\n";
+    }
 
     //output rotorNetwork data
     rotorIdNetwork.outputGMLEdgeList(rotorIDInheritanceNetwork);

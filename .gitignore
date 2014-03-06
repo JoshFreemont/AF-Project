@@ -11,3 +11,8 @@ obj/
 *.layout
 *.cbp
 *.zip
+
+*.o
+*.exe
+
+MAKEFILE

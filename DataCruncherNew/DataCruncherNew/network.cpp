@@ -70,7 +70,7 @@ std::vector<bool> network::getIsNode()
     return isNode;
 }
 
-void network::outputEdgeList (std::ofstream& aStream)
+void network::FOutEdgeList (std::ofstream& aStream)
 {
     aStream<<"Start Node"<<"\t"<<"End Node"<<std::endl;
     for(int i=0; i<maxNode; ++i)
@@ -87,7 +87,7 @@ void network::outputEdgeList (std::ofstream& aStream)
     }
 }
 
-void network::outputGMLEdgeList (std::ofstream& aStream)
+void network::FOutGMLEdgeList (std::ofstream& aStream)
 {
     aStream<<"graph\n[\n";
     for(int i=0; i<maxNode; ++i)
@@ -120,7 +120,7 @@ void network::outputGMLEdgeList (std::ofstream& aStream)
     }
 }
 
-void network::outputTemporalEdgeList(std::ofstream& aStream)
+void network::FOutTemporalEdgeList(std::ofstream& aStream)
 {
     aStream<<"Start Node Creation Time"<<"\t"<<"End Node Creation Time"<<std::endl;
     int index = 0;

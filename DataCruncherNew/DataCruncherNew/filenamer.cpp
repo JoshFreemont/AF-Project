@@ -71,6 +71,7 @@ FileNamer::FileNamer(const string& FileHeader): m_FileHeader(FileHeader)
         m_FileHeader + "_" + m_Convert.str() + ".txt";
 
         aStream.open(fileName.c_str());
+        
     }
 
     void FileNamer::RotorExCountFile(std::ofstream& aStream, double nu, double iteration, double rotorIDthreshold)
@@ -114,3 +115,6 @@ FileNamer::FileNamer(const string& FileHeader): m_FileHeader(FileHeader)
 		
 		aStream.open(fileName.c_str());
     }
+
+
+

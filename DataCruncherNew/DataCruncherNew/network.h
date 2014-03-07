@@ -12,26 +12,30 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
+#include <unordered_map>
 
 class network
 {
-    int maxNode;
-    std::vector<std::vector<int> > edgeList;
-    std::vector<bool> isNode;
-    std::vector<int> nodeFrameCreate;
-    std::vector<std::vector<int> > edgeFrameCreateList;
+
+    std::unordered_map<int, std::vector<int> > edgeList;
+    std::unordered_map<int, bool> isNode;
+    std::unordered_map<int, int> nodeFrameCreate;
+    std::unordered_map<int, std::vector<int> > edgeFrameCreateList;
 
 
 public:
+    network();
     network(const int maxNodeInit);//network with max node preassigned.
-    void addEdge(int startNode, int endNode);
+    void addEdge(int startNode, int endNode, int frame);
     void addEdgeFrame(int frame, int nodeId);
     void addNode(int nodeId);
+    void reset();
+    void reset(const int maxNodeInit);
     void addNodeFrame(int frame, int nodeId);
     void FOutEdgeList (std::ofstream& aStream);
     void FOutTemporalEdgeList (std::ofstream& aStream);
     void FOutGMLEdgeList (std::ofstream& aStream);
-    void reset();
+    
 };
 
 

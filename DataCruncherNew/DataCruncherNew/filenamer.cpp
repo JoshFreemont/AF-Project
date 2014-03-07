@@ -102,7 +102,7 @@ FileNamer::FileNamer(const string& FileHeader): m_FileHeader(FileHeader)
         aStream.open(fileName.c_str());
 	}
 		
-	void FileNamer::EdgeList(std::ofstream& aStream, double nu, double iteration, double rotorIDThreshold)
+void FileNamer::EdgeList(std::ofstream& aStream, double nu, double iteration, double rotorIDThreshold, std::string type)
 	{
 		string fileName;
 		m_Convert.clear();
@@ -111,7 +111,7 @@ FileNamer::FileNamer(const string& FileHeader): m_FileHeader(FileHeader)
 		
 		m_Convert << setprecision(4) << "edge_nu_" << nu << "_IDThresh" << rotorIDThreshold << "_" << iteration;
 		
-		fileName =m_FileHeader + "_" + m_Convert.str() + ".txt";
+		fileName =m_FileHeader + "_" + m_Convert.str() + "_" + type + ".txt";
 		
 		aStream.open(fileName.c_str());
     }

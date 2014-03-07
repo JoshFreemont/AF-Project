@@ -11,7 +11,7 @@
 #include <stdio.h>
 
 
-void pacemaker(array2D<int> &state_update, std::vector<int> &all_excited_coords, array2D<int> &excitation_frame, const int &frame, const int& RP, const int& GRIDSIZE, array2D<std::pair<int,int>> &excitedBy)
+void pacemaker(array2D<int> &state_update, std::vector<int> &all_excited_coords, const int& RP, const int& GRIDSIZE, array2D<std::pair<int,int>> &excitedBy)
 {
     for(int j=0; j<GRIDSIZE; ++j)
         if(state_update(0,j)==0)
@@ -20,7 +20,6 @@ void pacemaker(array2D<int> &state_update, std::vector<int> &all_excited_coords,
             excitedBy(0,j)=std::make_pair (0,j);
             all_excited_coords.push_back(0);//push back i coord in same coordinate definition as the state array.
             all_excited_coords.push_back(j);//push back j coord as above
-            excitation_frame(0,j)=frame;
         }
     return;
 }

@@ -8,17 +8,17 @@
 
 #include "network.h"
 
+//empty constructor.
+network::network()
+{}
+
+//constructor for initializing with a certain no. nodes
 network::network(const int maxNodeInit)
 {
-    maxNode=maxNodeInit;
     for(int i=0; i<maxNodeInit; ++i)
     {
-        edgeList.push_back(std::vector<int>(0));
-        isNode.push_back(false);
-        edgeFrameCreateList.push_back(std::vector<int>(0));
+        isNode[i] = true;
     }
-    nodeFrameCreate.reserve(maxNodeInit);
-
 }
 
 void network::reset()
@@ -27,30 +27,37 @@ void network::reset()
     isNode.clear();
     edgeFrameCreateList.clear();
     nodeFrameCreate.clear();
-    for(int i=0; i<maxNode; ++i)
-    {
-        edgeList.push_back(std::vector<int>(0));
-        isNode.push_back(false);
-        edgeFrameCreateList.push_back(std::vector<int>(0));
-    }
 }
 
-void network::addEdge(int startNode, int endNode)
+void network::reset(const int maxNodeInit)
 {
-    ((edgeList[startNode])).push_back(endNode);
+    edgeList.clear();
+    isNode.clear();
+    edgeFrameCreateList.clear();
+    nodeFrameCreate.clear();
+    
+    for(int i=0; i<maxNodeInit; ++i)
+    {
+        isNode[i] = true;
+    }
+}
+void network::addEdge(int startNode, int endNode, int frame)
+{
+    edgeList[startNode].push_back(endNode);
+    edgeList[startNode].push_back(frame);
     return;
 }
 
 //add frame of creation for child nodes to the edgeframecreatelist
 void network::addEdgeFrame(int frame, int nodeId)
 {
-    ((edgeFrameCreateList[nodeId])).push_back(frame);
+    edgeFrameCreateList[nodeId].push_back(frame);
     return;
 }
 
 void network::addNode(int nodeIdValue)
 {
-    (isNode[nodeIdValue]) = true;
+    isNode[nodeIdValue] = true;
     return;
 }
 
@@ -63,51 +70,42 @@ void network::addNodeFrame(int frame, int nodeId)
 void network::FOutEdgeList (std::ofstream& aStream)
 {
     aStream<<"Start Node"<<"\t"<<"End Node"<<std::endl;
-    for(int i=0; i<maxNode; ++i)
+    for(auto node = edgeList.begin(); node != edgeList.end(); node++)
     {
-        if((isNode[i]))
-        {
-            for(auto it = ((edgeList[i])).begin(); it != ((edgeList[i])).end(); ++it)
+            for(auto it = node->second.begin(); it != node->second.end(); ++it)
             {
-                aStream<<i<<"\t"<<*it<<std::endl;
+                aStream<< node->first << "\t" << *it << std::endl;
             }
-        }
-
-        else return;
     }
 }
 
 void network::FOutGMLEdgeList (std::ofstream& aStream)
 {
     aStream<<"graph\n[\n";
-    for(int i=0; i<maxNode; ++i)
+    for(auto node = isNode.begin(); node != isNode.end(); ++node)
     {
-        if((isNode[i]))
+        if(node->second)
         {
-
-            aStream<<"\tnode\n\t[\n\tid "<<i<<std::endl;
-            aStream<<"\tlabel \"" << i << "\"\n\t]\n";
+            aStream<< "\tnode\n\t[\n\tid " << node->first << std::endl;
+            aStream<< "\tlabel \"" << node->first << "\"" << std::endl;
+            aStream<< "\tframe " << nodeFrameCreate[node->first] << "\n\t]\n";
         }
-        else break;
+        
+        else continue;
     }
 
-    for(int i=0; i<maxNode; ++i)
+    for(auto node = edgeList.begin(); node!=edgeList.end(); ++node)
     {
-        if((isNode[i]))
+        for(auto it = node->second.begin(); it != node->second.end(); it+=2)
         {
-            for(auto it = ((edgeList[i])).begin(); it != ((edgeList[i])).end(); ++it)
-            {
-                aStream<<"\tedge\n\t[\n\tsource "<<i<<std::endl;
-                aStream<<"\ttarget " << *it << "\n\t]\n";
-            }
-        }
-
-        else
-        {
-            aStream << "]";
-            return;
+            aStream << "\tedge\n\t[\n\tsource " << node->first << std::endl;
+            aStream << "\ttarget " << *it << std::endl;
+            aStream << "\tframe "<< *(it+1) << "\n\t]\n";
         }
     }
+    
+    aStream << "]";
+    return;
 }
 
 void network::FOutTemporalEdgeList(std::ofstream& aStream)
@@ -116,14 +114,12 @@ void network::FOutTemporalEdgeList(std::ofstream& aStream)
     int index = 0;
     for(auto nodeFrame = edgeFrameCreateList.begin(); nodeFrame != edgeFrameCreateList.end();  ++nodeFrame)
     {
-        for(auto edgeFrame = ((*nodeFrame)).begin(); edgeFrame != ((*nodeFrame)).end(); ++edgeFrame)
+        for(auto edgeFrame = (*nodeFrame).second.begin(); edgeFrame != (*nodeFrame).second.end(); ++edgeFrame)
         {
-            aStream<<nodeFrameCreate[index]<<"\t"<<*edgeFrame<<std::endl;
+            aStream << nodeFrameCreate[index] << "\t" << *edgeFrame << std::endl;
         }
-
         ++index;
     }
-
     return;
 }
 

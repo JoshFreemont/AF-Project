@@ -28,8 +28,6 @@ public:
     void addEdgeFrame(int frame, int nodeId);
     void addNode(int nodeId);
     void addNodeFrame(int frame, int nodeId);
-    std::vector<std::vector<int> > getEdgeList();
-    std::vector<bool> getIsNode();
     void FOutEdgeList (std::ofstream& aStream);
     void FOutTemporalEdgeList (std::ofstream& aStream);
     void FOutGMLEdgeList (std::ofstream& aStream);

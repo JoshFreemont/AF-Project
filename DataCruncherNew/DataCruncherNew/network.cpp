@@ -60,16 +60,6 @@ void network::addNodeFrame(int frame, int nodeId)
     return;
 }
 
-std::vector<std::vector<int> > network::getEdgeList()
-{
-    return edgeList;
-}
-
-std::vector<bool> network::getIsNode()
-{
-    return isNode;
-}
-
 void network::FOutEdgeList (std::ofstream& aStream)
 {
     aStream<<"Start Node"<<"\t"<<"End Node"<<std::endl;

@@ -302,10 +302,9 @@ int main(int argc, char** argv)
                             }
                         }
                         
-                        //if no cycle (rotor) then continue through next iteration.
+                        //if no cycle (rotor),continue otherwise add to rotor counter.
                         if(!isCycle)continue;
-                        //otherwise add to rotorCount.
-                        rotorCount++;
+                        else rotorCount++;
                         
                         //Rotor Id allocation
                         //fill rotor frequency map with previous rotor ids for rotor cells. Hence work out if rotor Id is

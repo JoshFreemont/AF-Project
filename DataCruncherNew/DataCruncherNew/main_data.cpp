@@ -38,12 +38,12 @@ int main(int argc, char** argv)
     MTRand drand(time(NULL));//seed rnd generator
     
     //AF matrix declarations
-    array2D<double> inN (G_WIDTH,G_HEIGHT);
-    array2D<double> inE (G_WIDTH,G_HEIGHT);
-    array2D<double> inS (G_WIDTH,G_HEIGHT);
-    array2D<double> inW (G_WIDTH,G_HEIGHT);
-    array2D<int> state (G_WIDTH,G_HEIGHT);
-    array2D<int> state_update (G_WIDTH,G_HEIGHT);
+    array2D<double> inN (G_WIDTH, G_HEIGHT, VER);
+    array2D<double> inE (G_WIDTH, G_HEIGHT, VER);
+    array2D<double> inS (G_WIDTH, G_HEIGHT, HOR);
+    array2D<double> inW (G_WIDTH, G_HEIGHT, HOR);
+    array2D<int> state (G_WIDTH, G_HEIGHT, 0);
+    array2D<int> state_update (G_WIDTH, G_HEIGHT, 0);
     array2D <pair <int,int> > excitedBy(G_WIDTH,G_HEIGHT); //Stores coords of cell which excited current cell
     
     //AF matrix initialization
@@ -51,19 +51,13 @@ int main(int argc, char** argv)
     {
         for(int l=0; l<G_HEIGHT; ++l)
         {
-            inN(k,l)=VER;
-            inS(k,l)=VER;
-            inE(k,l)=HOR;
-            inW(k,l)=HOR;
-            state(k,l)=0;
-            state_update(k,l)=0;
             excitedBy(k,l) = make_pair(k,l);
         }
     }
     
     //Declare filenamer, and file streams.
     FileNamer MyFileNamer;
-    MyFileNamer.setFileHeader("test");
+    MyFileNamer.setFileHeader("test1");
     ofstream rotorIdInherit_T, rotorIdInherit_S, rotorExCountstream;
 	ofstream rotorCountstream;
 	ofstream rotorIDstream;
@@ -73,8 +67,8 @@ int main(int argc, char** argv)
     const int rotorLengthLimit = 2*RP;
     array2D <bool> isRotorInit (G_WIDTH,G_HEIGHT,false);
     vector <array2D <bool> > isRotor (MEMLIMIT, isRotorInit);//Stores whether a cell is a "rotor" cell or not
-    unordered_map<int, bool> isRotorAliveNowOld;
-    unordered_map<int, bool> isRotorAliveNowNow;
+    unordered_map<int, bool> isRotorAliveOld;
+    unordered_map<int, bool> isRotorAliveNow;
     int rotorCount=0;
     
     //rotor id variables
@@ -113,8 +107,10 @@ int main(int argc, char** argv)
     const int bucketSize = 25;
     int noBuckets = (GRIDSIZE/bucketSize)*(GRIDSIZE/bucketSize);
     int parentBucket, childBucket;//buckets for nodes of spatial network.
+    vector<pair<int, int> > bucketPos(noBuckets);
+    assignCoords(bucketPos, noBuckets, bucketSize);
     network rotorIdNetwork_T;
-    network rotorIdNetwork_S(noBuckets);
+    network rotorIdNetwork_S;
     
     //cell coordinates
     int i;
@@ -126,7 +122,7 @@ int main(int argc, char** argv)
     
     //setup to look at rotor duration for different nu in order to measure dynamism.
     double nu;
-    double nuSTART = 0.1;
+    double nuSTART = 0.18;
     const double nuMAX = 0.4;
     const double nuSTEP = 0.02;
     const int repeatMAX = 10;
@@ -148,36 +144,35 @@ int main(int argc, char** argv)
             {
                 //name files and set column headings.
         		MyFileNamer.IDFile(rotorIDstream, nu, repeat, rotorIdThresh);
-                FOutRotorIDColumns(rotorIDstream);
                 MyFileNamer.EdgeList(rotorIdInherit_T, nu, repeat, rotorIdThresh, "Temporal");
                 MyFileNamer.EdgeList(rotorIdInherit_S, nu, repeat, rotorIdThresh, "Spatial");
                 MyFileNamer.RotorExCountFile(rotorExCountstream,nu,repeat,rotorIdThresh);
                 MyFileNamer.RotorCountFile(rotorCountstream,nu,repeat,rotorIdThresh);
+                //column headings
+                FOutRotorIDColumns(rotorIDstream);
+                
                 
                 //set seed each time
                 drand.seed(time(NULL));
                 
                 //Reset everything
+                inN.reset(nu);
+                inS.reset(nu);
+                inE.reset(HOR);
+                inW.reset(HOR);
+                state.reset(0);
+                state_update.reset(0);
+                isRotorInit.reset(false);
+                activeRotorId.reset(-1);
+                rotorCellFrequency.reset(0);
+                
                 for(int k=0; k<G_WIDTH; ++k)
                 {
                     for(int l=0; l<G_HEIGHT; ++l)
                     {
-                        inN(k,l)=nu;
-                        inS(k,l)=nu;
-                        inE(k,l)=HOR;
-                        inW(k,l)=HOR;
-                        state(k,l)=0;
-                        state_update(k,l)=0;
-                        isRotorInit(k,l) = false;
-                        activeRotorId(k,l) = -1;
                         excitedBy(k,l) = make_pair(k,l);
-                        rotorCellFrequency(k,l) = 0;
                     }
                 }
-                
-                int cyclicNow=0;
-                int cyclicOld=0;
-                int cyclicBackRP=0;
                 
                 for (auto it=isRotor.begin();it!=isRotor.end();it++)
                 {
@@ -194,16 +189,18 @@ int main(int argc, char** argv)
                 rotorIDdata.clear();
                 tempRotorIdFrequency.clear();
                 rotorIdAverageCoords.clear();
-                isRotorAliveNowOld.clear();
-                isRotorAliveNowNow.clear();
+                isRotorAliveOld.clear();
+                isRotorAliveNow.clear();
                 maxRotorId=-1;
-                
                 exCoords = emptyCoords;
                 rotorCoords = emptyCoords;
                 
                 rotorIdNetwork_T.reset();
-                rotorIdNetwork_S.reset(noBuckets);
+                rotorIdNetwork_S.reset();
                 
+                int cyclicNow=0;
+                int cyclicOld=0;
+                int cyclicBackRP=0;
                 
                 //Start simulation "frame loop"
                 for(FRAME=0; FRAME<=MAXFRAME; FRAME++)
@@ -350,6 +347,7 @@ int main(int argc, char** argv)
         					averageY /= (double)(cycleLength);
                         }
                         
+                        
                         //now find highest rotor id frequency in map
                         //***function(tempRotorIdFrequency, tempRotorId)
                         maxFreq=0;
@@ -367,7 +365,7 @@ int main(int argc, char** argv)
                         // + create new id if all current ids are zeros.
                         tempRotorIdRatio=(double)maxFreq/cycleLength;
                         
-                        //inherit if threshold fulfilled
+                        //inherit Id if threshold fulfilled- rotor is the same as tempRotorId.
                         if(tempRotorIdRatio >= rotorIdThresh && tempRotorId != -1)
                         {
                             //put data in memory, [0]=i, [1]=j, [2]=state, [3]=rotorid
@@ -381,9 +379,9 @@ int main(int argc, char** argv)
                                 rotorCellFrequency(i,j)++;
                                 isRotor[cyclicNow](i,j)=true;
                             }
-                            //update RotorIdData[tempRotorId] struct, and isRotorAliveNowNow map.
+                            //update RotorIdData[tempRotorId] struct, and isRotorAliveNow map.
                             updateRotorIdData(rotorIDdata[tempRotorId], cycleLength, averageX, averageY);
-                            isRotorAliveNowNow[tempRotorId] = true;
+                            isRotorAliveNow[tempRotorId] = true;
                             
                             //do not add edge to rotorId network as no rotor is born.
                         }
@@ -409,51 +407,47 @@ int main(int argc, char** argv)
                                 isRotor[cyclicNow](i,j)=true;
                             }
                             
-                            //add RotorIDdata struct + isRotorAliveNowNow = true for new_rotor = maxRotorId
-                            rotorIDdata.push_back(rotorIDstruct(FRAME,cycleLength,averageX,averageY));
-                            isRotorAliveNowNow[maxRotorId] = true;
+                            //add RotorIDdata struct + isRotorAliveNow = true for new_rotor = maxRotorId
+                            rotorIDdata.push_back(rotorIDstruct(FRAME, cycleLength, averageX, averageY));
+                            isRotorAliveNow[maxRotorId] = true;
                             
-                            //Update rotorIdNetwork- add node at maxRotorId, and frame at which node is created.
-                            rotorIdNetwork_T.addNode(maxRotorId);
+                            //add node at maxRotorId, and frame at which node is created.
+                            rotorIdNetwork_T.addNode(maxRotorId, (int)averageX, (int)averageY);
                             rotorIdNetwork_T.addNodeFrame(FRAME, maxRotorId);
                             
+                            //calculate rotor bucket (spatial node) and add to network, alongside bucket position.
+                            childBucket = calcBucket(rotorIDdata[maxRotorId].birthX, rotorIDdata[maxRotorId].birthY, bucketSize, noBuckets);
+                            rotorIdNetwork_S.addNode(childBucket, bucketPos[childBucket].first, bucketPos[childBucket].second);
                             
-                            //add edge between parentRotorId and inheritedRotorId if parentRotorId != 0 + if parent rotorId is alive
-                            if(parentRotorId && isRotorAliveNowNow[parentRotorId])
+                            //add edge between parentRotorId and inheritedRotorId if parent rotorId is alive.
+                            //note that rotorId=-1 is never registered as alive.
+                            if(isRotorAliveOld[parentRotorId])
                             {
                                 //temporal network
                                 rotorIdNetwork_T.addEdge(parentRotorId, maxRotorId, FRAME);
                                 rotorIdNetwork_T.addEdgeFrame(FRAME, parentRotorId);
                                 
                                 //spatial network
-                                //find spatial "buckets" into which new rotor, and parent fall + add edge.
-                                parentBucket = calcBucket(rotorIDdata[parentRotorId].deathX, rotorIDdata[parentRotorId].deathY, bucketSize);
-                                childBucket = calcBucket(rotorIDdata[maxRotorId].birthX, rotorIDdata[maxRotorId].birthY, bucketSize);
+                                parentBucket = calcBucket(rotorIDdata[parentRotorId].deathX, rotorIDdata[parentRotorId].deathY, bucketSize, noBuckets);
                                 rotorIdNetwork_S.addEdge(parentBucket, childBucket, FRAME);
                             }
                         }
                     }
-                    //fOutput FRAME vs. rotorCount
-                    FOutFrameVsVar(rotorCountstream, FRAME, rotorCount);
                     
                     //de-excitation process for refractory cells
-                    //***function(exCoords, cyclicOld, cyclicBackRP, MEMLIMIT, stateupdate)
-                    for (int row = cyclicOld, rowEnd = cyclicBackRP; row != rowEnd; row=(row-1+MEMLIMIT)%MEMLIMIT)
-                    {
-                        for(vector<int>::iterator col = exCoords[row].begin(), col_end = exCoords[row].end(); col != col_end; col+=2)
-                        {
-                            --state_update(*col,*(col+1));
-                        }
-                    }
+                    deExciteState(exCoords, cyclicOld, cyclicBackRP, MEMLIMIT, state_update);
                     
                     //pacemaker
                     if(FRAME%SAP==0)pacemaker(state_update, exCoords[cyclicNow], RP, GRIDSIZE, excitedBy);
                     
                     //update loop variables.
                     state=state_update;
-                    isRotorAliveNowNow=isRotorAliveNowNow;
-                    isRotorAliveNowNow.clear();
+                    isRotorAliveOld=isRotorAliveNow;
+                    isRotorAliveNow.clear();
                     updateActiveRotorId(isRotor[cyclicNow], activeRotorId);
+                    
+                    //fOutput FRAME vs. rotorCount
+                    FOutFrameVsVar(rotorCountstream, FRAME, rotorCount);
                     
                 }//end frame loop
                 

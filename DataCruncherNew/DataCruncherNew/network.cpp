@@ -18,6 +18,7 @@ network::network(const int maxNodeInit)
     for(int i=0; i<maxNodeInit; ++i)
     {
         isNode[i] = true;
+        nodeCount[i] = 0;
     }
 }
 
@@ -27,20 +28,10 @@ void network::reset()
     isNode.clear();
     edgeFrameCreateList.clear();
     nodeFrameCreate.clear();
+    nodePos.clear();
+    nodeCount.clear();
 }
 
-void network::reset(const int maxNodeInit)
-{
-    edgeList.clear();
-    isNode.clear();
-    edgeFrameCreateList.clear();
-    nodeFrameCreate.clear();
-    
-    for(int i=0; i<maxNodeInit; ++i)
-    {
-        isNode[i] = true;
-    }
-}
 void network::addEdge(int startNode, int endNode, int frame)
 {
     edgeList[startNode].push_back(endNode);
@@ -55,9 +46,18 @@ void network::addEdgeFrame(int frame, int nodeId)
     return;
 }
 
-void network::addNode(int nodeIdValue)
+void network::addNode(int nodeIdValue, int x, int y)
 {
-    isNode[nodeIdValue] = true;
+    //if already a node then keep all properties same except frequency.
+    if(isNode[nodeIdValue]) nodeCount[nodeIdValue]++;
+    
+    //otherwise add properties.
+    else
+    {
+        isNode[nodeIdValue] = true;
+        nodeCount[nodeIdValue]  = 1;
+        nodePos[nodeIdValue] = std::make_pair(x, y);
+    }
     return;
 }
 
@@ -86,15 +86,19 @@ void network::FOutGMLEdgeList (std::ofstream& aStream)
     {
         if(node->second)
         {
-            aStream<< "\tnode\n\t[\n\tid " << node->first << std::endl;
-            aStream<< "\tlabel \"" << node->first << "\"" << std::endl;
-            aStream<< "\tframe " << nodeFrameCreate[node->first] << "\n\t]\n";
+            int nodeId = node->first;
+            aStream << "\tnode\n\t[\n\tid " << nodeId<< std::endl;
+            aStream << "\tlabel \"" << nodeId << "\"" << std::endl;
+            aStream << "\tframe " << nodeFrameCreate[nodeId] << std::endl;
+            aStream << "\tx " << nodePos[nodeId].first << std::endl;
+            aStream << "\ty " << nodePos[nodeId].second << std::endl;
+            aStream << "\tfrequency " << nodeCount[nodeId] << "\n\t]\n";
         }
         
         else continue;
     }
 
-    for(auto node = edgeList.begin(); node!=edgeList.end(); ++node)
+    for(auto node = edgeList.begin(); node != edgeList.end(); ++node)
     {
         for(auto it = node->second.begin(); it != node->second.end(); it+=2)
         {

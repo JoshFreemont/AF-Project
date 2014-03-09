@@ -13,14 +13,17 @@
 #include <vector>
 #include <fstream>
 #include <unordered_map>
+#include <map>
 
 class network
 {
 
-    std::unordered_map<int, std::vector<int> > edgeList;
-    std::unordered_map<int, bool> isNode;
-    std::unordered_map<int, int> nodeFrameCreate;
-    std::unordered_map<int, std::vector<int> > edgeFrameCreateList;
+    std::map<int, std::vector<int> > edgeList;//stores a list of edges between nodes.
+    std::map<int, bool> isNode;//stores if a node exists or not.
+    std::map<int, int> nodeFrameCreate;//stores time when a node is created.
+    std::map<int, std::vector<int> > edgeFrameCreateList;//stores frame when an edge is created
+    std::map<int, std::pair<int, int> > nodePos;//stores x, y position of a node
+    std::map<int, int> nodeCount;//stores count of how many instances of a node there are
 
 
 public:
@@ -28,9 +31,8 @@ public:
     network(const int maxNodeInit);//network with max node preassigned.
     void addEdge(int startNode, int endNode, int frame);
     void addEdgeFrame(int frame, int nodeId);
-    void addNode(int nodeId);
+    void addNode(int nodeId, int x, int y);
     void reset();
-    void reset(const int maxNodeInit);
     void addNodeFrame(int frame, int nodeId);
     void FOutEdgeList (std::ofstream& aStream);
     void FOutTemporalEdgeList (std::ofstream& aStream);

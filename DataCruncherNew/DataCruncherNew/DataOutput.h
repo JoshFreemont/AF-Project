@@ -20,6 +20,7 @@
 //function to output rotor Id data
 void FOutRotorIdData(std::ofstream& aStream, std::vector<struct rotorIDstruct> &rotorIDdata);
 
+//set columns for RotorIdStream.
 void FOutRotorIDColumns(std::ofstream& aStream);
 
 //function to output rotor excited count data

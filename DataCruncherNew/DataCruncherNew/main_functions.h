@@ -16,7 +16,9 @@
 #include <string>
 #include "rotorIDstruct.h"
 
-//Inline Update Functions.
+//INLINE FUNCTIONS
+
+//update functions
 inline void update_arrays(int &state_update, std::vector<int> &all_excited_coords_cyclic, const int& RP, const int& i_coord, const int& j_coord)
 {
     state_update=RP;
@@ -53,24 +55,50 @@ inline void updateActiveRotorId(array2D<bool>& isRotorNow, array2D<int>& activeR
     }
 }
 
+//state de-excitation process
+inline void deExciteState(std::vector<std::vector<int> >& exCoords, const int& cyclicOld, const int& cyclicBackRP, const int& MEMLIMIT, array2D<int>& state_update)
+{
+    for (int row = cyclicOld, rowEnd = cyclicBackRP; row != rowEnd; row=(row-1+MEMLIMIT)%MEMLIMIT)
+    {
+        for(std::vector<int>::iterator col = exCoords[row].begin(), col_end = exCoords[row].end(); col != col_end; col+=2)
+        {
+            --state_update(*col,*(col+1));
+        }
+    }
+    return;
+}
 
-//Calculate Bucket Function
+//Buckets
+//assign bucket xy coords
+inline void assignCoords(std::vector<std::pair<int, int> >& coordList, int noBuckets, int bucketSize)
+{
+    for(int i=0; i < noBuckets; ++i)
+    {
+        int noBuckets1D = (int)sqrt(noBuckets);
+        coordList[i] = std::make_pair((i%noBuckets1D)*bucketSize + (int)bucketSize/2, (int)(i/noBuckets1D)*bucketSize + (int)bucketSize/2);
+    }
+    return;
+}
+
+
 //Find bucket for given x,y under given discretization of the grid.
 //arrange grid as follows, for bucketSize = GRIDSIZE/5
-//1----2----3----4----5
-//6----7----8----9----10
-//11---12---13---14---15
-//16---17---18---19---20
-//21---22---23---24---25
-inline int calcBucket (int& x, int& y, const int& bucketSize)
+//0----1----2----3----4
+//5----6----7----8----9
+//...
+//20---21---22---23---24
+inline int calcBucket (int& x, int& y, const int& bucketSize, const int& noBuckets)
 {
-    int xBucket = int((double)x/(double)bucketSize + 1.0);
-    int yBucket = int((double)y/(double)bucketSize + 1.0);
-    int bucketNo = xBucket + 5*yBucket;
+    int bucketNo1D = (int)sqrt(noBuckets);
+    int xBucket = int((double)x/(double)bucketSize);
+    int yBucket = int((double)y/(double)bucketSize);
+    int bucketNo = xBucket + bucketNo1D*yBucket;
     return bucketNo;
 }
 
 
+
+//NON-INLINE FUNCTIONS
 //Pacemaker Function
 void pacemaker(array2D<int> &state_update, std::vector<int> &all_excited_coords, const int &RP, const int& GRIDSIZE, array2D<std::pair<int,int>> &excitedBy);
 

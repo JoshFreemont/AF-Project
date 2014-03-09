@@ -54,6 +54,15 @@ public:
         }
         return *this;
     }
+    
+    void reset(const T& objectInit)
+    {
+        for(int i = 0; i<m_Width*m_Height; ++i)
+        {
+            array1D[i] = objectInit;
+        }
+        return;
+    }
 
     ~array2D()
     {

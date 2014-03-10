@@ -37,7 +37,7 @@ int main(int argc, char** argv)
     //other parameters
     MTRand drand(time(NULL));//seed rnd generator
     
-    //AF matrix declarations
+    //AF matrix declaration + initialization.
     array2D<double> inN (G_WIDTH, G_HEIGHT, VER);
     array2D<double> inE (G_WIDTH, G_HEIGHT, VER);
     array2D<double> inS (G_WIDTH, G_HEIGHT, HOR);
@@ -45,8 +45,6 @@ int main(int argc, char** argv)
     array2D<int> state (G_WIDTH, G_HEIGHT, 0);
     array2D<int> state_update (G_WIDTH, G_HEIGHT, 0);
     array2D <pair <int,int> > excitedBy(G_WIDTH,G_HEIGHT); //Stores coords of cell which excited current cell
-    
-    //AF matrix initialization
     for(int k=0; k<G_WIDTH; ++k)
     {
         for(int l=0; l<G_HEIGHT; ++l)
@@ -84,7 +82,7 @@ int main(int argc, char** argv)
     
     
     //cycle data variables
-    pair <int,int> tempCycleArray[rotorLengthLimit+1];//Temporary array to store values
+    pair <int,int> tempCycleArray[rotorLengthLimit];//Temporary array to store values
     int cycleStart = 0;
     int cycleLength = 0;
     int tortoise, hare;
@@ -152,7 +150,6 @@ int main(int argc, char** argv)
                 //column headings
                 FOutRotorIDColumns(rotorIDstream);
                 
-                
                 //set seed each time
                 drand.seed(time(NULL));
                 
@@ -174,18 +171,8 @@ int main(int argc, char** argv)
                         excitedBy(k,l) = make_pair(k,l);
                     }
                 }
-                
-                for (auto it=isRotor.begin();it!=isRotor.end();it++)
-                {
-                    
-                    for(int k=0; k<G_WIDTH; ++k)
-                    {
-                        for(int l=0; l<G_HEIGHT; ++l)
-                        {
-                            (*it)(k,l)=false;
-                        }
-                    }
-                }
+
+                for (auto it=isRotor.begin();it!=isRotor.end();it++) (*it).reset(false);
                 
                 rotorIDdata.clear();
                 tempRotorIdFrequency.clear();
@@ -268,21 +255,14 @@ int main(int argc, char** argv)
                     for (auto col = exCoords[cyclicNow].begin(); col!= exCoords[cyclicNow].end(); col+=2)
                     {
                         
-                        //First, fill up temp array to check for cycles
-                        tempCycleArray[0] = excitedBy(*col,*(col+1));
+                        //First, fill up temp array with path of excitation.
+                        fillTempCycle(tempCycleArray, rotorLengthLimit, excitedBy, *col, *(col+1));
                         
-                        for (int k=1; k<rotorLengthLimit; ++k)
-                        {
-                            tempCycleArray[k]=excitedBy(tempCycleArray[k-1].first,tempCycleArray[k-1].second);
-                        }
-                        
-                        //Check if cell is already identified as being a rotor cell
-                        //continue to next iteration of loop if yes
+                        //Check if already a rotor cell, and continue if so.
                         if (isRotor[cyclicNow](tempCycleArray[rotorLengthLimit-1].first,tempCycleArray[rotorLengthLimit-1].second)) continue;
                         if (abs(tempCycleArray[rotorLengthLimit-1].second - *(col+1)) > rotorHeightCutoff) continue;
                         
-                        
-                        //Next, check for repeats
+                        //Next, check for repeats in tempCycleArray.
                         cycleLength=0;
                         isCycle=false;
                         for(tortoise=rotorLengthLimit-1; tortoise>=RP; --tortoise)
@@ -306,8 +286,7 @@ int main(int argc, char** argv)
                         else rotorCount++;
                         
                         //Rotor Id allocation
-                        //fill rotor frequency map with previous rotor ids for rotor cells. Hence work out if rotor Id is
-                        //+find average X and Y coordinates
+                        //fill rotor frequency map with previous rotor ids for inheritence check + find average X and Y.
                         double averageX = 0;
                         double averageY = 0;
                         for (int m=cycleStart, k=0;k<cycleLength;++k)
@@ -329,21 +308,11 @@ int main(int argc, char** argv)
                         averageY = (double)((int(averageY+0.5)+GRIDSIZE)%GRIDSIZE);//enforce correct bounds.
 
                         
-                        //now find highest rotor id frequency in map
-                        //***function(tempRotorIdFrequency, tempRotorId)
-                        maxFreq=0;
-                        for(unordered_map<int, int>::iterator it = tempRotorIdFrequency.begin(); it != tempRotorIdFrequency.end(); ++it)
-                         {
-                            if(it->second > maxFreq && it->first != 0)
-                            {
-                                maxFreq = it->second;
-                                tempRotorId = it->first;
-                            }
-                        }
+                        //now find max rotor id frequency and corresponding "tempRotorId"
+                        calcMaxFreqId(tempRotorIdFrequency, tempRotorId, maxFreq);
                         tempRotorIdFrequency.clear();//clear rotor id frequency map after use.
                         
-                        //now check if tempRotorIdRatio > rotorIdThresh if so then inherit id.
-                        //exclude case when tempRotorId=-1.
+                        //now check if tempRotorIdRatio > rotorIdThresh if so then inherit id. Exclude tempRotorId=-1.
                         tempRotorIdRatio=(double)maxFreq/cycleLength;
                         
                         if(tempRotorIdRatio >= rotorIdThresh && tempRotorId != -1)
@@ -360,8 +329,7 @@ int main(int argc, char** argv)
                                 isRotor[cyclicNow](i,j)=true;
                             }
                             
-                            //update RotorIdData[tempRotorId] struct, and isRotorAliveNow map.
-                            //do not add edge to rotorId network as no rotor is born.
+                            //update RotorIdData[tempRotorId] struct +isRotorAliveNow map - don't add edge/node- no rotor is born.
                             updateRotorIdData(rotorIDdata[tempRotorId], cycleLength, averageX, averageY);
                             isRotorAliveNow[tempRotorId] = true;
                         }

@@ -89,6 +89,7 @@ int main(int argc, char** argv)
     int cycleLength = 0;
     int tortoise, hare;
     bool isCycle;
+    const int rotorHeightCutoff = 15;
     
 	//Patches
     /*int size=40;
@@ -122,7 +123,7 @@ int main(int argc, char** argv)
     
     //setup to look at rotor duration for different nu in order to measure dynamism.
     double nu;
-    double nuSTART = 0.18;
+    double nuSTART = 0.1;
     const double nuMAX = 0.4;
     const double nuSTEP = 0.02;
     const int repeatMAX = 10;
@@ -278,7 +279,7 @@ int main(int argc, char** argv)
                         //Check if cell is already identified as being a rotor cell
                         //continue to next iteration of loop if yes
                         if (isRotor[cyclicNow](tempCycleArray[rotorLengthLimit-1].first,tempCycleArray[rotorLengthLimit-1].second)) continue;
-                        if (abs(tempCycleArray[rotorLengthLimit-1].second - *(col+1)) > 15) continue;
+                        if (abs(tempCycleArray[rotorLengthLimit-1].second - *(col+1)) > rotorHeightCutoff) continue;
                         
                         
                         //Next, check for repeats
@@ -309,50 +310,30 @@ int main(int argc, char** argv)
                         //+find average X and Y coordinates
                         double averageX = 0;
                         double averageY = 0;
-                        int minY=199;
-                        int maxY=0;
-                        
                         for (int m=cycleStart, k=0;k<cycleLength;++k)
                         {
                             int i = tempCycleArray[m+k].first, j = tempCycleArray[m+k].second;
-                            if(j>maxY)maxY = j;
-                            if(j<minY)minY = j;
                             averageX += i;
+                            
+                            //check if j is far from running average- if so assume j is across boundary.
+                            if(k==0) averageY += j;
+                            else if(j - (int)(averageY/(double)k) > rotorHeightCutoff) averageY += j-GRIDSIZE;
+                            else if(j - (int)(averageY/(double)k) < -rotorHeightCutoff) averageY += j+GRIDSIZE;
+                            else averageY += j;
                             
                             //fill tempRotorIdFrequency map.
                             tempRotorIdFrequency[activeRotorId(i,j)]++;
                         }
                         averageX /= (double)(cycleLength);
-                        
-                        //This checks if the loop is at the 0/200 boundary
-                        if(minY<40 && maxY>160)
-                        {
-        					for (int m=cycleStart, k=0;k<cycleLength;++k)
-                            {
-        						int j = tempCycleArray[m+k].second;
-                                if(j<40)averageY+=j+200;
-        						else averageY+=j;
-                            }
-                            //If average is out of bounds, subtract 200
-        					if(averageY>=G_HEIGHT)averageY -= 200;
-        					averageY /= (double)(cycleLength);
-                        }
-                        else
-                        {
-                            for (int m=cycleStart, k=0;k<cycleLength;++k)
-                            {
-        						int j = tempCycleArray[m+k].second;
-        						averageY+=j;
-                            }
-        					averageY /= (double)(cycleLength);
-                        }
-                        
+                        averageY /= (double)(cycleLength);
+                        averageY = (double)((int(averageY+0.5)+GRIDSIZE)%GRIDSIZE);//enforce correct bounds.
+
                         
                         //now find highest rotor id frequency in map
                         //***function(tempRotorIdFrequency, tempRotorId)
                         maxFreq=0;
                         for(unordered_map<int, int>::iterator it = tempRotorIdFrequency.begin(); it != tempRotorIdFrequency.end(); ++it)
-                        {
+                         {
                             if(it->second > maxFreq && it->first != 0)
                             {
                                 maxFreq = it->second;
@@ -361,11 +342,10 @@ int main(int argc, char** argv)
                         }
                         tempRotorIdFrequency.clear();//clear rotor id frequency map after use.
                         
-                        //now check if tempRotorIdRatio > rotorIdThresh if so then inherit id and put all rotor data in memory.
-                        // + create new id if all current ids are zeros.
+                        //now check if tempRotorIdRatio > rotorIdThresh if so then inherit id.
+                        //exclude case when tempRotorId=-1.
                         tempRotorIdRatio=(double)maxFreq/cycleLength;
                         
-                        //inherit Id if threshold fulfilled- rotor is the same as tempRotorId.
                         if(tempRotorIdRatio >= rotorIdThresh && tempRotorId != -1)
                         {
                             //put data in memory, [0]=i, [1]=j, [2]=state, [3]=rotorid
@@ -379,11 +359,11 @@ int main(int argc, char** argv)
                                 rotorCellFrequency(i,j)++;
                                 isRotor[cyclicNow](i,j)=true;
                             }
+                            
                             //update RotorIdData[tempRotorId] struct, and isRotorAliveNow map.
+                            //do not add edge to rotorId network as no rotor is born.
                             updateRotorIdData(rotorIDdata[tempRotorId], cycleLength, averageX, averageY);
                             isRotorAliveNow[tempRotorId] = true;
-                            
-                            //do not add edge to rotorId network as no rotor is born.
                         }
                         
                         //otherwise new rotor is born.

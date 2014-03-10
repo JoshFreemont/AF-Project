@@ -39,6 +39,8 @@
 		031F74B018C922A3002BF2C3 /* network.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = network.h; sourceTree = "<group>"; };
 		0361543E18CA0883003F2EC3 /* DataOutput.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DataOutput.cpp; sourceTree = "<group>"; };
 		0361543F18CA0883003F2EC3 /* DataOutput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataOutput.h; sourceTree = "<group>"; };
+		0393CA3418CE00E0001B61D5 /* rotorFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rotorFunctions.h; sourceTree = "<group>"; };
+		0393CA3A18CE0336001B61D5 /* frameStruct.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = frameStruct.h; sourceTree = "<group>"; };
 		03BD267218BB9B5E005511EA /* DataCruncherNew */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = DataCruncherNew; sourceTree = BUILT_PRODUCTS_DIR; };
 		03BD267718BB9B5E005511EA /* DataCruncherNew.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = DataCruncherNew.1; sourceTree = "<group>"; };
 		03BD267E18BB9B74005511EA /* main_data.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main_data.cpp; sourceTree = "<group>"; };
@@ -64,6 +66,52 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0393CA3618CE00F8001B61D5 /* functions */ = {
+			isa = PBXGroup;
+			children = (
+				03BD268018BB9B74005511EA /* main_functions.h */,
+				03BD267F18BB9B74005511EA /* main_functions.cpp */,
+				0393CA3418CE00E0001B61D5 /* rotorFunctions.h */,
+				0361543E18CA0883003F2EC3 /* DataOutput.cpp */,
+				0361543F18CA0883003F2EC3 /* DataOutput.h */,
+				031F74AC18C8C248002BF2C3 /* analysisfunctions.h */,
+				031F74AB18C8C248002BF2C3 /* analysisfunctions.cpp */,
+			);
+			name = functions;
+			sourceTree = "<group>";
+		};
+		0393CA3718CE0123001B61D5 /* Structs/Data Classes */ = {
+			isa = PBXGroup;
+			children = (
+				031F74AE18C8C250002BF2C3 /* rotorIDstruct.h */,
+				0393CA3A18CE0336001B61D5 /* frameStruct.h */,
+			);
+			name = "Structs/Data Classes";
+			sourceTree = "<group>";
+		};
+		0393CA3818CE0143001B61D5 /* ext. libraries */ = {
+			isa = PBXGroup;
+			children = (
+				03BD268218BB9B74005511EA /* mtrand.h */,
+				03BD268118BB9B74005511EA /* mtrand.cpp */,
+				03BD268918BB9BBC005511EA /* array2D.h */,
+			);
+			name = "ext. libraries";
+			sourceTree = "<group>";
+		};
+		0393CA3918CE0153001B61D5 /* main classes */ = {
+			isa = PBXGroup;
+			children = (
+				03BD268418BB9B74005511EA /* patch.h */,
+				03BD268318BB9B74005511EA /* patch.cpp */,
+				031F74AF18C922A3002BF2C3 /* network.cpp */,
+				031F74B018C922A3002BF2C3 /* network.h */,
+				03D5F3EC18BC126200D9F277 /* filenamer.h */,
+				03D5F3EB18BC126200D9F277 /* filenamer.cpp */,
+			);
+			name = "main classes";
+			sourceTree = "<group>";
+		};
 		03BD266918BB9B5E005511EA = {
 			isa = PBXGroup;
 			children = (
@@ -84,22 +132,10 @@
 			isa = PBXGroup;
 			children = (
 				03BD267E18BB9B74005511EA /* main_data.cpp */,
-				031F74AF18C922A3002BF2C3 /* network.cpp */,
-				031F74B018C922A3002BF2C3 /* network.h */,
-				0361543E18CA0883003F2EC3 /* DataOutput.cpp */,
-				0361543F18CA0883003F2EC3 /* DataOutput.h */,
-				03D5F3EC18BC126200D9F277 /* filenamer.h */,
-				03D5F3EB18BC126200D9F277 /* filenamer.cpp */,
-				031F74AE18C8C250002BF2C3 /* rotorIDstruct.h */,
-				031F74AC18C8C248002BF2C3 /* analysisfunctions.h */,
-				031F74AB18C8C248002BF2C3 /* analysisfunctions.cpp */,
-				03BD268018BB9B74005511EA /* main_functions.h */,
-				03BD267F18BB9B74005511EA /* main_functions.cpp */,
-				03BD268918BB9BBC005511EA /* array2D.h */,
-				03BD268218BB9B74005511EA /* mtrand.h */,
-				03BD268118BB9B74005511EA /* mtrand.cpp */,
-				03BD268418BB9B74005511EA /* patch.h */,
-				03BD268318BB9B74005511EA /* patch.cpp */,
+				0393CA3718CE0123001B61D5 /* Structs/Data Classes */,
+				0393CA3618CE00F8001B61D5 /* functions */,
+				0393CA3818CE0143001B61D5 /* ext. libraries */,
+				0393CA3918CE0153001B61D5 /* main classes */,
 				03BD267718BB9B5E005511EA /* DataCruncherNew.1 */,
 			);
 			path = DataCruncherNew;

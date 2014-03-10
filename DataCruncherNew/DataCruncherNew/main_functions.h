@@ -97,12 +97,20 @@ inline int calcBucket (int& x, int& y, const int& bucketSize, const int& noBucke
 }
 
 
+
 //NON-INLINE FUNCTIONS
 //Pacemaker Function
 void pacemaker(array2D<int> &state_update, std::vector<int> &all_excited_coords, const int &RP, const int& GRIDSIZE, array2D<std::pair<int,int>> &excitedBy);
 
 //CurrentDatetime function
 const std::string currentDateTime() ;
+
+//rotorIdDataStruct
+//Birth data
+std::vector<int> getBirthDataVect(std::vector<rotorIDstruct>& rotorIdData);
+
+//Death data
+std::vector<int> getDeathDataVect(std::vector<rotorIDstruct>& rotorIdData);
 
 
 #endif /* defined(__sdltest__main_functions__) */

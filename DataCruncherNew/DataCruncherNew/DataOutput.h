@@ -33,4 +33,5 @@ void COutCurrentStatus(const int& TotalIterations, const int& CurrentIteration);
 void FOutFrameVsVar(std::ofstream& aStream, const int& Var, const int& FRAME);
 
 
+
 #endif /* defined(__DataCruncherNew__DataOutput__) */

@@ -102,7 +102,7 @@ FileNamer::FileNamer(const string& FileHeader): m_FileHeader(FileHeader)
         aStream.open(fileName.c_str());
 	}
 		
-void FileNamer::EdgeList(std::ofstream& aStream, double nu, double iteration, double rotorIDThreshold, std::string type)
+    void FileNamer::EdgeList(std::ofstream& aStream, double nu, double iteration, double rotorIDThreshold, std::string type)
 	{
 		string fileName;
 		m_Convert.clear();
@@ -116,5 +116,18 @@ void FileNamer::EdgeList(std::ofstream& aStream, double nu, double iteration, do
 		aStream.open(fileName.c_str());
     }
 
+    void FileNamer::HistoFile(std::ofstream& aStream, double nu, double iteration, double rotorIDThreshold, std::string type)
+    {
+        string fileName;
+        m_Convert.clear();
+        m_Convert.str("");
+        aStream.close();
+    
+        m_Convert << setprecision(4) << nu << "_IDThresh" << rotorIDThreshold << "_" << iteration;
+    
+        fileName =m_FileHeader + "_" + m_Convert.str() + "_" + type + "histo" + ".txt";
+    
+        aStream.open(fileName.c_str());
+    }
 
 

@@ -64,8 +64,7 @@ inline bool returnIsCycleRepeat(const int& rotorLengthLimit, const int& RP, std:
 
 
 //function(cycleStart, cycleLength, tempCycleArray, avX, avY, rotorHeightCutoff, GRIDSIZE, activeRotorId)
-inline void calcAvPos(const int& cycleStart, const int& cycleLength, std::pair<int, int>* tempCycleArray, std::unordered_map<int, int>& tempRotorIdFrequency,
-                      double& avX, double& avY, const int& rotorHeightCutoff, const int& GRIDSIZE, array2D<int>& activeRotorId)
+inline void calcAvPos(const int& cycleStart, const int& cycleLength, std::pair<int, int>* tempCycleArray, std::unordered_map<int, int>& tempRotorIdFrequency, double& avX, double& avY, const int& rotorHeightCutoff, const int& GRIDSIZE, array2D<int>& activeRotorId)
 {
     for (int m=cycleStart, k=0; k<cycleLength; ++k)
     {
@@ -73,9 +72,9 @@ inline void calcAvPos(const int& cycleStart, const int& cycleLength, std::pair<i
         avX += i;
         
         //check if j is far from running average- if so assume j is across boundary.
-        if(k==0) avY += j;
-        else if(j - (int)(avY/(double)k) > rotorHeightCutoff) avY += j-GRIDSIZE;
-        else if(j - (int)(avY/(double)k) < -rotorHeightCutoff) avY += j+GRIDSIZE;
+        if(k==0) avY += j;//first iteration, add j.
+        else if((double)j - (avY/(double)k) > (double)rotorHeightCutoff) avY += j-GRIDSIZE;
+        else if((double)j - (avY/(double)k) < (double)-rotorHeightCutoff) avY += j+GRIDSIZE;
         else avY += j;
         
         //fill tempRotorIdFrequency map.

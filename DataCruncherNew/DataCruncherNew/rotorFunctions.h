@@ -10,6 +10,7 @@
 #define __DataCruncherNew__rotorFunctions__
 
 #include <iostream>
+#include <cmath>
 
 //fill temp cycle array with "excitedBy" coords.
 inline void fillTempCycle(std::pair<int,int>* tempCycleArray, const int rotorLengthLimit, array2D<std::pair<int,int> > &excitedBy, const int& iInit, const int& jInit)
@@ -83,7 +84,8 @@ inline void calcAvPos(const int& cycleStart, const int& cycleLength, std::pair<i
     
     avX /= (double)(cycleLength);
     avY /= (double)(cycleLength);
-    avY = (double)((int(avY+0.5)+GRIDSIZE)%GRIDSIZE);//enforce correct bounds.
+	avX = floor(avX+0.5);
+    avY = (double)(static_cast<int>((floor(avY+0.5)+GRIDSIZE))%GRIDSIZE);//enforce correct bounds.
     
     return;
 }

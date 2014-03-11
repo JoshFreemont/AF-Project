@@ -11,7 +11,7 @@ double mean(std::vector<double>& someVector) //overloaded just in case
 	return sum/(someVector.size());
 }
 
-double stddev(std::vector<int>& someVector, double& mean)
+double standarddev(std::vector<int>& someVector, double& mean)
 {
 	double accum = 0.0;
 	std::for_each (std::begin(someVector), std::end(someVector), [&](const double d)
@@ -21,7 +21,7 @@ double stddev(std::vector<int>& someVector, double& mean)
 	return sqrt(accum/someVector.size());
 }
 
-double stddev(std::vector<double>& someVector, double& mean)
+double standarddev(std::vector<double>& someVector, double& mean)
 {
 	double accum = 0.0;
 	std::for_each (std::begin(someVector), std::end(someVector), [&](const double d)

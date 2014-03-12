@@ -60,7 +60,7 @@ int main(int argc, char** argv)
     
     //Declare filenamer, and file streams.
     FileNamer MyFileNamer;
-    MyFileNamer.setFileHeader("test1");
+    MyFileNamer.setFileHeader("test3");
     ofstream rotorIdInherit_T;
     ofstream rotorIdInherit_S;
     ofstream rotorExCountstream;

@@ -326,7 +326,7 @@ int main(int argc, char** argv)
                             isRotorAliveNow[maxRotorId] = true;
                         
                             //add node at maxRotorId, and frame at which node is created.
-                            rotorIdNetwork_T.addNode(maxRotorId, (int)avX, (int)avY);
+                            rotorIdNetwork_T.addNode(maxRotorId, (int)(avX + 0.5), (int)(avY + 0.5));
                             rotorIdNetwork_T.addNodeFrame(frame, maxRotorId);
                             
                             //calculate rotor bucket (spatial node) and add to network, alongside bucket position.

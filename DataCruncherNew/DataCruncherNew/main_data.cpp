@@ -369,7 +369,7 @@ int main(int argc, char** argv)
                 histogram birthRateWTime(MAXFRAME/1000);
                 histogram deathRateWTime(MAXFRAME/1000);
                 birthRateWTime.addPoints(getBirthDataVect(rotorIdData));
-                deathRateWTime.addPoints(getDeathDataVect(rotorIdData));
+                deathRateWTime.addPoints(getDeathDataVect(rotorIdData, MAXFRAME));
                 birthRateWTime.printHist(birthRateStream);
                 deathRateWTime.printHist(deathRateStream);
                 birthRateWTime.resetFrequency();

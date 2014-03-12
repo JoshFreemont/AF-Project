@@ -109,7 +109,7 @@ const std::string currentDateTime() ;
 std::vector<int> getBirthDataVect(std::vector<rotorIDstruct>& rotorIdData);
 
 //Death data
-std::vector<int> getDeathDataVect(std::vector<rotorIDstruct>& rotorIdData);
+std::vector<int> getDeathDataVect(std::vector<rotorIDstruct>& rotorIdData, const int MAXFRAME);
 
 
 #endif /* defined(__sdltest__main_functions__) */

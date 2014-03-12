@@ -9,6 +9,7 @@
 
 #include "histogram.h"
 #include <fstream>
+#include <cmath>
 
 
 histogram::histogram(int binIntervalInit)
@@ -24,11 +25,10 @@ histogram::~histogram()
 
 void histogram::addPoint(int data_value)
 {
-    int bin_select = (int)(data_value/binInterval);
-    if(bin_select > frequency.size())
+    int bin_select = static_cast<int>(floor((double)data_value/(double)binInterval));
+    if(bin_select >= frequency.size())//resize vector if vector[bin] doesn't exist.
     {
-        //i is equivalent to index of vector-> must be less than bin_select.
-        for(int i = (int)(frequency.size()+0.5); i<=bin_select; ++i)
+        for(int i = (int)((double)frequency.size() + 0.5); i <= bin_select; ++i)
         {
             frequency.push_back(0);
         }
@@ -41,11 +41,11 @@ void histogram::addPoint(int data_value)
 void histogram::addPoint(double data_value)
 {
     //find selected bin and resize frequency vector if out of current bounds.
-    int bin_select = (int)(data_value/binInterval);
+    int bin_select = (int)round(data_value/(double)binInterval);
     if(bin_select > frequency.size())
     {
         //i is equivalent to index of vector-> must be less than bin_select.
-        for(int i = (int)frequency.size(); i<=bin_select; ++i)
+        for(int i = (int)frequency.size(); i<=(bin_select+1); ++i)
         {
             frequency.push_back(0);
         }

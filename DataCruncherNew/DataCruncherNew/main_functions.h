@@ -70,7 +70,7 @@ inline void deExciteState(std::vector<std::vector<int> >& exCoords, const int& c
 
 //Buckets
 //assign bucket xy coords
-inline void assignCoords(std::vector<std::pair<int, int> >& coordList, int noBuckets, int bucketSize)
+inline void assignBucketCoords(std::vector<std::pair<int, int> >& coordList, int noBuckets, int bucketSize)
 {
     for(int i=0; i < noBuckets; ++i)
     {
@@ -95,7 +95,6 @@ inline int calcBucket (int& x, int& y, const int& bucketSize, const int& noBucke
     int bucketNo = xBucket + bucketNo1D*yBucket;
     return bucketNo;
 }
-
 
 
 //NON-INLINE FUNCTIONS

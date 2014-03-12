@@ -113,7 +113,7 @@ int main(int argc, char** argv)
     int noBuckets = (GRIDSIZE/bucketSize)*(GRIDSIZE/bucketSize);
     int parentBucket, childBucket;//buckets for nodes of spatial network.
     vector<pair<int, int> > bucketPos(noBuckets);
-    assignCoords(bucketPos, noBuckets, bucketSize);
+    assignBucketCoords(bucketPos, noBuckets, bucketSize);
     network rotorIdNetwork_T;
     network rotorIdNetwork_S;
     
@@ -366,8 +366,8 @@ int main(int argc, char** argv)
                 }//end frame loop
                 
                 //create and output histogram of birth rates wrt. time.
-                histogram birthRateWTime(MAXFRAME/500);
-                histogram deathRateWTime(MAXFRAME/500);
+                histogram birthRateWTime(MAXFRAME/1000);
+                histogram deathRateWTime(MAXFRAME/1000);
                 birthRateWTime.addPoints(getBirthDataVect(rotorIdData));
                 deathRateWTime.addPoints(getDeathDataVect(rotorIdData));
                 birthRateWTime.printHist(birthRateStream);

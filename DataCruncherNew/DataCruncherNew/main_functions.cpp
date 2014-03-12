@@ -48,14 +48,18 @@ std::vector<int> getBirthDataVect(std::vector<rotorIDstruct>& rotorIdData)
     return dataVector;
 }
 
-std::vector<int> getDeathDataVect(std::vector<rotorIDstruct>& rotorIdData)
+std::vector<int> getDeathDataVect(std::vector<rotorIDstruct>& rotorIdData, const int MAXFRAME)
 {
     std::vector<int> dataVector (rotorIdData.size());
     int index = 0;
     for(auto it = rotorIdData.begin(); it != rotorIdData.end(); it++)
     {
-        dataVector[index] = it->birthframe + it->lifetime;
+        //if death is enforced by end of experiment then continue.
+        if( it->lifetime + it->birthframe == MAXFRAME) continue;
+        else dataVector[index] = it->birthframe + it->lifetime;
         index++;
     }
+    
+    //correct for deaths which are enforced by the end of experiment
     return dataVector;
 }

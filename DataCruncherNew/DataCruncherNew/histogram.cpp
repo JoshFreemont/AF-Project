@@ -41,6 +41,7 @@ void histogram::addPoint(int data_value)
 void histogram::addPoint(double data_value)
 {
     //find selected bin and resize frequency vector if out of current bounds.
+    //selected bin is labelled [0]->[maxBin -1]
     int bin_select = (int)round(data_value/(double)binInterval);
     if(bin_select > frequency.size())
     {
@@ -63,6 +64,7 @@ void histogram::addPoints(std::vector<int> dataVector)
         addPoint(*it);
     }
 }
+
 void histogram::addPoints(std::vector<double> dataVector)
 {
     for(auto it = dataVector.begin(); it != dataVector.end(); ++it)

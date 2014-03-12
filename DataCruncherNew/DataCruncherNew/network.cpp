@@ -112,20 +112,6 @@ void network::FOutGMLEdgeList (std::ofstream& aStream)
     return;
 }
 
-void network::FOutTemporalEdgeList(std::ofstream& aStream)
-{
-    aStream<<"Start Node Creation Time"<<"\t"<<"End Node Creation Time"<<std::endl;
-    int index = 0;
-    for(auto nodeFrame = edgeFrameCreateList.begin(); nodeFrame != edgeFrameCreateList.end();  ++nodeFrame)
-    {
-        for(auto edgeFrame = (*nodeFrame).second.begin(); edgeFrame != (*nodeFrame).second.end(); ++edgeFrame)
-        {
-            aStream << nodeFrameCreate[index] << "\t" << *edgeFrame << std::endl;
-        }
-        ++index;
-    }
-    return;
-}
 
 
 

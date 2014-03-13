@@ -121,6 +121,39 @@ void network::FOutGMLEdgeList (std::ofstream& aStream)
 }
 
 
+void network::FOutGMLTreeEdgeList (std::ofstream& aStream)
+{
+    aStream<<"graph\n[\n";
+    for(auto node = isNode.begin(); node != isNode.end(); ++node)
+    {
+        if(node->second)
+        {
+            int nodeId = node->first;
+            aStream << "\tnode\n\t[\n\tid " << nodeId<< std::endl;
+            aStream << "\tlabel \"" << nodeId << "\"" << std::endl;
+            aStream << "\tframe " << nodeFrameCreate[nodeId] << std::endl;
+            aStream << "\tx " << nodePos[nodeId].first << std::endl;
+            aStream << "\ty " << nodePos[nodeId].second << std::endl;
+            aStream << "\tfrequency " << nodeCount[nodeId] << "\n\t]\n";
+        }
+        else continue;
+    }
+    
+    for(auto node = edgeList.begin(); node != edgeList.end(); ++node)
+    {
+        for(auto it = node->second.begin(); it != node->second.end(); it+=4)
+        {
+            aStream << "\tedge\n\t[\n\tsource " << node->first << std::endl;
+            aStream << "\ttarget " << *it << std::endl;
+            aStream << "\tframe "<< *(it+1) << "\n\t]\n";
+        }
+    }
+    
+    aStream << "]";
+    return;
+}
+
+
 
 
 

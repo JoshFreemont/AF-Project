@@ -37,6 +37,7 @@ public:
     void FOutEdgeList (std::ofstream& aStream);
     void FOutTemporalEdgeList (std::ofstream& aStream);
     void FOutGMLEdgeList (std::ofstream& aStream);
+    void FOutGMLTreeEdgeList (std::ofstream& aStream);
     
 };
 

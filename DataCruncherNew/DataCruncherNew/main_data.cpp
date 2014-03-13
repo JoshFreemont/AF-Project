@@ -68,6 +68,7 @@ int main(int argc, char** argv)
 	ofstream rotorIDstream;
     ofstream birthRateStream;
     ofstream deathRateStream;
+    ofstream rotorIdTreeStream;
     
     //rotor variables
     array2D <int> rotorCellFrequency (G_WIDTH,G_HEIGHT,0);
@@ -116,6 +117,7 @@ int main(int argc, char** argv)
     assignBucketCoords(bucketPos, noBuckets, bucketSize);
     network rotorIdNetwork_T;
     network rotorIdNetwork_S;
+    network rotorIdTree;
     
     //cell coordinates
     int i;
@@ -151,6 +153,7 @@ int main(int argc, char** argv)
         		MyFileNamer.IDFile(rotorIDstream, nu, repeat, rotorIdThresh);
                 MyFileNamer.EdgeList(rotorIdInherit_T, nu, repeat, rotorIdThresh, "Temporal");
                 MyFileNamer.EdgeList(rotorIdInherit_S, nu, repeat, rotorIdThresh, "Spatial");
+                MyFileNamer.EdgeList(rotorIdTreeStream, nu, repeat, rotorIdThresh, "Tree");
                 MyFileNamer.RotorExCountFile(rotorExCountstream,nu,repeat,rotorIdThresh);
                 MyFileNamer.RotorCountFile(rotorCountstream,nu,repeat,rotorIdThresh);
                 MyFileNamer.HistoFile(birthRateStream, nu, repeat, rotorIdThresh, "BirthRate");
@@ -189,6 +192,7 @@ int main(int argc, char** argv)
                 
                 rotorIdNetwork_T.reset();
                 rotorIdNetwork_S.reset();
+                rotorIdTree.reset();
                 
                 drand.seed(time(NULL));
                 
@@ -328,10 +332,12 @@ int main(int argc, char** argv)
                             //add node at maxRotorId, and frame at which node is created.
                             rotorIdNetwork_T.addNode(maxRotorId, (int)(avX + 0.5), (int)(avY + 0.5));
                             rotorIdNetwork_T.addNodeFrame(frame, maxRotorId);
+
                             
                             //calculate rotor bucket (spatial node) and add to network, alongside bucket position.
                             childBucket = calcBucket(rotorIdData[maxRotorId].birthX, rotorIdData[maxRotorId].birthY, bucketSize, noBuckets);
                             rotorIdNetwork_S.addNode(childBucket, bucketPos[childBucket].first, bucketPos[childBucket].second);
+                            rotorIdTree.addNode(maxRotorId, frame, childBucket);
                             
                             //add edge between parentRotorId and inheritedRotorId if parent rotorId is alive.
                             //note that rotorId=-1 is never registered as alive.
@@ -339,8 +345,7 @@ int main(int argc, char** argv)
                             {
                                 //temporal network
 								double xDistance = static_cast<double>(rotorIdData[maxRotorId].birthX - rotorIdData[parentRotorId].deathX);
-								//this syntax is rather hard to read, but basically it means that it compares which distance between the two rotors is the shorter one and takes that one
-								//this is a ternary operator, which is a conditional operator
+								//select shortest distance
 								double yDistance = static_cast<double>(2*abs(rotorIdData[maxRotorId].birthY - rotorIdData[parentRotorId].deathY)<200 ?
 								rotorIdData[maxRotorId].birthY - rotorIdData[parentRotorId].deathY
 								:
@@ -353,6 +358,7 @@ int main(int argc, char** argv)
                                 //spatial network
                                 parentBucket = calcBucket(rotorIdData[parentRotorId].deathX, rotorIdData[parentRotorId].deathY, bucketSize, noBuckets);
                                 rotorIdNetwork_S.addEdge(parentBucket, childBucket, frame, xDistance, yDistance);
+                                rotorIdTree.addEdge(parentRotorId, maxRotorId, frame, xDistance, yDistance);
                             }
                         }
                     }
@@ -389,6 +395,7 @@ int main(int argc, char** argv)
                 FOutRotorExCountData(rotorExCountstream, rotorCellFrequency);
                 rotorIdNetwork_T.FOutEdgeList(rotorIdInherit_T);
                 rotorIdNetwork_S.FOutGMLEdgeList(rotorIdInherit_S);
+                rotorIdTree.FOutGMLTreeEdgeList(rotorIdTreeStream);
                 
                 //cOutput current progress.
                 COutCurrentStatus(TotalIterations, iterationcount);

@@ -40,7 +40,6 @@
 		0361543E18CA0883003F2EC3 /* DataOutput.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DataOutput.cpp; sourceTree = "<group>"; };
 		0361543F18CA0883003F2EC3 /* DataOutput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataOutput.h; sourceTree = "<group>"; };
 		0393CA3418CE00E0001B61D5 /* rotorFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rotorFunctions.h; sourceTree = "<group>"; };
-		0393CA3A18CE0336001B61D5 /* frameStruct.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = frameStruct.h; sourceTree = "<group>"; };
 		03BD267218BB9B5E005511EA /* DataCruncherNew */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = DataCruncherNew; sourceTree = BUILT_PRODUCTS_DIR; };
 		03BD267718BB9B5E005511EA /* DataCruncherNew.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = DataCruncherNew.1; sourceTree = "<group>"; };
 		03BD267E18BB9B74005511EA /* main_data.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main_data.cpp; sourceTree = "<group>"; };
@@ -84,7 +83,6 @@
 			isa = PBXGroup;
 			children = (
 				031F74AE18C8C250002BF2C3 /* rotorIDstruct.h */,
-				0393CA3A18CE0336001B61D5 /* frameStruct.h */,
 			);
 			name = "Structs/Data Classes";
 			sourceTree = "<group>";

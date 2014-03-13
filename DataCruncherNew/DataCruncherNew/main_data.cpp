@@ -340,9 +340,11 @@ int main(int argc, char** argv)
                                 //temporal network
 								double xDistance = static_cast<double>(rotorIdData[maxRotorId].birthX - rotorIdData[parentRotorId].deathX);
 								//this syntax is rather hard to read, but basically it means that it compares which distance between the two rotors is the shorter one and takes that one
+								//this is a ternary operator, which is a conditional operator
 								double yDistance = static_cast<double>(2*abs(rotorIdData[maxRotorId].birthY - rotorIdData[parentRotorId].deathY)<200 ?
 								rotorIdData[maxRotorId].birthY - rotorIdData[parentRotorId].deathY
 								:
+								//copysign copies the sign of the second argument and sticks it on the first argument
 								-copysign(200-abs(rotorIdData[maxRotorId].birthY - rotorIdData[parentRotorId].deathY),rotorIdData[maxRotorId].birthY - rotorIdData[parentRotorId].deathY)
 								);
                                 rotorIdNetwork_T.addEdge(parentRotorId, maxRotorId, frame, xDistance, yDistance);

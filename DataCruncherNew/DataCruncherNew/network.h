@@ -14,6 +14,7 @@
 #include <fstream>
 #include <unordered_map>
 #include <map>
+#include <utility>
 
 class network
 {
@@ -24,6 +25,8 @@ class network
     std::map<int, std::vector<int> > edgeFrameCreateList;//stores frame when an edge is created
     std::map<int, std::pair<int, int> > nodePos;//stores x, y position of a node
     std::map<int, int> nodeCount;//stores count of how many instances of a node there are
+	bool IsCleanBirth;
+	bool IsAbort;
 
 
 public:
@@ -37,6 +40,9 @@ public:
     void FOutEdgeList (std::ofstream& aStream);
     void FOutTemporalEdgeList (std::ofstream& aStream);
     void FOutGMLEdgeList (std::ofstream& aStream);
+	std::pair<int,int> getFirstEdgeXY();
+	bool getIsCleanBirth();
+	bool getIsAbort();
     
 };
 

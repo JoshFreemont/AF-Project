@@ -111,5 +111,8 @@ std::vector<int> getBirthDataVect(std::vector<rotorIDstruct>& rotorIdData);
 //Death data
 std::vector<int> getDeathDataVect(std::vector<rotorIDstruct>& rotorIdData, const int MAXFRAME);
 
+//Calculat yDistance
+double calculateYdiff(int parentY, int birthY);
+
 
 #endif /* defined(__sdltest__main_functions__) */

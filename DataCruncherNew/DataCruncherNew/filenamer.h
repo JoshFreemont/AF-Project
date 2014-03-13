@@ -36,6 +36,10 @@ public:
     void EdgeList(std::ofstream& aStream, double nu, double iteration, double rotorIDThreshold, std::string type);
     
     void HistoFile(std::ofstream& aStream, double nu, double iteration, double rotorIDThreshold, std::string type);
+	
+	void FirstBirthFile(std::ofstream& aStream, double nu, double rotorIDThreshold);
+	
+	void FirstBirthMasterFile(std::ofstream& aStream);
     
 };
 

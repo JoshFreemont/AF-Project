@@ -87,8 +87,8 @@ FileNamer::FileNamer(const string& FileHeader): m_FileHeader(FileHeader)
 
         aStream.open(fileName.c_str());
     }
-
-    void FileNamer::RotorCountFile(std::ofstream& aStream, double nu, double iteration, double rotorIDthreshold)
+	
+	void FileNamer::RotorCountFile(std::ofstream& aStream, double nu, double iteration, double rotorIDthreshold)
     {
         string fileName;
         m_Convert.clear();
@@ -101,6 +101,7 @@ FileNamer::FileNamer(const string& FileHeader): m_FileHeader(FileHeader)
 
         aStream.open(fileName.c_str());
 	}
+
 		
     void FileNamer::EdgeList(std::ofstream& aStream, double nu, double iteration, double rotorIDThreshold, std::string type)
 	{
@@ -129,5 +130,32 @@ FileNamer::FileNamer(const string& FileHeader): m_FileHeader(FileHeader)
     
         aStream.open(fileName.c_str());
     }
+	
+	 void FileNamer::FirstBirthFile(std::ofstream& aStream, double nu, double rotorIDThreshold)
+    {
+        string fileName;
+        m_Convert.clear();
+        m_Convert.str("");
+        aStream.close();
+    
+        m_Convert << setprecision(4) << nu << "_IDThresh" << rotorIDThreshold;
+    
+        fileName =m_FileHeader + "_" + m_Convert.str() + "_" + "firstbirth" + ".txt";
+    
+        aStream.open(fileName.c_str());
+    }
+	
+	void FileNamer::FirstBirthMasterFile(std::ofstream& aStream)
+    {
+        string fileName;
+        m_Convert.clear();
+        m_Convert.str("");
+        aStream.close();
+    
+        fileName =m_FileHeader + "_" + "firstbirthmaster" + ".txt";
+    
+        aStream.open(fileName.c_str());
+    }
+
 
 

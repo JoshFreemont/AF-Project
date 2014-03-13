@@ -68,6 +68,11 @@ int main(int argc, char** argv)
 	ofstream rotorIDstream;
     ofstream birthRateStream;
     ofstream deathRateStream;
+	ofstream firstRotorDistance;
+	ofstream firstRotorDistanceMaster;
+	
+	//first rotor birth data
+	vector<pair<int,int> > firstRotorBirthVec;
     
     //rotor variables
     array2D <int> rotorCellFrequency (G_WIDTH,G_HEIGHT,0);
@@ -127,23 +132,25 @@ int main(int argc, char** argv)
     
     //setup to look at rotor duration for different nu in order to measure dynamism.
     double nu;
-    double nuSTART = 0.1;
-    const double nuMAX = 0.4;
+    double nuSTART = 0.05;
+    const double nuMAX = 0.15;
     const double nuSTEP = 0.02;
-    const int repeatMAX = 10;
+    const int repeatMAX = 100;
     int iterationcount = 1;
     const int TotalIterations = repeatMAX*3*((nuMAX-nuSTART)/nuSTEP+1);
     
     
 //EXPERIMENTATION//
     //Start "nu loop"
+	MyFileNamer.FirstBirthMasterFile(firstRotorDistanceMaster);
     for (nu = nuSTART; nu < nuMAX; nu += nuSTEP)
     {
-        
         //Start "threshold loop"
         for(rotorIdThresh = 0.01; rotorIdThresh <= 1.0; rotorIdThresh *= 10)
         {
-            
+            MyFileNamer.FirstBirthFile(firstRotorDistance, nu, rotorIdThresh);
+			firstRotorDistance << "xDist\tyDist\tDistance\tAngle" << endl;
+			firstRotorBirthVec.clear();
             //Start simulation "repeat Loop"
             for(int repeat = 0; repeat < repeatMAX; ++repeat)
             {
@@ -190,7 +197,7 @@ int main(int argc, char** argv)
                 rotorIdNetwork_T.reset();
                 rotorIdNetwork_S.reset();
                 
-                drand.seed(time(NULL));
+                //drand.seed(time(NULL));
                 
                 //Start simulation "frame loop"
                 for(frame=0; frame<=MAXFRAME; frame++)
@@ -339,14 +346,7 @@ int main(int argc, char** argv)
                             {
                                 //temporal network
 								double xDistance = static_cast<double>(rotorIdData[maxRotorId].birthX - rotorIdData[parentRotorId].deathX);
-								//this syntax is rather hard to read, but basically it means that it compares which distance between the two rotors is the shorter one and takes that one
-								//this is a ternary operator, which is a conditional operator
-								double yDistance = static_cast<double>(2*abs(rotorIdData[maxRotorId].birthY - rotorIdData[parentRotorId].deathY)<200 ?
-								rotorIdData[maxRotorId].birthY - rotorIdData[parentRotorId].deathY
-								:
-								//copysign copies the sign of the second argument and sticks it on the first argument
-								-copysign(200-abs(rotorIdData[maxRotorId].birthY - rotorIdData[parentRotorId].deathY),rotorIdData[maxRotorId].birthY - rotorIdData[parentRotorId].deathY)
-								);
+								double yDistance =  calculateYdiff(rotorIdData[parentRotorId].deathY,rotorIdData[maxRotorId].birthY);
                                 rotorIdNetwork_T.addEdge(parentRotorId, maxRotorId, frame, xDistance, yDistance);
                                 rotorIdNetwork_T.addEdgeFrame(frame, parentRotorId);
                                 
@@ -371,7 +371,7 @@ int main(int argc, char** argv)
                     
                     //fOutput FRAME vs. rotorCount
                     FOutFrameVsVar(rotorCountstream, frame, rotorCount);
-                    
+                if (rotorIdNetwork_T.getIsAbort()) break;
                 }//end frame loop
                 
                 //create and output histogram of birth rates wrt. time.
@@ -393,12 +393,30 @@ int main(int argc, char** argv)
                 //cOutput current progress.
                 COutCurrentStatus(TotalIterations, iterationcount);
                 iterationcount++;
-                
+			
+			if (rotorIdNetwork_T.getIsCleanBirth())
+			{	
+				firstRotorBirthVec.push_back(rotorIdNetwork_T.getFirstEdgeXY());
+			}
+			else
+			{
+				cout << "Clean birth not successful, repeating." << endl;
+				repeat--;
+				iterationcount--;
+			}
             }//end repeat loop
-            
+			for (auto it=firstRotorBirthVec.begin();it!=firstRotorBirthVec.end();
+			it++)
+			{	
+				double xDist = it->first;
+				double yDist = it->second;
+				firstRotorDistance << xDist << "\t";
+				firstRotorDistance << yDist << "\t";
+				firstRotorDistance << sqrt(xDist*xDist+yDist*yDist) << "\t";
+				firstRotorDistance << atan2(yDist,xDist) << endl;
+			}
         }//end threshold loop
-        
-    }//end nu loop
+	}//end nu loop
     
     return 0;
 }

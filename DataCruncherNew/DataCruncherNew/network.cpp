@@ -8,10 +8,13 @@
 
 #include "network.h"
 #include <cmath>
+#include <utility>
 
 //empty constructor.
 network::network()
-{}
+{IsCleanBirth=false;
+	IsAbort = false;
+}
 
 //constructor for initializing with a certain no. nodes
 network::network(const int maxNodeInit)
@@ -31,6 +34,8 @@ void network::reset()
     nodeFrameCreate.clear();
     nodePos.clear();
     nodeCount.clear();
+	IsCleanBirth=false;
+	IsAbort = false;
 }
 
 void network::addEdge(int startNode, int endNode, int frame, int xDistance, int yDistance)
@@ -39,6 +44,16 @@ void network::addEdge(int startNode, int endNode, int frame, int xDistance, int 
     edgeList[startNode].push_back(frame);
     edgeList[startNode].push_back(xDistance);
     edgeList[startNode].push_back(yDistance);
+	if (startNode==0 && endNode==1)
+	{
+		IsAbort = true;
+		IsCleanBirth = true;
+	}
+	else
+	{
+		IsAbort = true;
+		IsCleanBirth = false;
+	}
     return;
 }
 
@@ -120,8 +135,20 @@ void network::FOutGMLEdgeList (std::ofstream& aStream)
     return;
 }
 
+std::pair<int,int> network::getFirstEdgeXY()
+{
+	auto it = edgeList.begin();
+	int xDist = it->second[2];
+	int yDist = it->second[3];
+	return std::make_pair(xDist,yDist);
+}
 
+bool network::getIsCleanBirth()
+{
+	return IsCleanBirth;
+}
 
-
-
-
+bool network::getIsAbort()
+{
+	return IsAbort;
+}

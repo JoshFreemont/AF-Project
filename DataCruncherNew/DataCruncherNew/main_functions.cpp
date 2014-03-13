@@ -9,6 +9,7 @@
 #include "main_functions.h"
 #include <ctime>
 #include <stdio.h>
+#include <cmath>
 
 
 void pacemaker(array2D<int> &state_update, std::vector<int> &all_excited_coords, const int& RP, const int& GRIDSIZE, array2D<std::pair<int,int>> &excitedBy)
@@ -62,4 +63,19 @@ std::vector<int> getDeathDataVect(std::vector<rotorIDstruct>& rotorIdData, const
     
     //correct for deaths which are enforced by the end of experiment
     return dataVector;
+}
+
+double calculateYdiff(int parentY, int birthY)
+{
+	//this syntax is rather hard to read, but basically it means that it compares which distance between the two rotors is the shorter one and takes that one
+								//this is a ternary operator, which is a conditional operator
+	double Ydiff = birthY - parentY;
+	return
+	(std::abs(2*Ydiff)<200
+	?
+	Ydiff
+	:
+	//copysign copies the sign of the second argument and sticks it on the first argument
+	-copysign(200-abs(Ydiff),Ydiff)
+	);
 }

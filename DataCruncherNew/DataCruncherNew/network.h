@@ -30,12 +30,9 @@ public:
     network();
     network(const int maxNodeInit);//network with max node preassigned.
     void addEdge(int startNode, int endNode, int frame, int xDistance, int yDistance);
-    void addEdgeFrame(int frame, int nodeId);
     void addNode(int nodeId, int x, int y);
     void reset();
-    void addNodeFrame(int frame, int nodeId);
-    void FOutEdgeList (std::ofstream& aStream);
-    void FOutTemporalEdgeList (std::ofstream& aStream);
+    void FOutEdgeDistList (std::ofstream& aStream);
     void FOutGMLEdgeList (std::ofstream& aStream);
     void FOutGMLTreeEdgeList (std::ofstream& aStream);
     

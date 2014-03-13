@@ -61,14 +61,15 @@ int main(int argc, char** argv)
     //Declare filenamer, and file streams.
     FileNamer MyFileNamer;
     MyFileNamer.setFileHeader("test3");
-    ofstream rotorIdInherit_T;
+    ofstream rotorIdDistStream;
     ofstream rotorIdInherit_S;
+    ofstream rotorIdTreeStream;
     ofstream rotorExCountstream;
 	ofstream rotorCountstream;
 	ofstream rotorIDstream;
     ofstream birthRateStream;
     ofstream deathRateStream;
-    ofstream rotorIdTreeStream;
+    
     
     //rotor variables
     array2D <int> rotorCellFrequency (G_WIDTH,G_HEIGHT,0);
@@ -151,7 +152,7 @@ int main(int argc, char** argv)
             {
                 //name files and set column headings.
         		MyFileNamer.IDFile(rotorIDstream, nu, repeat, rotorIdThresh);
-                MyFileNamer.EdgeList(rotorIdInherit_T, nu, repeat, rotorIdThresh, "Temporal");
+                MyFileNamer.EdgeList(rotorIdDistStream, nu, repeat, rotorIdThresh, "Dist");
                 MyFileNamer.EdgeList(rotorIdInherit_S, nu, repeat, rotorIdThresh, "Spatial");
                 MyFileNamer.EdgeList(rotorIdTreeStream, nu, repeat, rotorIdThresh, "Tree");
                 MyFileNamer.RotorExCountFile(rotorExCountstream,nu,repeat,rotorIdThresh);
@@ -328,11 +329,6 @@ int main(int argc, char** argv)
                             //add rotorIdData struct + isRotorAliveNow = true for new_rotor = maxRotorId
                             rotorIdData.push_back(rotorIDstruct(frame, cycleLength, avX, avY));
                             isRotorAliveNow[maxRotorId] = true;
-                        
-                            //add node at maxRotorId, and frame at which node is created.
-                            rotorIdNetwork_T.addNode(maxRotorId, (int)(avX + 0.5), (int)(avY + 0.5));
-                            rotorIdNetwork_T.addNodeFrame(frame, maxRotorId);
-
                             
                             //calculate rotor bucket (spatial node) and add to network, alongside bucket position.
                             childBucket = calcBucket(rotorIdData[maxRotorId].birthX, rotorIdData[maxRotorId].birthY, bucketSize, noBuckets);
@@ -352,8 +348,6 @@ int main(int argc, char** argv)
 								//copysign copies the sign of the second argument and sticks it on the first argument
 								-copysign(200-abs(rotorIdData[maxRotorId].birthY - rotorIdData[parentRotorId].deathY),rotorIdData[maxRotorId].birthY - rotorIdData[parentRotorId].deathY)
 								);
-                                rotorIdNetwork_T.addEdge(parentRotorId, maxRotorId, frame, xDistance, yDistance);
-                                rotorIdNetwork_T.addEdgeFrame(frame, parentRotorId);
                                 
                                 //spatial network
                                 parentBucket = calcBucket(rotorIdData[parentRotorId].deathX, rotorIdData[parentRotorId].deathY, bucketSize, noBuckets);
@@ -393,8 +387,8 @@ int main(int argc, char** argv)
                 //fOutput Rotor + Network Data
                 FOutRotorIdData(rotorIDstream, rotorIdData);
                 FOutRotorExCountData(rotorExCountstream, rotorCellFrequency);
-                rotorIdNetwork_T.FOutEdgeList(rotorIdInherit_T);
                 rotorIdNetwork_S.FOutGMLEdgeList(rotorIdInherit_S);
+                rotorIdNetwork_S.FOutEdgeDistList(rotorIdDistStream);
                 rotorIdTree.FOutGMLTreeEdgeList(rotorIdTreeStream);
                 
                 //cOutput current progress.

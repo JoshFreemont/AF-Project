@@ -42,13 +42,6 @@ void network::addEdge(int startNode, int endNode, int frame, int xDistance, int 
     return;
 }
 
-//add frame of creation for child nodes to the edgeframecreatelist
-void network::addEdgeFrame(int frame, int nodeId)
-{
-    edgeFrameCreateList[nodeId].push_back(frame);
-    return;
-}
-
 void network::addNode(int nodeIdValue, int x, int y)
 {
     //if already a node then keep all properties same except frequency.
@@ -64,13 +57,7 @@ void network::addNode(int nodeIdValue, int x, int y)
     return;
 }
 
-void network::addNodeFrame(int frame, int nodeId)
-{
-    nodeFrameCreate[nodeId]=frame;
-    return;
-}
-
-void network::FOutEdgeList (std::ofstream& aStream)
+void network::FOutEdgeDistList (std::ofstream& aStream)
 {
     aStream<<"Start Node"<<"\t"<<"End Node"<< "\tFrame"
 	<< "\txDistance" << "\tyDistance" << "\tDistance" << "\tAngle" << std::endl;

@@ -7,6 +7,7 @@
 //
 
 #include "network.h"
+#include <cmath>
 
 //empty constructor.
 network::network()
@@ -32,10 +33,12 @@ void network::reset()
     nodeCount.clear();
 }
 
-void network::addEdge(int startNode, int endNode, int frame)
+void network::addEdge(int startNode, int endNode, int frame, int xDistance, int yDistance)
 {
     edgeList[startNode].push_back(endNode);
     edgeList[startNode].push_back(frame);
+    edgeList[startNode].push_back(xDistance);
+    edgeList[startNode].push_back(yDistance);
     return;
 }
 
@@ -69,12 +72,18 @@ void network::addNodeFrame(int frame, int nodeId)
 
 void network::FOutEdgeList (std::ofstream& aStream)
 {
-    aStream<<"Start Node"<<"\t"<<"End Node"<<std::endl;
+    aStream<<"Start Node"<<"\t"<<"End Node"<< "\tFrame"
+	<< "\txDistance" << "\tyDistance" << "\tDistance" << "\tAngle" << std::endl;
     for(auto node = edgeList.begin(); node != edgeList.end(); node++)
     {
-            for(auto it = node->second.begin(); it != node->second.end(); ++it)
+            for(auto it = node->second.begin(); it != node->second.end(); it+=4)
             {
-                aStream<< node->first << "\t" << *it << std::endl;
+				double xDistance = *(it+2);
+				double yDistance = *(it+3);
+                aStream<< node->first << "\t" << *it << "\t" << *(it+1)
+				<< "\t" << xDistance << "\t" << yDistance << "\t"
+				<< std::sqrt(xDistance*xDistance+yDistance*yDistance) << "\t"
+				<< std::atan2(yDistance,xDistance) << std::endl;
             }
     }
 }
@@ -94,13 +103,12 @@ void network::FOutGMLEdgeList (std::ofstream& aStream)
             aStream << "\ty " << nodePos[nodeId].second << std::endl;
             aStream << "\tfrequency " << nodeCount[nodeId] << "\n\t]\n";
         }
-        
         else continue;
     }
 
     for(auto node = edgeList.begin(); node != edgeList.end(); ++node)
     {
-        for(auto it = node->second.begin(); it != node->second.end(); it+=2)
+        for(auto it = node->second.begin(); it != node->second.end(); it+=4)
         {
             aStream << "\tedge\n\t[\n\tsource " << node->first << std::endl;
             aStream << "\ttarget " << *it << std::endl;

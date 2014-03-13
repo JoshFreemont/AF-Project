@@ -338,12 +338,14 @@ int main(int argc, char** argv)
                             if(isRotorAliveOld[parentRotorId])
                             {
                                 //temporal network
-                                rotorIdNetwork_T.addEdge(parentRotorId, maxRotorId, frame);
+								double xDistance = static_cast<double>(rotorIdData[maxRotorId].birthX - rotorIdData[parentRotorId].deathX);
+								double yDistance = static_cast<double>(rotorIdData[maxRotorId].birthY - rotorIdData[parentRotorId].deathY);
+                                rotorIdNetwork_T.addEdge(parentRotorId, maxRotorId, frame, xDistance, yDistance);
                                 rotorIdNetwork_T.addEdgeFrame(frame, parentRotorId);
                                 
                                 //spatial network
                                 parentBucket = calcBucket(rotorIdData[parentRotorId].deathX, rotorIdData[parentRotorId].deathY, bucketSize, noBuckets);
-                                rotorIdNetwork_S.addEdge(parentBucket, childBucket, frame);
+                                rotorIdNetwork_S.addEdge(parentBucket, childBucket, frame, xDistance, yDistance);
                             }
                         }
                     }
@@ -378,7 +380,7 @@ int main(int argc, char** argv)
                 //fOutput Rotor + Network Data
                 FOutRotorIdData(rotorIDstream, rotorIdData);
                 FOutRotorExCountData(rotorExCountstream, rotorCellFrequency);
-                rotorIdNetwork_T.FOutGMLEdgeList(rotorIdInherit_T);
+                rotorIdNetwork_T.FOutEdgeList(rotorIdInherit_T);
                 rotorIdNetwork_S.FOutGMLEdgeList(rotorIdInherit_S);
                 
                 //cOutput current progress.

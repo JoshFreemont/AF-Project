@@ -29,7 +29,7 @@ class network
 public:
     network();
     network(const int maxNodeInit);//network with max node preassigned.
-    void addEdge(int startNode, int endNode, int frame);
+    void addEdge(int startNode, int endNode, int frame, int xDistance, int yDistance);
     void addEdgeFrame(int frame, int nodeId);
     void addNode(int nodeId, int x, int y);
     void reset();

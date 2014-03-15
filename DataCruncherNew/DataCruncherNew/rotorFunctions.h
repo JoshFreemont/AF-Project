@@ -30,7 +30,7 @@ inline void calcMaxFreqId(std::unordered_map<int, int>& tempRotorIdFrequency, in
     maxFreq=0;//reset frequency
     for(std::unordered_map<int, int>::iterator it = tempRotorIdFrequency.begin(); it != tempRotorIdFrequency.end(); ++it)
     {
-        if(it->second > maxFreq && it->first != 0)
+        if(it->second > maxFreq && it->first != -1)
         {
             maxFreq = it->second;
             tempRotorId = it->first;

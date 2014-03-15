@@ -17,6 +17,9 @@
 
 using namespace std;
 
+const bool DETECTROTORS = true;
+const bool EXCELLSOUTPUT = true;
+
 int main(int argc, char** argv)
 {
 
@@ -150,7 +153,9 @@ int main(int argc, char** argv)
             //Start simulation "repeat Loop"
             for(int repeat = 0; repeat < repeatMAX; ++repeat)
             {
-                //name files and set column headings.
+                if (DETECTROTORS)
+				{
+				//name files and set column headings.
         		MyFileNamer.IDFile(rotorIDstream, nu, repeat, rotorIdThresh);
                 MyFileNamer.EdgeList(rotorIdDistStream, nu, repeat, rotorIdThresh, "Dist");
                 MyFileNamer.EdgeList(rotorIdInherit_S, nu, repeat, rotorIdThresh, "Spatial");
@@ -160,6 +165,7 @@ int main(int argc, char** argv)
                 MyFileNamer.HistoFile(birthRateStream, nu, repeat, rotorIdThresh, "BirthRate");
                 MyFileNamer.HistoFile(deathRateStream, nu, repeat, rotorIdThresh, "DeathRate");
                 FOutRotorIDColumns(rotorIDstream);
+				}
                 
                 //Reset everything
                 inN.reset(nu);
@@ -260,6 +266,8 @@ int main(int argc, char** argv)
                     }
                     
                     //check for rotors
+					if (DETECTROTORS)
+					{
                     for (auto col = exCoords[cyclicNow].begin(); col != exCoords[cyclicNow].end(); col+=2)
                     {
                         
@@ -356,6 +364,7 @@ int main(int argc, char** argv)
                             }
                         }
                     }
+					}
                     
                     //de-excitation process for refractory cells
                     deExciteState(exCoords, cyclicOld, cyclicBackRP, MEMLIMIT, state_update);
@@ -365,15 +374,20 @@ int main(int argc, char** argv)
                     
                     //update loop variables.
                     state=state_update;
+					if (DETECTROTORS)
+					{
                     isRotorAliveOld=isRotorAliveNow;
                     isRotorAliveNow.clear();
                     updateActiveRotorId(isRotor[cyclicNow], activeRotorId);
                     
                     //fOutput FRAME vs. rotorCount
                     FOutFrameVsVar(rotorCountstream, frame, rotorCount);
+					}
                     
                 }//end frame loop
                 
+				if (DETECTROTORS)
+				{
                 //create and output histogram of birth rates wrt. time.
                 histogram birthRateWTime(MAXFRAME/1000);
                 histogram deathRateWTime(MAXFRAME/1000);
@@ -390,6 +404,7 @@ int main(int argc, char** argv)
                 rotorIdNetwork_S.FOutGMLEdgeList(rotorIdInherit_S);
                 rotorIdNetwork_S.FOutEdgeDistList(rotorIdDistStream);
                 rotorIdTree.FOutGMLTreeEdgeList(rotorIdTreeStream);
+				}
                 
                 //cOutput current progress.
                 COutCurrentStatus(TotalIterations, iterationcount);

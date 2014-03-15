@@ -8,7 +8,7 @@
 
 double mean(std::vector<int>& someVector);
 double mean(std::vector<double>& someVector); //overloaded just in case
-double standarddev(std::vector<int>& someVector, double mean);
-double standarddev(std::vector<double>& someVector, double mean);
+double standarddev(std::vector<int>& someVector, double& m);
+double standarddev(std::vector<double>& someVector, double& m);
 
 #endif //__ANALYSISFUNCTIONS__H__

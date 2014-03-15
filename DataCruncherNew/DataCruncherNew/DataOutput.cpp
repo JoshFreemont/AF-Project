@@ -7,6 +7,7 @@
 //
 
 #include "DataOutput.h"
+#include "analysisfunctions.h"
 
 
 void FOutRotorIdData(std::ofstream& aStream, std::vector<struct rotorIDstruct> &rotorIDdata)
@@ -17,14 +18,14 @@ void FOutRotorIdData(std::ofstream& aStream, std::vector<struct rotorIDstruct> &
 		aStream << rotorCounter << "\t";
 		aStream << it->birthframe << "\t";
         aStream << it->lifetime << "\t";
-		
+
 		double m = mean(it->length); //std dev of lengths
 		double accum = 0.0;
 		std::for_each (std::begin(it->length), std::end(it->length), [&](const double d)
                        {
                            accum += (d - m) * (d - m);
                        });
-        
+
 		double stdev = sqrt(accum / (it->length.size())); //std dev of lengths
 		aStream << m << "\t";
 		aStream << stdev << "\t";
@@ -32,7 +33,7 @@ void FOutRotorIdData(std::ofstream& aStream, std::vector<struct rotorIDstruct> &
 		aStream << *max_element(it->length.begin(),it->length.end()) << "\t"; //Max length
 		aStream << it->birthX << "\t" << it->birthY << "\t"; //rotor birth locations
 		aStream << it->deathX << "\t" << it->deathY << "\n"; //rotor death locations
-		
+
 		rotorCounter++;
     }
     return;
@@ -74,4 +75,73 @@ void COutCurrentStatus(const int& TotalIterations, const int& iterationcount)
 void FOutFrameVsVar(std::ofstream& aStream, const int& FRAME, const int& Var)
 {
     aStream<<FRAME<<"\t"<<Var<<"\n";
+}
+
+void FOutExCellsColumns(std::ofstream& aStream)
+{
+	aStream << "Frame" << "\t";
+    aStream << "Excited Cells" << "\n";
+}
+
+void FOutExStatsColumns(std::ofstream& aStream)
+{
+	aStream << "Iteration" << "\t";
+    aStream << "Frames in AF" << "\t";
+	aStream << "Time in AF" << "\t";
+	aStream << "Horizontal Firing Prob" << "\t";
+	aStream << "Vertical Firing Prob" << "\n";
+}
+
+void FOutExMasterColumns(std::ofstream& aStream)
+{
+	aStream << "Nu" << "\t";
+	aStream << "Mean Frames in AF" << "\t";
+    aStream << "Mean Time in AF" << "\t";
+    aStream << "Cases in AF" << "\t";
+    aStream << "STDDEV of Time in AF" << "\n";
+    aStream << "STDERR of Time in AF" << "\n";
+}
+
+//function to write out data for excited cell count file
+void FOutExCellsData(std::ofstream& aStream,  const std::vector<int>& exCellCount)
+{
+	int frame = 0;
+	for (auto it=exCellCount.begin(); it!=exCellCount.end(); it++)
+	{
+	aStream << frame << "\t" << *it << "\n";
+	frame++;
+	}
+}
+
+//function to write out data for excited cell count stats file
+void FOutExStatsData(std::ofstream& aStream, const std::vector<int>& exCellStats, const int& repeat, const int& MAXFRAME, const double& HorFiringProb, const double& VerFiringProb)
+{
+	aStream << repeat << "\t" << exCellStats[repeat] << "\t";
+	aStream << exCellStats[repeat]/(double)MAXFRAME << "\t";
+	aStream << HorFiringProb << "\t";
+	aStream << VerFiringProb << std::endl;
+}
+
+//function to write out data for excited cell count master file
+void FOutExMasterData(std::ofstream& aStream, std::vector<int>& exCellStats, const int& MAXFRAME, const double& nu)
+{
+	int AFCases = 0;
+	std::vector<int> fractionInAF;
+	for (auto it=exCellStats.begin(); it!=exCellStats.end(); it++)
+	{
+		if(*it > 0)
+		AFCases++;
+
+		fractionInAF.push_back(*it/(double)MAXFRAME);
+	}
+
+	aStream << nu << "\t";
+	aStream << mean(exCellStats) << "\t";
+
+	double m = mean(fractionInAF);
+	aStream << mean(fractionInAF) << "\t";
+
+	double sdev = standarddev(fractionInAF, m);
+	aStream << sdev << "\t";
+	aStream << sdev/(double)(fractionInAF.size()) << std::endl;
 }

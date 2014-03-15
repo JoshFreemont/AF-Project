@@ -32,6 +32,22 @@ void COutCurrentStatus(const int& TotalIterations, const int& CurrentIteration);
 //function to output rotor count vs. frame
 void FOutFrameVsVar(std::ofstream& aStream, const int& Var, const int& FRAME);
 
+//function to write out columns for excited cell count file
+void FOutExCellsColumns(std::ofstream& aStream);
 
+//function to write out columns for excited cell count stats file
+void FOutExStatsColumns(std::ofstream& aStream);
+
+//function to write out columns for excited cell count master file
+void FOutExMasterColumns(std::ofstream& aStream);
+
+//function to write out data for excited cell count file
+void FOutExCellsData(std::ofstream& aStream,  const std::vector<int>& exCellCount);
+
+//function to write out data for excited cell count stats file
+void FOutExStatsData(std::ofstream& aStream, const std::vector<int>& exCellStats, const int& repeat, const int& MAXFRAME, const double& HorFiringProb, const double& VerFiringProb);
+
+//function to write out data for excited cell count master file
+void FOutExMasterData(std::ofstream& aStream, std::vector<int>& exCellStats, const int& MAXFRAME, const double& nu);
 
 #endif /* defined(__DataCruncherNew__DataOutput__) */

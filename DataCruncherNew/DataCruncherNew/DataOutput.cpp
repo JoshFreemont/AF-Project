@@ -8,6 +8,8 @@
 
 #include "DataOutput.h"
 #include "analysisfunctions.h"
+#include <cmath>
+#include <iomanip>
 
 
 void FOutRotorIdData(std::ofstream& aStream, std::vector<struct rotorIDstruct> &rotorIDdata)
@@ -63,6 +65,8 @@ void FOutRotorExCountData(std::ofstream& aStream, array2D<int>& rotorCellFrequen
         }
         aStream << "\n";
     }
+    aStream.flush();
+    aStream.clear();
     return;
 }
 
@@ -75,12 +79,18 @@ void COutCurrentStatus(const int& TotalIterations, const int& iterationcount)
 void FOutFrameVsVar(std::ofstream& aStream, const int& FRAME, const int& Var)
 {
     aStream<<FRAME<<"\t"<<Var<<"\n";
+    aStream.flush();
+    aStream.clear();
+    return;
 }
 
 void FOutExCellsColumns(std::ofstream& aStream)
 {
 	aStream << "Frame" << "\t";
     aStream << "Excited Cells" << "\n";
+    aStream.flush();
+    aStream.clear();
+    return;
 }
 
 void FOutExStatsColumns(std::ofstream& aStream)
@@ -90,6 +100,9 @@ void FOutExStatsColumns(std::ofstream& aStream)
 	aStream << "Time in AF" << "\t";
 	aStream << "Horizontal Firing Prob" << "\t";
 	aStream << "Vertical Firing Prob" << "\n";
+    aStream.flush();
+    aStream.clear();
+    return;
 }
 
 void FOutExMasterColumns(std::ofstream& aStream)
@@ -100,6 +113,9 @@ void FOutExMasterColumns(std::ofstream& aStream)
     aStream << "Cases in AF" << "\t";
     aStream << "STDDEV of Time in AF" << "\n";
     aStream << "STDERR of Time in AF" << "\n";
+    aStream.flush();
+    aStream.clear();
+    return;
 }
 
 //function to write out data for excited cell count file
@@ -111,22 +127,31 @@ void FOutExCellsData(std::ofstream& aStream,  const std::vector<int>& exCellCoun
 	aStream << frame << "\t" << *it << "\n";
 	frame++;
 	}
+	aStream.flush();
+	aStream.clear();
+	return;
 }
 
 //function to write out data for excited cell count stats file
 void FOutExStatsData(std::ofstream& aStream, const std::vector<int>& exCellStats, const int& repeat, const int& MAXFRAME, const double& HorFiringProb, const double& VerFiringProb)
 {
 	aStream << repeat << "\t" << exCellStats[repeat] << "\t";
-	aStream << exCellStats[repeat]/(double)MAXFRAME << "\t";
+	double something = static_cast<double>(MAXFRAME);
+	double timeInAF = exCellStats[repeat]/something;
+	aStream.flush();
+	aStream.clear();
+	aStream << timeInAF << "\t";
 	aStream << HorFiringProb << "\t";
 	aStream << VerFiringProb << std::endl;
+	aStream.clear();
+	return;
 }
 
 //function to write out data for excited cell count master file
 void FOutExMasterData(std::ofstream& aStream, std::vector<int>& exCellStats, const int& MAXFRAME, const double& nu)
 {
 	int AFCases = 0;
-	std::vector<int> fractionInAF;
+	std::vector<double> fractionInAF;
 	for (auto it=exCellStats.begin(); it!=exCellStats.end(); it++)
 	{
 		if(*it > 0)
@@ -134,14 +159,21 @@ void FOutExMasterData(std::ofstream& aStream, std::vector<int>& exCellStats, con
 
 		fractionInAF.push_back(*it/(double)MAXFRAME);
 	}
+	aStream.flush();
+	aStream.clear();
 
 	aStream << nu << "\t";
 	aStream << mean(exCellStats) << "\t";
 
 	double m = mean(fractionInAF);
-	aStream << mean(fractionInAF) << "\t";
+	aStream << m << "\t";
+	aStream << AFCases << "\t";
 
 	double sdev = standarddev(fractionInAF, m);
 	aStream << sdev << "\t";
-	aStream << sdev/(double)(fractionInAF.size()) << std::endl;
+
+	aStream << sdev/sqrt((double)(fractionInAF.size())) << "\n";
+	aStream.flush();
+	aStream.clear();
+	return;
 }

@@ -18,8 +18,8 @@
 using namespace std;
 
 //constants to set what the program outputs
-const bool DETECTROTORS = true;
-const bool COUNTEXCELLS = false;
+const bool DETECTROTORS = false;
+const bool COUNTEXCELLS = true;
 
 int main(int argc, char** argv)
 {
@@ -67,6 +67,7 @@ int main(int argc, char** argv)
     //Declare filenamer, and file streams.
     FileNamer MyFileNamer;
     MyFileNamer.setFileHeader("test3");
+
     ofstream rotorIdDistStream;
     ofstream rotorIdInherit_S;
     ofstream rotorIdTreeStream;
@@ -142,11 +143,11 @@ int main(int argc, char** argv)
     //setup to look at rotor duration for different nu in order to measure dynamism.
     double nu;
     double nuSTART = 0.1;
-    const double nuMAX = 0.4;
+    const double nuMAX = 0.14;
     const double nuSTEP = 0.02;
-    const int repeatMAX = 10;
+    const int repeatMAX = 2;
     int iterationcount = 1;
-    const int TotalIterations = repeatMAX*3*((nuMAX-nuSTART)/nuSTEP+1);
+    const int TotalIterations = repeatMAX*((nuMAX-nuSTART)/nuSTEP+1);
 
 	//contains number of frames in AF for each iteration
 	vector <int> exCellStats;
@@ -163,7 +164,7 @@ int main(int argc, char** argv)
 			}
 
 		//Start "nu loop"
-		for (nu = nuSTART; nu < nuMAX; nu += nuSTEP)
+		for (nu = nuSTART; nu <= nuMAX; nu += nuSTEP)
 		{
 			if (COUNTEXCELLS)
 			{
@@ -193,6 +194,10 @@ int main(int argc, char** argv)
 				{
 				MyFileNamer.ExCountFile(exCellStream, nu, repeat, rotorIdThresh);
 				FOutExCellsColumns(exCellStream);
+				for(auto it=exCellCount.begin();it!=exCellCount.end();it++)
+                {
+                    *it = 0;
+                }
 				}
 
                 //Reset everything
@@ -411,19 +416,21 @@ int main(int argc, char** argv)
                     //update loop variables.
                     state=state_update;
 
+                    if (DETECTROTORS)
+					{
                     isRotorAliveOld=isRotorAliveNow;
                     isRotorAliveNow.clear();
                     updateActiveRotorId(isRotor[cyclicNow], activeRotorId);
 
-                    if (DETECTROTORS)
-					{
                     //fOutput FRAME vs. rotorCount
                     FOutFrameVsVar(rotorCountstream, frame, rotorCount);
 					}
 
 					//update excited cells in frame count
 					if (COUNTEXCELLS)
+                    {
 					exCellCount[frame] = exCells;
+                    }
                 }//end frame loop
  //--------------------------------------------------------------------------------
 

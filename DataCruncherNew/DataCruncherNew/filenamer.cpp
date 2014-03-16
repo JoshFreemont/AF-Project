@@ -1,5 +1,6 @@
 #include "filenamer.h"
 #include <iomanip>
+#include <iostream>
 
 using namespace std;
 
@@ -71,7 +72,7 @@ FileNamer::FileNamer(const string& FileHeader): m_FileHeader(FileHeader)
         m_FileHeader + "_" + m_Convert.str() + ".txt";
 
         aStream.open(fileName.c_str());
-        
+
     }
 
     void FileNamer::RotorExCountFile(std::ofstream& aStream, double nu, double iteration, double rotorIDthreshold)
@@ -101,18 +102,18 @@ FileNamer::FileNamer(const string& FileHeader): m_FileHeader(FileHeader)
 
         aStream.open(fileName.c_str());
 	}
-		
+
     void FileNamer::EdgeList(std::ofstream& aStream, double nu, double iteration, double rotorIDThreshold, std::string type)
 	{
 		string fileName;
 		m_Convert.clear();
 		m_Convert.str("");
 		aStream.close();
-		
+
 		m_Convert << setprecision(4) << "edge_nu_" << nu << "_IDThresh" << rotorIDThreshold << "_" << iteration;
-		
+
 		fileName =m_FileHeader + "_" + m_Convert.str() + "_" + type + ".txt";
-		
+
 		aStream.open(fileName.c_str());
     }
 
@@ -122,53 +123,53 @@ FileNamer::FileNamer(const string& FileHeader): m_FileHeader(FileHeader)
         m_Convert.clear();
         m_Convert.str("");
         aStream.close();
-    
+
         m_Convert << setprecision(4) << nu << "_IDThresh" << rotorIDThreshold << "_" << iteration;
-    
+
         fileName =m_FileHeader + "_" + m_Convert.str() + "_" + type + "histo" + ".txt";
-    
+
         aStream.open(fileName.c_str());
     }
-	
-	void FileNamer::ExCountFile(std::ofstream& aStream, double nu, int iteration, double rotorIDThreshold)
+
+	void FileNamer::ExCountFile(std::ofstream& aStream, double nu, double iteration, double rotorIDThreshold)
 	{
 		string fileName;
         m_Convert.clear();
         m_Convert.str("");
         aStream.close();
-    
+
         m_Convert << setprecision(4) << nu << "_Thr" << rotorIDThreshold << "_" << iteration;
-    
+
         fileName =m_FileHeader + "_exCells" + m_Convert.str() + ".txt";
-    
+
         aStream.open(fileName.c_str());
     }
-	
+
 	void FileNamer::ExStatsFile(std::ofstream& aStream, double nu, double rotorIDThreshold)
 	{
 		string fileName;
         m_Convert.clear();
         m_Convert.str("");
         aStream.close();
-    
+
         m_Convert << setprecision(4) << nu << "_Thr" << rotorIDThreshold;
-    
+
         fileName =m_FileHeader + "_exStats" + m_Convert.str() + ".txt";
-    
+
         aStream.open(fileName.c_str());
 	}
-	
+
 	void FileNamer::ExMasterFile(std::ofstream& aStream, double rotorIDThreshold)
 	{
 		string fileName;
         m_Convert.clear();
         m_Convert.str("");
         aStream.close();
-    
+
         m_Convert << "_Thr" << rotorIDThreshold;
-    
+
         fileName =m_FileHeader + "_exMaster" + m_Convert.str() + ".txt";
-    
+
         aStream.open(fileName.c_str());
 	}
 

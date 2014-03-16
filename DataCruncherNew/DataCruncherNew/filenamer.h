@@ -32,17 +32,17 @@ public:
     void RotorExCountFile(std::ofstream& aStream, double nu, double iteration, double rotorIDthreshold);
 
     void RotorCountFile(std::ofstream& aStream, double nu, double iteration, double rotorIDthreshold);
-    
+
     void EdgeList(std::ofstream& aStream, double nu, double iteration, double rotorIDThreshold, std::string type);
-    
+
     void HistoFile(std::ofstream& aStream, double nu, double iteration, double rotorIDThreshold, std::string type);
-	
-	void ExCountFile(std::ofstream& aStream, double nu, int iteration, double rotorIDThreshold);
-	
+
+	void ExCountFile(std::ofstream& aStream, double nu, double iteration, double rotorIDThreshold);
+
 	void ExStatsFile(std::ofstream& aStream, double nu, double rotorIDThreshold);
-	
+
 	void ExMasterFile(std::ofstream& aStream, double rotorIDThreshold);
-    
+
 };
 
 

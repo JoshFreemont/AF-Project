@@ -67,7 +67,7 @@ int main(int argc, char** argv)
 
     //Declare filenamer, and file streams.
     FileNamer MyFileNamer;
-    MyFileNamer.setFileHeader("test3");
+    MyFileNamer.setFileHeader("rtr0.2_0.28");
 
     ofstream rotorIdDistStream;
     ofstream rotorIdInherit_S;
@@ -143,10 +143,10 @@ int main(int argc, char** argv)
 
     //setup to look at rotor duration for different nu in order to measure dynamism.
     double nu;
-    double nuSTART = 0.0;
-    const double nuMAX = 0.04;
+    double nuSTART = 0.20;
+    const double nuMAX = 0.28;
     const double nuSTEP = 0.02;
-    const int repeatMAX = 2;
+    const int repeatMAX = 4;
     int iterationcount = 1;
     const int TotalIterations = repeatMAX*1*((nuMAX-nuSTART)/nuSTEP+1);
 

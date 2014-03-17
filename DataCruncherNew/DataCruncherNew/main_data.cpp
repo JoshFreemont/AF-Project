@@ -18,7 +18,7 @@
 using namespace std;
 
 //constants to set what the program outputs
-const bool DETECTROTORS = true;
+const bool DETECTROTORS = false;
 const bool COUNTEXCELLS = true;
 
 int main(int argc, char** argv)
@@ -395,7 +395,6 @@ int main(int argc, char** argv)
 								rotorIdData[maxRotorId].birthY - rotorIdData[parentRotorId].deathY
 								:
 								//copysign copies the sign of the second argument and sticks it on the first argument
-								//NOTE: Visual Studio has _copysign instead of copysign for some reason
 								-copysign(200-abs(rotorIdData[maxRotorId].birthY - rotorIdData[parentRotorId].deathY),rotorIdData[maxRotorId].birthY - rotorIdData[parentRotorId].deathY)
 								);
 
@@ -412,7 +411,7 @@ int main(int argc, char** argv)
                     deExciteState(exCoords, cyclicOld, cyclicBackRP, MEMLIMIT, state_update);
 
                     //pacemaker
-                    if(frame%SAP==0)pacemaker(state_update, exCoords[cyclicNow], RP, GRIDSIZE, excitedBy);
+                    if(frame%SAP==0)pacemaker(state_update, exCoords[cyclicNow], RP, GRIDSIZE, excitedBy, exCells);
 
                     //update loop variables.
                     state=state_update;

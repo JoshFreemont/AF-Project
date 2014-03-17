@@ -99,7 +99,7 @@ inline int calcBucket (int& x, int& y, const int& bucketSize, const int& noBucke
 
 //NON-INLINE FUNCTIONS
 //Pacemaker Function
-void pacemaker(array2D<int> &state_update, std::vector<int> &all_excited_coords, const int &RP, const int& GRIDSIZE, array2D<std::pair<int,int>> &excitedBy);
+void pacemaker(array2D<int> &state_update, std::vector<int> &all_excited_coords, const int &RP, const int& GRIDSIZE, array2D<std::pair<int,int>> &excitedBy, int& exCells);
 
 //CurrentDatetime function
 const std::string currentDateTime() ;

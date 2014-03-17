@@ -18,8 +18,9 @@
 using namespace std;
 
 //constants to set what the program outputs
-const bool DETECTROTORS = false;
+const bool DETECTROTORS = true;
 const bool COUNTEXCELLS = true;
+const bool DISPLAYFULLEXCELLS = true;
 
 int main(int argc, char** argv)
 {
@@ -39,7 +40,7 @@ int main(int argc, char** argv)
 
     //frame and memory variables
     const int MEMLIMIT=RP+1;
-    const int MAXFRAME=10000;
+    const int MAXFRAME=1000000;
     int frame=0;
     int cyclicNow=0;
     int cyclicOld=0;
@@ -143,9 +144,9 @@ int main(int argc, char** argv)
     //setup to look at rotor duration for different nu in order to measure dynamism.
     double nu;
     double nuSTART = 0.0;
-    const double nuMAX = 0.1;
+    const double nuMAX = 0.04;
     const double nuSTEP = 0.02;
-    const int repeatMAX = 10;
+    const int repeatMAX = 2;
     int iterationcount = 1;
     const int TotalIterations = repeatMAX*1*((nuMAX-nuSTART)/nuSTEP+1);
 
@@ -464,7 +465,10 @@ int main(int argc, char** argv)
 				}
 
 				exCellStats.push_back(exFrameCount);
+				if(DISPLAYFULLEXCELLS)
+				{
 				FOutExCellsData(exCellStream, exCellCount);
+				}
 				FOutExStatsData(exCellStatsStream, exCellStats, repeat, MAXFRAME, HOR, nu);
 				}
 

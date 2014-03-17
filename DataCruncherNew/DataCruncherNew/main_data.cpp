@@ -18,7 +18,7 @@
 using namespace std;
 
 //constants to set what the program outputs
-const bool DETECTROTORS = false;
+const bool DETECTROTORS = true;
 const bool COUNTEXCELLS = true;
 
 int main(int argc, char** argv)
@@ -119,7 +119,7 @@ int main(int argc, char** argv)
     vector<vector<int> >exCoords(MEMLIMIT, coords);
     vector<vector<int> >rotorCoords(MEMLIMIT, coords);
     vector<vector<int> >emptyCoords(MEMLIMIT, coords);
-	vector<int> exCellCount (MAXFRAME,0); //contains number of excited cells in frame
+	vector<int> exCellCount (MAXFRAME+1,0); //contains number of excited cells in frame
 	int exCells = 0; //temp variable to count excited cells in frame
 
     //rotorIdNetwork
@@ -142,12 +142,12 @@ int main(int argc, char** argv)
 
     //setup to look at rotor duration for different nu in order to measure dynamism.
     double nu;
-    double nuSTART = 0.1;
-    const double nuMAX = 0.14;
+    double nuSTART = 0.0;
+    const double nuMAX = 0.1;
     const double nuSTEP = 0.02;
-    const int repeatMAX = 2;
+    const int repeatMAX = 10;
     int iterationcount = 1;
-    const int TotalIterations = repeatMAX*((nuMAX-nuSTART)/nuSTEP+1);
+    const int TotalIterations = repeatMAX*1*((nuMAX-nuSTART)/nuSTEP+1);
 
 	//contains number of frames in AF for each iteration
 	vector <int> exCellStats;
@@ -395,6 +395,7 @@ int main(int argc, char** argv)
 								rotorIdData[maxRotorId].birthY - rotorIdData[parentRotorId].deathY
 								:
 								//copysign copies the sign of the second argument and sticks it on the first argument
+								//NOTE: Visual Studio has _copysign instead of copysign for some reason
 								-copysign(200-abs(rotorIdData[maxRotorId].birthY - rotorIdData[parentRotorId].deathY),rotorIdData[maxRotorId].birthY - rotorIdData[parentRotorId].deathY)
 								);
 
@@ -483,7 +484,11 @@ int main(int argc, char** argv)
 
     }//end threshold loop
 
-    return 0;
+	 exCellStream.close();
+ exCellStatsStream.close();
+	exCellMasterStream.close();
+
+return 0;
 }
 
 

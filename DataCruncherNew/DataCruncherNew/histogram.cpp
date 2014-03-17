@@ -42,7 +42,7 @@ void histogram::addPoint(double data_value)
 {
     //find selected bin and resize frequency vector if out of current bounds.
     //selected bin is labelled [0]->[maxBin -1]
-    int bin_select = (int)round(data_value/(double)binInterval);
+    int bin_select = (int)floor(data_value/(double)binInterval+0.5);
     if(bin_select > frequency.size())
     {
         //i is equivalent to index of vector-> must be less than bin_select.

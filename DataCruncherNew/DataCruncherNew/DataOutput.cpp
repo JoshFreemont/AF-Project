@@ -136,13 +136,12 @@ void FOutExCellsData(std::ofstream& aStream,  const std::vector<int>& exCellCoun
 void FOutExStatsData(std::ofstream& aStream, const std::vector<int>& exCellStats, const int& repeat, const int& MAXFRAME, const double& HorFiringProb, const double& VerFiringProb)
 {
 	aStream << repeat << "\t" << exCellStats[repeat] << "\t";
-	double something = static_cast<double>(MAXFRAME);
-	double timeInAF = exCellStats[repeat]/something;
-	aStream.flush();
-	aStream.clear();
+	double dblMAXFRAME = static_cast<double>(MAXFRAME);
+	double timeInAF = exCellStats[repeat]/dblMAXFRAME;
 	aStream << timeInAF << "\t";
 	aStream << HorFiringProb << "\t";
-	aStream << VerFiringProb << std::endl;
+	aStream << VerFiringProb << "\n";
+	aStream.flush();
 	aStream.clear();
 	return;
 }
@@ -159,8 +158,6 @@ void FOutExMasterData(std::ofstream& aStream, std::vector<int>& exCellStats, con
 
 		fractionInAF.push_back(*it/(double)MAXFRAME);
 	}
-	aStream.flush();
-	aStream.clear();
 
 	aStream << nu << "\t";
 	aStream << mean(exCellStats) << "\t";

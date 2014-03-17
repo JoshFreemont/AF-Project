@@ -84,8 +84,8 @@ inline void calcAvPos(const int& cycleStart, const int& cycleLength, std::pair<i
     
     avX /= (double)(cycleLength);
     avY /= (double)(cycleLength);
-	avX = round(avX);
-    avY = (double)(static_cast<int>(round(avY+GRIDSIZE))%GRIDSIZE);//enforce correct bounds.
+	avX = floor(avX+0.5);
+    avY = (double)(static_cast<int>(floor(avY+GRIDSIZE+0.5))%GRIDSIZE);//enforce correct bounds.
     
     return;
 }

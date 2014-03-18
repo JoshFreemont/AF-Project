@@ -416,7 +416,7 @@ int main(int argc, char** argv)
 								rotorIdData[maxRotorId].birthY - rotorIdData[parentRotorId].deathY
 								:
 								//copysign copies the sign of the second argument and sticks it on the first argument
-								-copysign(200-abs(rotorIdData[maxRotorId].birthY - rotorIdData[parentRotorId].deathY),rotorIdData[maxRotorId].birthY - rotorIdData[parentRotorId].deathY)
+								-_copysign(200-abs(rotorIdData[maxRotorId].birthY - rotorIdData[parentRotorId].deathY),rotorIdData[maxRotorId].birthY - rotorIdData[parentRotorId].deathY)
 								);
 
                                 //spatial network

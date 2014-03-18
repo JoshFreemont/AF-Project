@@ -1,0 +1,4 @@
+# This is a comment
+# Bla bla
+FileHeader	Detect Rotors?	Count ExCells?	DisplayFullOutput?	nuStart	nuMax	nuStep	Repeats	MaxFrame
+example	false	true	true	0.1	0.15	0.05	2	10000

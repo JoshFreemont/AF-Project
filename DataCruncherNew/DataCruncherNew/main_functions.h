@@ -15,6 +15,8 @@
 #include <utility>
 #include <string>
 #include "rotorIDstruct.h"
+#include <fstream>
+#include <string>
 
 //INLINE FUNCTIONS
 
@@ -111,5 +113,19 @@ std::vector<int> getBirthDataVect(std::vector<rotorIDstruct>& rotorIdData);
 //Death data
 std::vector<int> getDeathDataVect(std::vector<rotorIDstruct>& rotorIdData, const int MAXFRAME);
 
+struct optionsStruct
+{
+	std::string m_FileHeader;
+	bool m_DETECTROTORS;
+	bool m_COUNTEXCELLS;
+	bool m_DISPLAYFULLEXCELLS;
+	double m_nuSTART;
+	double m_nuMAX;
+	double m_nuSTEP;
+	int m_repeatMAX;
+	int m_MAXFRAME;
+};
+
+void readOptionsFile(std::ifstream& opFile, optionsStruct& startOptions);
 
 #endif /* defined(__sdltest__main_functions__) */

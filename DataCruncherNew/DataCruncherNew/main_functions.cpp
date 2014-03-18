@@ -9,6 +9,10 @@
 #include "main_functions.h"
 #include <ctime>
 #include <stdio.h>
+#include <sstream>
+#include <fstream>
+#include <string>
+#include <algorithm>
 
 
 void pacemaker(array2D<int> &state_update, std::vector<int> &all_excited_coords, const int& RP, const int& GRIDSIZE, array2D<std::pair<int,int>> &excitedBy, int& exCells)
@@ -63,4 +67,36 @@ std::vector<int> getDeathDataVect(std::vector<rotorIDstruct>& rotorIdData, const
     
     //correct for deaths which are enforced by the end of experiment
     return dataVector;
+}
+
+void readOptionsFile(std::ifstream& opFile, optionsStruct& startOptions)
+{
+	std::string line;
+	while(getline(opFile, line)) 
+    {
+        if(line[0] == '#') continue;
+		else break;
+	}
+	getline(opFile, line);
+	std::stringstream data;
+	std::string dataPart;
+	data << line;
+	data >> dataPart;
+	startOptions.m_FileHeader = dataPart;
+	bool trueornot;
+	data >> std::boolalpha >> trueornot;
+	startOptions.m_DETECTROTORS = trueornot;
+	data >> std::boolalpha >> trueornot;
+	startOptions.m_COUNTEXCELLS = trueornot;
+	data >> std::boolalpha >> trueornot;
+	startOptions.m_DISPLAYFULLEXCELLS = trueornot;
+	data >> dataPart;
+	startOptions.m_nuSTART = static_cast<double>(atof(dataPart.c_str()));
+	data >> dataPart;
+	startOptions.m_nuMAX = static_cast<double>(atof(dataPart.c_str()));
+	data >> dataPart;
+	startOptions.m_nuSTEP = static_cast<double>(atof(dataPart.c_str()));
+	data >> dataPart;
+	startOptions.m_repeatMAX = atoi(dataPart.c_str());data >> dataPart;
+	startOptions.m_MAXFRAME = atoi(dataPart.c_str());
 }

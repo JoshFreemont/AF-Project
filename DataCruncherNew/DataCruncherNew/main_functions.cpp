@@ -60,7 +60,7 @@ std::vector<int> getDeathDataVect(std::vector<rotorIDstruct>& rotorIdData, const
     for(auto it = rotorIdData.begin(); it != rotorIdData.end(); it++)
     {
         //if death is enforced by end of experiment then continue.
-        if( it->lifetime + it->birthframe == MAXFRAME) continue;
+        if( it->lifetime + it->birthframe == MAXFRAME+1) continue;
         else dataVector[index] = it->birthframe + it->lifetime;
         index++;
     }

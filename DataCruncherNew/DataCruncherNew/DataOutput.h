@@ -29,8 +29,11 @@ void FOutRotorExCountData(std::ofstream& aStream, array2D<int>& rotorCellFrequen
 //function to "cout" the current status of an experiment.
 void COutCurrentStatus(const int& TotalIterations, const int& CurrentIteration);
 
-//function to output rotor count vs. frame
-void FOutFrameVsVar(std::ofstream& aStream, const int& Var, const int& FRAME);
+//function to output y vs. x
+void FOutXvsY(std::ofstream& aStream, const int& x, const int& y);
+
+//overload FOutXvsY for vector input
+void FOutXvsY(std::ofstream& aStream, std::vector<int>& data)
 
 //function to write out columns for excited cell count file
 void FOutExCellsColumns(std::ofstream& aStream);
@@ -49,5 +52,6 @@ void FOutExStatsData(std::ofstream& aStream, const std::vector<int>& exCellStats
 
 //function to write out data for excited cell count master file
 void FOutExMasterData(std::ofstream& aStream, std::vector<int>& exCellStats, const int& MAXFRAME, const double& nu);
+
 
 #endif /* defined(__DataCruncherNew__DataOutput__) */

@@ -76,13 +76,26 @@ void COutCurrentStatus(const int& TotalIterations, const int& iterationcount)
     std::cout << " at time " << currentDateTime() << ".\n";
 }
 
-void FOutFrameVsVar(std::ofstream& aStream, const int& FRAME, const int& Var)
+void FOutXvsY(std::ofstream& aStream, const int& x, const int& y)
 {
-    aStream<<FRAME<<"\t"<<Var<<"\n";
+    aStream<<x<<"\t"<<y<<"\n";
     aStream.flush();
     aStream.clear();
-    return;
 }
+
+void FOutXvsY(std::ofstream& aStream, std::vector<int>& data)
+{
+    int x = 0;
+    for(auto it = data.begin(); it != data.end(); ++it)
+    {
+        aStream << x << "\t" << *it << "\n";
+        x++;
+    }
+    
+    aStream.flush();
+    aStream.clear();
+}
+
 
 void FOutExCellsColumns(std::ofstream& aStream)
 {

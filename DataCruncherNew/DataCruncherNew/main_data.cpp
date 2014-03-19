@@ -19,8 +19,10 @@
 using namespace std;
 
 //constants to set what the program outputs
-bool DETECTROTORS = false;
-bool COUNTEXCELLS = true;
+bool DETECTROTORS = true;
+bool BIRTHPROBDIST = true;
+bool BIRTHEXPECTATION = true;
+bool COUNTEXCELLS = false;
 bool DISPLAYFULLEXCELLS = false;
 
 int main(int argc, char** argv)
@@ -185,7 +187,7 @@ int main(int argc, char** argv)
     //EXPERIMENTATION//
     
 	//Start "threshold loop"
-	for(rotorIdThresh = 0.1; rotorIdThresh <= 0.1; rotorIdThresh *= 10)
+	for(rotorIdThresh = 0.01; rotorIdThresh <= 0.1; rotorIdThresh *= 10)
 	{
 		if (COUNTEXCELLS)
         {
@@ -217,6 +219,8 @@ int main(int argc, char** argv)
                     MyFileNamer.RotorCountFile(rotorCountstream,nu,repeat,rotorIdThresh);
                     MyFileNamer.HistoFile(birthRateStream, nu, repeat, rotorIdThresh, "BirthRate");
                     MyFileNamer.HistoFile(deathRateStream, nu, repeat, rotorIdThresh, "DeathRate");
+                    MyFileNamer.XYFile(eDBirthNRotorStream, nu, repeat, rotorIdThresh, "E(dBirth)");
+                    
                     FOutRotorIDColumns(rotorIDstream);
 				}
                 
@@ -452,7 +456,7 @@ int main(int argc, char** argv)
                         //now add data
                         pDBirthNRotors[rotorCount].addPoints(birthDistList);
                     }
-                     
+                    
                     //de-excitation process for refractory cells
                     deExciteState(exCoords, cyclicOld, cyclicBackRP, MEMLIMIT, state_update);
                     
@@ -495,14 +499,23 @@ int main(int argc, char** argv)
                     int nRotors = 0;
                     for(auto it = pDBirthNRotors.begin(); it != pDBirthNRotors.end(); ++it)
                     {
-                        MyFileNamer.HistoFile(pDBirthNRotorHistoStream, nu, repeat, rotorIdThresh, "pDBirth" + std::to_string(nRotors));
-                        it->printHist(pDBirthNRotorHistoStream);
-                        eDBirthNRotors.push_back(it->expValue());
+                        if(BIRTHPROBDIST)
+                        {
+                            MyFileNamer.HistoFile(pDBirthNRotorHistoStream, nu, repeat, rotorIdThresh, "pDBirth" + std::to_string(nRotors));
+                            it->printHist(pDBirthNRotorHistoStream);
+                        }
+                        
+                        if(BIRTHEXPECTATION) eDBirthNRotors.push_back(it->expValue());
                         nRotors++;
                     }
                     
                     //output EDbirthNRotor data
-                    FOutXvsY(eDBirthNRotorStream, eDBirthNRotors);
+                    if(BIRTHEXPECTATION)
+                    {
+                        FOutXvsY(eDBirthNRotorStream, eDBirthNRotors);
+                        eDBirthNRotors.clear();
+                        
+                    }
                     
                     //fOutput Rotor + Network Data
                     FOutRotorIdData(rotorIDstream, rotorIdData);

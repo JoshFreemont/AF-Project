@@ -173,4 +173,17 @@ FileNamer::FileNamer(const string& FileHeader): m_FileHeader(FileHeader)
         aStream.open(fileName.c_str());
 	}
 
+void FileNamer::XYFile(std::ofstream& aStream, double nu, double iteration, double rotorIDThreshold, std::string type)
+{
+    string fileName;
+    m_Convert.clear();
+    m_Convert.str("");
+    aStream.close();
+    
+    m_Convert << setprecision(4) << "XY_nu" << nu << "_IDThresh" << rotorIDThreshold << "_" << iteration;
+    
+    fileName =m_FileHeader + "_" + m_Convert.str() + "_" + type + ".txt";
+    
+    aStream.open(fileName.c_str());
+}
 

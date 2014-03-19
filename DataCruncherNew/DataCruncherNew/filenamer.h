@@ -42,6 +42,8 @@ public:
 	void ExStatsFile(std::ofstream& aStream, double nu, double rotorIDThreshold);
 
 	void ExMasterFile(std::ofstream& aStream, double rotorIDThreshold);
+    
+    void XYFile(std::ofstream& aStream, double nu, double iteration, double rotorIDThreshold, std::string type);
 
 };
 

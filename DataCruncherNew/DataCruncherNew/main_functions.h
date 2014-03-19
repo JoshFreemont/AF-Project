@@ -128,9 +128,17 @@ struct optionsStruct
 	bool m_DETECTROTORS;
 	bool m_COUNTEXCELLS;
 	bool m_DISPLAYFULLEXCELLS;
+	bool m_BIRTHPROBDIST;
+	bool m_BIRTHEXPECTATION;
+	bool m_STATICMODEL;
+	bool m_JOINTMODEL;
+	bool m_OUTPUTDEFECTLOC;
+	
 	double m_nuSTART;
 	double m_nuMAX;
 	double m_nuSTEP;
+	double m_delta;
+	double m_epsilon;
 	int m_repeatMAX;
 	int m_MAXFRAME;
 };

@@ -1,4 +1,3 @@
-# This is a comment
-# Bla bla
-FileHeader	Detect Rotors?	Count ExCells?	DisplayFullOutput?	nuStart	nuMax	nuStep	Repeats	MaxFrame
-example	false	true	true	0.1	0.15	0.05	2	10000
+#Example of an options file
+FileHeader	Detect Rotors?	Count ExCells?	DisplayFullOutput?  BIRTHPROBDIST	BIRTHEXPECTATION    STATICMODEL   JOINTMODEL   OutputDefects? nuStart	nuMax	nuStep   delta  epsilon   Repeats	MaxFrame
+example		false		true            true           false	false               true            false       true        0.370000      0.370000      0.010000          0.3     0.05        25	1000

@@ -117,6 +117,20 @@ FileNamer::FileNamer(const string& FileHeader): m_FileHeader(FileHeader)
 		aStream.open(fileName.c_str());
     }
 
+	void FileNamer::LocGrid(std::ofstream& aStream, double nu, double iteration, double rotorIDThreshold, std::string type)
+		{
+		string fileName;
+		m_Convert.clear();
+		m_Convert.str("");
+		aStream.close();
+
+		m_Convert << setprecision(4) << "loc_nu_" << nu << "_Thr" << rotorIDThreshold << "_" << iteration;
+
+		fileName =m_FileHeader + "_" + m_Convert.str() + "_" + type + ".txt";
+
+		aStream.open(fileName.c_str());
+    }
+
     void FileNamer::HistoFile(std::ofstream& aStream, double nu, double iteration, double rotorIDThreshold, std::string type)
     {
         string fileName;

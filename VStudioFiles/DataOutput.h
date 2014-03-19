@@ -29,25 +29,66 @@ void FOutRotorExCountData(std::ofstream& aStream, array2D<int>& rotorCellFrequen
 //function to "cout" the current status of an experiment.
 void COutCurrentStatus(const int& TotalIterations, const int& CurrentIteration);
 
-//function to output rotor count vs. frame
-void FOutFrameVsVar(std::ofstream& aStream, const int& Var, const int& FRAME);
+//function to output y vs. x
+void FOutXvsY(std::ofstream& aStream, const int& x, const int& y);
+
+//overload FOutXvsY for vector input
+void FOutXvsY(std::ofstream& aStream, std::vector<int>& data);
 
 //function to write out columns for excited cell count file
 void FOutExCellsColumns(std::ofstream& aStream);
 
+//function to write out columns for excited cell count file
+//for static model
+void FOutExCellsStaticColumns(std::ofstream& aStream);
+
+//function to write out columns for excited cell count file
+//for joint model
+void FOutExCellsJointColumns(std::ofstream& aStream);
+
 //function to write out columns for excited cell count stats file
 void FOutExStatsColumns(std::ofstream& aStream);
+
+//function to write out columns for excited cell count stats file
+void FOutExStatsStaticColumns(std::ofstream& aStream);
+
+//function to write out columns for excited cell count stats file
+void FOutExStatsJointColumns(std::ofstream& aStream);
 
 //function to write out columns for excited cell count master file
 void FOutExMasterColumns(std::ofstream& aStream);
 
+//function to write out columns for excited cell count master file
+void FOutExMasterStaticColumns(std::ofstream& aStream);
+
+//function to write out columns for excited cell count master file
+void FOutExMasterJointColumns(std::ofstream& aStream);
+
 //function to write out data for excited cell count file
 void FOutExCellsData(std::ofstream& aStream,  const std::vector<int>& exCellCount);
+
+//function to write out data for excited cell count file
+void FOutExCellsStaticData(std::ofstream& aStream,  const std::vector<int>& exCellCount);
+
+//function to write out data for excited cell count file
+void FOutExCellsJointData(std::ofstream& aStream,  const std::vector<int>& exCellCount);
 
 //function to write out data for excited cell count stats file
 void FOutExStatsData(std::ofstream& aStream, const std::vector<int>& exCellStats, const int& repeat, const int& MAXFRAME, const double& HorFiringProb, const double& VerFiringProb);
 
+//function to write out data for excited cell count stats file
+void FOutExStatsStaticData(std::ofstream& aStream, const std::vector<int>& exCellStats, const int& repeat, const int& MAXFRAME, const double& HorFiringProb, const double& VerFiringProb);
+
+//function to write out data for excited cell count stats file
+void FOutExStatsJointData(std::ofstream& aStream, const std::vector<int>& exCellStats, const int& repeat, const int& MAXFRAME, const double& HorFiringProb, const double& VerFiringProb);
+
 //function to write out data for excited cell count master file
 void FOutExMasterData(std::ofstream& aStream, std::vector<int>& exCellStats, const int& MAXFRAME, const double& nu);
+
+//function to write out data for excited cell count master file
+void FOutExMasterStaticData(std::ofstream& aStream, std::vector<int>& exCellStats, const int& MAXFRAME, const double& nu);
+
+//function to write out data for excited cell count master file
+void FOutExMasterJointData(std::ofstream& aStream, std::vector<int>& exCellStats, const int& MAXFRAME, const double& nu);
 
 #endif /* defined(__DataCruncherNew__DataOutput__) */

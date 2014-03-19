@@ -124,7 +124,7 @@ void FOutExMasterColumns(std::ofstream& aStream)
 	aStream << "Mean Frames in AF" << "\t";
     aStream << "Mean Time in AF" << "\t";
     aStream << "Cases in AF" << "\t";
-    aStream << "STDDEV of Time in AF" << "\n";
+    aStream << "STDDEV of Time in AF" << "\t";
     aStream << "STDERR of Time in AF" << "\n";
     aStream.flush();
     aStream.clear();

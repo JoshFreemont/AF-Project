@@ -89,13 +89,22 @@ inline void assignBucketCoords(std::vector<std::pair<int, int> >& coordList, int
 //5----6----7----8----9
 //...
 //20---21---22---23---24
-inline int calcBucket (int& x, int& y, const int& bucketSize, const int& noBuckets)
+inline int calcBucket ( int& x, int& y, const int& bucketSize, const int& noBuckets)
 {
     int bucketNo1D = (int)sqrt(noBuckets);
     int xBucket = int((double)x/(double)bucketSize);
     int yBucket = int((double)y/(double)bucketSize);
     int bucketNo = xBucket + bucketNo1D*yBucket;
     return bucketNo;
+}
+
+
+inline void calcBirthDist (double& xDist, double& yDist, rotorIDstruct parent, rotorIDstruct child)
+{
+    xDist = static_cast<double>(child.birthX - parent.deathX);
+    if(2*abs(child.birthY - parent.deathY)<200) yDist = child.birthY - parent.deathY;
+    else yDist = -_copysign(200-abs(child.birthY - parent.deathY), child.birthY - parent.deathY);
+
 }
 
 
@@ -119,9 +128,17 @@ struct optionsStruct
 	bool m_DETECTROTORS;
 	bool m_COUNTEXCELLS;
 	bool m_DISPLAYFULLEXCELLS;
+	bool m_BIRTHPROBDIST;
+	bool m_BIRTHEXPECTATION;
+	bool m_STATICMODEL;
+	bool m_JOINTMODEL;
+	bool m_OUTPUTDEFECTLOC;
+	
 	double m_nuSTART;
 	double m_nuMAX;
 	double m_nuSTEP;
+	double m_delta;
+	double m_epsilon;
 	int m_repeatMAX;
 	int m_MAXFRAME;
 };

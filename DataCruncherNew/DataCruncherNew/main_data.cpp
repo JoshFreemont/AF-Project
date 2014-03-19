@@ -13,21 +13,24 @@
 #include "rotorFunctions.h"
 #include "DataOutput.h"
 #include "histogram.h"
+#include "initialise.h"
 #include <algorithm>
 #include <string>
 
 using namespace std;
 
 //constants to set what the program outputs
-bool DETECTROTORS = true;
-bool BIRTHPROBDIST = true;
-bool BIRTHEXPECTATION = true;
-bool COUNTEXCELLS = false;
-bool DISPLAYFULLEXCELLS = false;
+bool DETECTROTORS = false;
+bool BIRTHPROBDIST = false;
+bool BIRTHEXPECTATION = false;
+bool COUNTEXCELLS = true;
+bool DISPLAYFULLEXCELLS = true;
+bool STATICMODEL = true;
+bool JOINTMODEL = false;
+bool OUTPUTDEFECTLOC = true;
 
 int main(int argc, char** argv)
 {
-    
     //VARIABLE DECLARATION + INITIALIZATION//
     
     //AF parameters
@@ -46,6 +49,8 @@ int main(int argc, char** argv)
 	double nuSTART = 0.10;
     double nuMAX = 0.10;
     double nuSTEP = 0.01;
+	double delta = 0.3;
+	double epsilon = 0.05;
     int repeatMAX = 25;
 	int MAXFRAME=10000;
     
@@ -58,9 +63,16 @@ int main(int argc, char** argv)
 		DETECTROTORS = startOptions.m_DETECTROTORS;
 		COUNTEXCELLS = startOptions.m_COUNTEXCELLS;
 		DISPLAYFULLEXCELLS = startOptions.m_DISPLAYFULLEXCELLS;
+		BIRTHPROBDIST = startOptions.m_BIRTHPROBDIST;
+		BIRTHEXPECTATION = startOptions.m_BIRTHEXPECTATION;
+		STATICMODEL = startOptions.m_STATICMODEL;
+		JOINTMODEL = startOptions.m_JOINTMODEL;
+		OUTPUTDEFECTLOC = startOptions.m_OUTPUTDEFECTLOC;
 		nuSTART = floor(startOptions.m_nuSTART*1000)/1000;
 		nuMAX = floor(startOptions.m_nuMAX*1000)/1000;
 		nuSTEP = floor(startOptions.m_nuSTEP*1000)/1000;
+		delta = floor(startOptions.m_delta*1000)/1000;
+		epsilon = floor(startOptions.m_epsilon*1000)/1000;
 		repeatMAX = startOptions.m_repeatMAX;
 		MAXFRAME = startOptions.m_MAXFRAME;
 	}
@@ -108,6 +120,8 @@ int main(int argc, char** argv)
 	ofstream exCellMasterStream;
     ofstream pDBirthNRotorHistoStream;
     ofstream eDBirthNRotorStream;
+	ofstream defectStream;
+	ofstream verConStream;
     
     
     //rotor variables
@@ -187,7 +201,7 @@ int main(int argc, char** argv)
     //EXPERIMENTATION//
     
 	//Start "threshold loop"
-	for(rotorIdThresh = 0.01; rotorIdThresh <= 0.1; rotorIdThresh *= 10)
+	for(rotorIdThresh = 0.01; rotorIdThresh <= 0.01; rotorIdThresh *= 10)
 	{
 		if (COUNTEXCELLS)
         {
@@ -239,6 +253,17 @@ int main(int argc, char** argv)
                 inS.reset(nu);
                 inE.reset(HOR);
                 inW.reset(HOR);
+
+				if (STATICMODEL)
+				{
+					initStaticDefects(inW,inE,delta,epsilon);
+				}
+
+				if (STATICMODEL || JOINTMODEL)
+				{
+					initStaticVerts(inW,inE,inN,inS,nu,GRIDSIZE);
+				}
+					
                 state.reset(0);
                 state_update.reset(0);
                 isRotorInit.reset(false);
@@ -269,6 +294,14 @@ int main(int argc, char** argv)
                 rotorIdTree.reset();
                 
                 drand.seed(time(NULL));
+
+				if(OUTPUTDEFECTLOC)
+				{
+					MyFileNamer.LocGrid(defectStream, nu, repeat,	rotorIdThresh, "defects");
+					MyFileNamer.LocGrid(verConStream, nu, repeat,	rotorIdThresh, "vercon");
+					outputDefects(inE, defectStream);
+					outputVerConn(inS, verConStream);
+				}
                 
                 //Start simulation "frame loop"
                 for(frame=0; frame<=MAXFRAME; frame++)
@@ -499,18 +532,18 @@ int main(int argc, char** argv)
                     int nRotors = 0;
                     for(auto it = pDBirthNRotors.begin(); it != pDBirthNRotors.end(); ++it)
                     {
-                        if(BIRTHPROBDIST)
+                        if(DETECTROTORS&&BIRTHPROBDIST)
                         {
                             MyFileNamer.HistoFile(pDBirthNRotorHistoStream, nu, repeat, rotorIdThresh, "pDBirth" + std::to_string(nRotors));
                             it->printHist(pDBirthNRotorHistoStream);
                         }
                         
-                        if(BIRTHEXPECTATION) eDBirthNRotors.push_back(it->expValue());
+                        if(DETECTROTORS&&BIRTHEXPECTATION) eDBirthNRotors.push_back(it->expValue());
                         nRotors++;
                     }
                     
                     //output EDbirthNRotor data
-                    if(BIRTHEXPECTATION)
+                    if(DETECTROTORS&&BIRTHEXPECTATION)
                     {
                         FOutXvsY(eDBirthNRotorStream, eDBirthNRotors);
                         eDBirthNRotors.clear();
@@ -534,7 +567,7 @@ int main(int argc, char** argv)
     				}
 				    exCellStats.push_back(exFrameCount);
     				
-                    if(DISPLAYFULLEXCELLS) FOutExCellsData(exCellStream, exCellCount);
+					if(DISPLAYFULLEXCELLS&&COUNTEXCELLS) FOutExCellsData(exCellStream, exCellCount);
 				    
                     FOutExStatsData(exCellStatsStream, exCellStats, repeat, MAXFRAME, HOR, nu);
 				}
@@ -560,7 +593,7 @@ int main(int argc, char** argv)
     exCellStatsStream.close();
 	exCellMasterStream.close();
     
-    return 0;
+
 }
 
 

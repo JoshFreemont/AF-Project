@@ -35,6 +35,8 @@ public:
 
     void EdgeList(std::ofstream& aStream, double nu, double iteration, double rotorIDThreshold, std::string type);
 
+	void LocGrid(std::ofstream& aStream, double nu, double iteration, double rotorIDThreshold, std::string type);
+
     void HistoFile(std::ofstream& aStream, double nu, double iteration, double rotorIDThreshold, std::string type);
 
 	void ExCountFile(std::ofstream& aStream, double nu, double iteration, double rotorIDThreshold);
@@ -42,6 +44,8 @@ public:
 	void ExStatsFile(std::ofstream& aStream, double nu, double rotorIDThreshold);
 
 	void ExMasterFile(std::ofstream& aStream, double rotorIDThreshold);
+    
+    void XYFile(std::ofstream& aStream, double nu, double iteration, double rotorIDThreshold, std::string type);
 
 };
 

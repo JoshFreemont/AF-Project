@@ -60,7 +60,7 @@ std::vector<int> getDeathDataVect(std::vector<rotorIDstruct>& rotorIdData, const
     for(auto it = rotorIdData.begin(); it != rotorIdData.end(); it++)
     {
         //if death is enforced by end of experiment then continue.
-        if( it->lifetime + it->birthframe == MAXFRAME) continue;
+        if( it->lifetime + it->birthframe == MAXFRAME+1) continue;
         else dataVector[index] = it->birthframe + it->lifetime;
         index++;
     }
@@ -83,13 +83,25 @@ void readOptionsFile(std::ifstream& opFile, optionsStruct& startOptions)
 	data << line;
 	data >> dataPart;
 	startOptions.m_FileHeader = dataPart;
-	bool trueornot;
-	data >> std::boolalpha >> trueornot;
-	startOptions.m_DETECTROTORS = trueornot;
-	data >> std::boolalpha >> trueornot;
-	startOptions.m_COUNTEXCELLS = trueornot;
-	data >> std::boolalpha >> trueornot;
-	startOptions.m_DISPLAYFULLEXCELLS = trueornot;
+	bool isTrue;
+
+	data >> std::boolalpha >> isTrue;
+	startOptions.m_DETECTROTORS = isTrue;
+	data >> std::boolalpha >> isTrue;
+	startOptions.m_COUNTEXCELLS = isTrue;
+	data >> std::boolalpha >> isTrue;
+	startOptions.m_DISPLAYFULLEXCELLS = isTrue;
+	data >> std::boolalpha >> isTrue;
+	startOptions.m_BIRTHPROBDIST = isTrue;
+	data >> std::boolalpha >> isTrue;
+	startOptions.m_BIRTHEXPECTATION = isTrue;
+	data >> std::boolalpha >> isTrue;
+	startOptions.m_STATICMODEL = isTrue;
+	data >> std::boolalpha >> isTrue;
+	startOptions.m_JOINTMODEL = isTrue;
+	data >> std::boolalpha >> isTrue;
+	startOptions.m_OUTPUTDEFECTLOC = isTrue;
+	
 	data >> dataPart;
 	startOptions.m_nuSTART = static_cast<double>(atof(dataPart.c_str()));
 	data >> dataPart;
@@ -97,6 +109,11 @@ void readOptionsFile(std::ifstream& opFile, optionsStruct& startOptions)
 	data >> dataPart;
 	startOptions.m_nuSTEP = static_cast<double>(atof(dataPart.c_str()));
 	data >> dataPart;
-	startOptions.m_repeatMAX = atoi(dataPart.c_str());data >> dataPart;
+	startOptions.m_delta = static_cast<double>(atof(dataPart.c_str()));
+	data >> dataPart;
+	startOptions.m_epsilon = static_cast<double>(atof(dataPart.c_str()));
+	data >> dataPart;
+	startOptions.m_repeatMAX = atoi(dataPart.c_str());
+	data >> dataPart;
 	startOptions.m_MAXFRAME = atoi(dataPart.c_str());
 }

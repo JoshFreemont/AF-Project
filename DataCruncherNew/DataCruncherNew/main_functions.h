@@ -89,13 +89,22 @@ inline void assignBucketCoords(std::vector<std::pair<int, int> >& coordList, int
 //5----6----7----8----9
 //...
 //20---21---22---23---24
-inline int calcBucket (int& x, int& y, const int& bucketSize, const int& noBuckets)
+inline int calcBucket ( int& x, int& y, const int& bucketSize, const int& noBuckets)
 {
     int bucketNo1D = (int)sqrt(noBuckets);
     int xBucket = int((double)x/(double)bucketSize);
     int yBucket = int((double)y/(double)bucketSize);
     int bucketNo = xBucket + bucketNo1D*yBucket;
     return bucketNo;
+}
+
+
+inline void calcBirthDist (double& xDist, double& yDist, rotorIDstruct parent, rotorIDstruct child)
+{
+    xDist = static_cast<double>(child.birthX - parent.deathX);
+    if(2*abs(child.birthY - parent.deathY)<200) yDist = child.birthY - parent.deathY;
+    else yDist = -copysign(200-abs(child.birthY - parent.deathY), child.birthY - parent.deathY);
+
 }
 
 

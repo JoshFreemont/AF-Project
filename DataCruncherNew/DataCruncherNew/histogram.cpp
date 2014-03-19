@@ -25,6 +25,7 @@ histogram::~histogram()
 
 void histogram::addPoint(int data_value)
 {
+    //add point to "lower" bin. ie. if bin interval = 2 and data is 1 then add to 0th bin.
     int bin_select = static_cast<int>(floor((double)data_value/(double)binInterval));
     if(bin_select >= frequency.size())//resize vector if vector[bin] doesn't exist.
     {
@@ -72,6 +73,24 @@ void histogram::addPoints(std::vector<double> dataVector)
         addPoint(*it);
     }
 }
+
+
+int histogram::expValue()
+{
+    int sum = 0;
+    int bin = 0;
+    int totalFrequency = 0;
+    for(auto it = frequency.begin(); it != frequency.end(); ++it)
+    {
+        sum += (int)((*it)*(bin*binInterval + binInterval/2));
+        totalFrequency += (*it);
+        bin++;
+    }
+    
+    sum /= totalFrequency;
+    return sum;
+}
+
 
 void histogram::resetFrequency()
 {

@@ -26,6 +26,7 @@ public:
     void resetFrequency();
     void addPoints(std::vector<int> dataVector);
     void addPoints(std::vector<double> dataVector);
+    int expValue();
     void printHist(std::ofstream& aStream);
     
 };

@@ -33,7 +33,7 @@ void COutCurrentStatus(const int& TotalIterations, const int& CurrentIteration);
 void FOutXvsY(std::ofstream& aStream, const int& x, const int& y);
 
 //overload FOutXvsY for vector input
-void FOutXvsY(std::ofstream& aStream, std::vector<int>& data)
+void FOutXvsY(std::ofstream& aStream, std::vector<int>& data);
 
 //function to write out columns for excited cell count file
 void FOutExCellsColumns(std::ofstream& aStream);

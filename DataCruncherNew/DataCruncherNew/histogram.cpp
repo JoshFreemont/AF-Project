@@ -23,6 +23,8 @@ histogram::~histogram()
     frequency.clear();
 }
 
+
+//add individual datum to histo in int form
 void histogram::addPoint(int data_value)
 {
     //add point to "lower" bin. ie. if bin interval = 2 and data is 1 then add to 0th bin.
@@ -39,6 +41,8 @@ void histogram::addPoint(int data_value)
     else frequency[bin_select]++;
 }
 
+
+//add individual datum to histo in double form
 void histogram::addPoint(double data_value)
 {
     //find selected bin and resize frequency vector if out of current bounds.
@@ -58,6 +62,7 @@ void histogram::addPoint(double data_value)
 }
 
 
+//add data to histo in vector<int> form
 void histogram::addPoints(std::vector<int> dataVector)
 {
     for(auto it = dataVector.begin(); it != dataVector.end(); ++it)
@@ -66,15 +71,17 @@ void histogram::addPoints(std::vector<int> dataVector)
     }
 }
 
+//add data to histo in vector<double> form
 void histogram::addPoints(std::vector<double> dataVector)
 {
+    if(!dataVector.size()) return;
     for(auto it = dataVector.begin(); it != dataVector.end(); ++it)
     {
         addPoint(*it);
     }
 }
 
-
+//Calculate expectation value for the data input - ie. E(x).
 int histogram::expValue()
 {
     int sum = 0;
@@ -87,16 +94,22 @@ int histogram::expValue()
         bin++;
     }
     
-    sum /= totalFrequency;
+    if(totalFrequency)sum /= totalFrequency;
     return sum;
 }
 
+//Calculate Std deviation of data input -  ie. sqrt(Var(x))
 
+
+
+//reset frequency
 void histogram::resetFrequency()
 {
     frequency.clear();
 }
 
+
+//write histo to file.
 void histogram::printHist(std::ofstream& aStream)
 {
     //set column headings

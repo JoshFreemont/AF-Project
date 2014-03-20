@@ -133,7 +133,8 @@ struct optionsStruct
 	bool m_STATICMODEL;
 	bool m_JOINTMODEL;
 	bool m_OUTPUTDEFECTLOC;
-	
+	bool m_DETECTCLEANBIRTH;
+
 	double m_nuSTART;
 	double m_nuMAX;
 	double m_nuSTEP;

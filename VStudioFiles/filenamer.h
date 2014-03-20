@@ -47,6 +47,10 @@ public:
     
     void XYFile(std::ofstream& aStream, double nu, double iteration, double rotorIDThreshold, std::string type);
 
+	void CleanBirthFile(std::ofstream& aStream, double& nu, double& rotorIDThreshold);
+	
+	void CleanBirthMasterFile(std::ofstream& aStream, double& rotorIDThreshold);
+
 };
 
 

@@ -13,6 +13,7 @@
 #include <fstream>
 #include <string>
 #include <algorithm>
+#include <iostream>
 
 
 void pacemaker(array2D<int> &state_update, std::vector<int> &all_excited_coords, const int& RP, const int& GRIDSIZE, array2D<std::pair<int,int>> &excitedBy, int& exCells)
@@ -80,40 +81,100 @@ void readOptionsFile(std::ifstream& opFile, optionsStruct& startOptions)
 	getline(opFile, line);
 	std::stringstream data;
 	std::string dataPart;
-	data << line;
-	data >> dataPart;
-	startOptions.m_FileHeader = dataPart;
+	startOptions.m_FileHeader = line;
 	bool isTrue;
 
-	data >> std::boolalpha >> isTrue;
+	getline(opFile, line);
+	opFile >> std::boolalpha >> isTrue;
 	startOptions.m_DETECTROTORS = isTrue;
-	data >> std::boolalpha >> isTrue;
+
+	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	getline(opFile, line);
+	opFile >> std::boolalpha >> isTrue;
 	startOptions.m_COUNTEXCELLS = isTrue;
-	data >> std::boolalpha >> isTrue;
+	
+	
+	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	getline(opFile, line);
+	opFile >> std::boolalpha >> isTrue;
 	startOptions.m_DISPLAYFULLEXCELLS = isTrue;
-	data >> std::boolalpha >> isTrue;
+	
+	
+	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	getline(opFile, line);
+	opFile >> std::boolalpha >> isTrue;
 	startOptions.m_BIRTHPROBDIST = isTrue;
-	data >> std::boolalpha >> isTrue;
+	
+	
+	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	getline(opFile, line);
+	opFile >> std::boolalpha >> isTrue;
 	startOptions.m_BIRTHEXPECTATION = isTrue;
-	data >> std::boolalpha >> isTrue;
+	
+
+	
+	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');getline(opFile, line);
+	opFile >> std::boolalpha >> isTrue;
 	startOptions.m_STATICMODEL = isTrue;
-	data >> std::boolalpha >> isTrue;
+	
+
+	
+	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	getline(opFile, line);
+	opFile >> std::boolalpha >> isTrue;
 	startOptions.m_JOINTMODEL = isTrue;
-	data >> std::boolalpha >> isTrue;
+	
+
+	
+	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	getline(opFile, line);
+	opFile >> std::boolalpha >> isTrue;
 	startOptions.m_OUTPUTDEFECTLOC = isTrue;
 	
-	data >> dataPart;
+
+	
+	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	getline(opFile, line);
+	opFile >> std::boolalpha >> isTrue;
+	startOptions.m_DETECTCLEANBIRTH = isTrue;
+	
+
+	
+	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	getline(opFile, line);
+	opFile >> dataPart;
 	startOptions.m_nuSTART = static_cast<double>(atof(dataPart.c_str()));
-	data >> dataPart;
+
+	
+	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	getline(opFile, line);
+	opFile >> dataPart;
 	startOptions.m_nuMAX = static_cast<double>(atof(dataPart.c_str()));
-	data >> dataPart;
+
+	
+	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	getline(opFile, line);
+	opFile >> dataPart;
 	startOptions.m_nuSTEP = static_cast<double>(atof(dataPart.c_str()));
-	data >> dataPart;
+
+	
+	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	getline(opFile, line);
+	opFile >> dataPart;
 	startOptions.m_delta = static_cast<double>(atof(dataPart.c_str()));
-	data >> dataPart;
+
+	
+	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	getline(opFile, line);
+	opFile >> dataPart;
 	startOptions.m_epsilon = static_cast<double>(atof(dataPart.c_str()));
-	data >> dataPart;
+
+	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	getline(opFile, line);
+	opFile >> dataPart;
 	startOptions.m_repeatMAX = atoi(dataPart.c_str());
-	data >> dataPart;
+	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	getline(opFile, line);
+	opFile >> dataPart;
 	startOptions.m_MAXFRAME = atoi(dataPart.c_str());
 }

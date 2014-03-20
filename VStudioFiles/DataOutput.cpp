@@ -10,6 +10,8 @@
 #include "analysisfunctions.h"
 #include <cmath>
 #include <iomanip>
+#include <utility>
+#include <vector>
 
 
 void FOutRotorIdData(std::ofstream& aStream, std::vector<struct rotorIDstruct> &rotorIDdata)
@@ -186,4 +188,72 @@ void FOutExMasterData(std::ofstream& aStream, std::vector<int>& exCellStats, con
 	aStream.flush();
 	aStream.clear();
 	return;
+}
+
+//function to write out column headers for clean birth  stats file
+void FOutCleanBirthColumns(std::ofstream& aStream)
+{
+	aStream << "xDist\tyDist\tDistance\tAngle" << std::endl;
+	aStream.flush();
+	aStream.clear();
+	return;
+}
+
+//function to write out data for clean birth stats file
+void FOutCleanBirthData(std::ofstream& aStream, const std::vector<std::pair<int,int> >& firstCleanBirthVec)
+{
+	for (auto it=firstCleanBirthVec.begin();it!=firstCleanBirthVec.end();
+				it++)
+				{	
+					double xDist = it->first;
+					double yDist = it->second;
+					aStream << xDist << "\t";
+					aStream << yDist << "\t";
+					aStream << sqrt(xDist*xDist+yDist*yDist) << "\t";
+					aStream << atan2(yDist,xDist) << std::endl;
+				}
+	aStream.flush();
+	aStream.clear();
+	return;
+}
+
+//function to write out columns for clean birth master file
+void FOutCleanBirthMasterColumns(std::ofstream& aStream)
+{
+	aStream << "nu\trepeats\txDistMean\txDistSdev\tyDistMean\tyDistSdev\tDistanceMean\tDistanceSdev\tAngleMean\tAngleSdev" << std::endl;
+	aStream.flush();
+	aStream.clear();
+	return;
+}
+
+//function to write out data for clean birth master file
+void FOutCleanBirthMasterData(std::ofstream& aStream, const std::vector<std::pair<int,int> >& firstCleanBirthVec, double& nu)
+{
+	std::vector<int> xDistances;
+	std::vector<int> yDistances;
+	std::vector<double> angles;
+	std::vector<double> distances;
+	for (auto it=firstCleanBirthVec.begin();it!=firstCleanBirthVec.end(); it++)
+	{
+		double xDist = it->first;
+		double yDist = it->second;
+		xDistances.push_back(xDist);
+		yDistances.push_back(it->second);
+		angles.push_back(atan2(yDist,xDist));
+		distances.push_back(sqrt(xDist*xDist+yDist*yDist));
+	}
+	double Mean = mean(xDistances);
+	double sdev = standarddev(xDistances,Mean);
+	aStream << nu << "\t";
+	aStream << xDistances.size();
+	aStream << Mean << "\t" << sdev << "\t";
+	Mean = mean(yDistances);
+	sdev = standarddev(yDistances,Mean);
+	aStream << Mean << "\t" << sdev << "\t";
+	Mean = mean(angles);
+	sdev = standarddev(angles,Mean);
+	aStream << Mean << "\t" << sdev << "\t";
+	Mean = mean(distances);
+	sdev = standarddev(distances,Mean);
+	aStream << Mean << "\t" << sdev << std::endl;
 }

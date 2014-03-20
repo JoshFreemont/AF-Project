@@ -12,6 +12,8 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <utility>
+#include <vector>
 #include "rotorIDstruct.h"
 #include "analysisfunctions.h"
 #include "array2D.h"
@@ -90,5 +92,17 @@ void FOutExMasterStaticData(std::ofstream& aStream, std::vector<int>& exCellStat
 
 //function to write out data for excited cell count master file
 void FOutExMasterJointData(std::ofstream& aStream, std::vector<int>& exCellStats, const int& MAXFRAME, const double& nu);
+
+//function to write out column headers for clean birth  stats file
+void FOutCleanBirthColumns(std::ofstream& aStream);
+
+//function to write out data for clean birth stats file
+void FOutCleanBirthData(std::ofstream& aStream, const std::vector<std::pair<int,int> >& firstCleanBirthVec);
+
+//function to write out columns for clean birth master file
+void FOutCleanBirthMasterColumns(std::ofstream& aStream);
+
+//function to write out data for clean birth master file
+void FOutCleanBirthMasterData(std::ofstream& aStream, const std::vector<std::pair<int,int> >& firstCleanBirthVec, double& nu);
 
 #endif /* defined(__DataCruncherNew__DataOutput__) */

@@ -8,6 +8,7 @@
 
 #include "network.h"
 #include <cmath>
+#include <utility>
 
 //empty constructor.
 network::network()
@@ -140,8 +141,10 @@ void network::FOutGMLTreeEdgeList (std::ofstream& aStream)
     return;
 }
 
-
-
-
-
-
+std::pair<int,int> network::getFirstEdgeXY()
+{
+	auto it = edgeList.begin();
+	int xDist = it->second[2];
+	int yDist = it->second[3];
+	return std::make_pair(xDist,yDist);
+}

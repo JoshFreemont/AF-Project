@@ -1,3 +1,35 @@
-#Example of an options file
-FileHeader	Detect Rotors?	Count ExCells?	DisplayFullOutput?  BIRTHPROBDIST	BIRTHEXPECTATION    STATICMODEL   JOINTMODEL   OutputDefects? nuStart	nuMax	nuStep   delta  epsilon   Repeats	MaxFrame
-example		false		true            true           false	false               true            false       true        0.370000      0.370000      0.010000          0.3     0.05        25	1000
+#something
+string m_FileHeader
+test
+bool m_DETECTROTORS
+true
+bool m_COUNTEXCELLS
+false
+bool m_DISPLAYFULLEXCELLS
+false
+bool m_BIRTHPROBDIST
+false
+bool m_BIRTHEXPECTATION
+false
+bool m_STATICMODEL
+false
+bool m_JOINTMODEL
+false
+bool m_OUTPUTDEFECTLOC
+false
+bool m_DETECTCLEANBIRTH
+true
+double m_nuSTART
+0.080000
+double m_nuMAX
+0.080000
+double m_nuSTEP
+0.010000
+double m_delta
+0.300000
+double m_epsilon
+0.050000
+int m_repeatMAX
+10
+int m_MAXFRAME
+10000

@@ -14,6 +14,7 @@
 #include <fstream>
 #include <unordered_map>
 #include <map>
+#include <utility>
 
 class network
 {
@@ -35,7 +36,7 @@ public:
     void FOutEdgeDistList (std::ofstream& aStream);
     void FOutGMLEdgeList (std::ofstream& aStream);
     void FOutGMLTreeEdgeList (std::ofstream& aStream);
-    
+    std::pair<int,int> getFirstEdgeXY();
 };
 
 

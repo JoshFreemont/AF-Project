@@ -6,7 +6,7 @@
 #include "network.h"
 #include <ctime>
 #include <fstream>
-#include <unordered_map>
+#include <unordered_map> 
 #include <cmath>
 #include "rotorIDstruct.h"
 #include "analysisfunctions.h"
@@ -28,6 +28,7 @@ bool DISPLAYFULLEXCELLS = true;
 bool STATICMODEL = true;
 bool JOINTMODEL = false;
 bool OUTPUTDEFECTLOC = true;
+bool DETECTCLEANBIRTH = false;
 
 int main(int argc, char** argv)
 {
@@ -53,6 +54,13 @@ int main(int argc, char** argv)
 	double epsilon = 0.05;
     int repeatMAX = 25;
 	int MAXFRAME=10000;
+
+	//first clean rotor birth variables
+	bool isAbort;
+	bool isCleanBirth;
+	vector<pair<int,int> > firstCleanBirthVec;
+	ofstream cleanBirthStream;
+	ofstream cleanBirthMasterStream;
     
 	ifstream opFile("options.op");
 	if (opFile) {
@@ -68,6 +76,7 @@ int main(int argc, char** argv)
 		STATICMODEL = startOptions.m_STATICMODEL;
 		JOINTMODEL = startOptions.m_JOINTMODEL;
 		OUTPUTDEFECTLOC = startOptions.m_OUTPUTDEFECTLOC;
+		DETECTCLEANBIRTH = startOptions.m_DETECTCLEANBIRTH;
 		nuSTART = floor(startOptions.m_nuSTART*1000)/1000;
 		nuMAX = floor(startOptions.m_nuMAX*1000)/1000;
 		nuSTEP = floor(startOptions.m_nuSTEP*1000)/1000;
@@ -208,7 +217,11 @@ int main(int argc, char** argv)
             MyFileNamer.ExMasterFile(exCellMasterStream, rotorIdThresh);
             FOutExMasterColumns(exCellMasterStream);
         }
-        
+		if (DETECTCLEANBIRTH)
+		{
+			MyFileNamer.CleanBirthMasterFile(cleanBirthMasterStream, rotorIdThresh);
+			FOutCleanBirthMasterColumns(cleanBirthMasterStream);
+		}
 		//Start "nu loop"
 		for (nu = nuSTART; nu <= nuMAX; nu += nuSTEP)
 		{
@@ -218,11 +231,16 @@ int main(int argc, char** argv)
 				MyFileNamer.ExStatsFile(exCellStatsStream, nu, rotorIdThresh);
 				FOutExStatsColumns(exCellStatsStream);
 			}
+
+			if (DETECTCLEANBIRTH)
+			{
+				MyFileNamer.CleanBirthFile(cleanBirthStream,nu,rotorIdThresh);
+			}
             
             //Start simulation "repeat Loop"
             for(int repeat = 0; repeat < repeatMAX; ++repeat)
             {
-                if (DETECTROTORS)
+                if (DETECTROTORS && !DETECTCLEANBIRTH)
 				{
     				//name files and set column headings.
             		MyFileNamer.IDFile(rotorIDstream, nu, repeat, rotorIdThresh);
@@ -233,6 +251,8 @@ int main(int argc, char** argv)
                     MyFileNamer.RotorCountFile(rotorCountstream,nu,repeat,rotorIdThresh);
                     MyFileNamer.HistoFile(birthRateStream, nu, repeat, rotorIdThresh, "BirthRate");
                     MyFileNamer.HistoFile(deathRateStream, nu, repeat, rotorIdThresh, "DeathRate");
+
+					if (!BIRTHEXPECTATION)
                     MyFileNamer.XYFile(eDBirthNRotorStream, nu, repeat, rotorIdThresh, "E(dBirth)");
                     
                     FOutRotorIDColumns(rotorIDstream);
@@ -263,6 +283,9 @@ int main(int argc, char** argv)
 				{
 					initStaticVerts(inW,inE,inN,inS,nu,GRIDSIZE);
 				}
+
+				isAbort = false;
+				isCleanBirth = false;
 					
                 state.reset(0);
                 state_update.reset(0);
@@ -292,8 +315,6 @@ int main(int argc, char** argv)
                 rotorIdNetwork_T.reset();
                 rotorIdNetwork_S.reset();
                 rotorIdTree.reset();
-                
-                drand.seed(time(NULL));
 
 				if(OUTPUTDEFECTLOC)
 				{
@@ -468,6 +489,14 @@ int main(int argc, char** argv)
                                                               rotorIdData[parentRotorId].deathY, bucketSize, noBuckets);
                                     rotorIdNetwork_S.addEdge(parentBucket, childBucket, frame, xDist, yDist);
                                     rotorIdTree.addEdge(parentRotorId, maxRotorId, frame, xDist, yDist);
+									if (DETECTCLEANBIRTH)
+									{
+										if(parentRotorId == 0 && maxRotorId == 1)
+										{
+											isCleanBirth = true;
+										}
+										isAbort = true;
+									}
                                 }
                             }
                         }
@@ -514,8 +543,11 @@ int main(int argc, char** argv)
                     {
                         exCellCount[frame] = exCells;
                     }
+
+					if (isAbort)
+						break;
                 }//end frame loop
-                
+//------------------------------------------------------------------                
 				if (DETECTROTORS)
 				{
                     //create and output histogram of birth rates wrt. time.
@@ -532,7 +564,7 @@ int main(int argc, char** argv)
                     int nRotors = 0;
                     for(auto it = pDBirthNRotors.begin(); it != pDBirthNRotors.end(); ++it)
                     {
-                        if(DETECTROTORS&&BIRTHPROBDIST)
+                        if(BIRTHPROBDIST)
                         {
                             MyFileNamer.HistoFile(pDBirthNRotorHistoStream, nu, repeat, rotorIdThresh, "pDBirth" + std::to_string(nRotors));
                             it->printHist(pDBirthNRotorHistoStream);
@@ -543,19 +575,21 @@ int main(int argc, char** argv)
                     }
                     
                     //output EDbirthNRotor data
-                    if(DETECTROTORS&&BIRTHEXPECTATION)
+                    if(BIRTHEXPECTATION)
                     {
                         FOutXvsY(eDBirthNRotorStream, eDBirthNRotors);
                         eDBirthNRotors.clear();
                         
                     }
-                    
+                    if (!DETECTCLEANBIRTH)
+					{
                     //fOutput Rotor + Network Data
                     FOutRotorIdData(rotorIDstream, rotorIdData);
                     FOutRotorExCountData(rotorExCountstream, rotorCellFrequency);
                     rotorIdNetwork_S.FOutGMLEdgeList(rotorIdInherit_S);
                     rotorIdNetwork_S.FOutEdgeDistList(rotorIdDistStream);
                     rotorIdTree.FOutGMLTreeEdgeList(rotorIdTreeStream);
+					}
 				}
                 
 				if (COUNTEXCELLS)
@@ -567,7 +601,7 @@ int main(int argc, char** argv)
     				}
 				    exCellStats.push_back(exFrameCount);
     				
-					if(DISPLAYFULLEXCELLS&&COUNTEXCELLS) FOutExCellsData(exCellStream, exCellCount);
+					if(DISPLAYFULLEXCELLS) FOutExCellsData(exCellStream, exCellCount);
 				    
                     FOutExStatsData(exCellStatsStream, exCellStats, repeat, MAXFRAME, HOR, nu);
 				}
@@ -575,6 +609,18 @@ int main(int argc, char** argv)
                 //cOutput current progress.
                 COutCurrentStatus(TotalIterations, iterationcount);
                 iterationcount++;
+
+				//output clean birth stats
+				if (DETECTROTORS && DETECTCLEANBIRTH && isCleanBirth)
+				{	
+					firstCleanBirthVec.push_back(rotorIdTree.getFirstEdgeXY());
+				}
+				else
+				{
+					cout << "Clean birth not successful, repeating." << endl;
+					repeat--;
+					iterationcount--;
+				}
                 
             }//end repeat loop
             
@@ -583,7 +629,12 @@ int main(int argc, char** argv)
                 FOutExMasterData(exCellMasterStream, exCellStats, MAXFRAME, nu);
     		}
             
-            
+			if (DETECTROTORS&&DETECTCLEANBIRTH)
+			{
+				FOutCleanBirthColumns(cleanBirthStream);
+				FOutCleanBirthData(cleanBirthStream,firstCleanBirthVec);
+				FOutCleanBirthMasterData(cleanBirthMasterStream,firstCleanBirthVec, nu);
+			}
             
         }//end nu loop
         

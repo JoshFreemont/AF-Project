@@ -201,3 +201,30 @@ void FileNamer::XYFile(std::ofstream& aStream, double nu, double iteration, doub
     aStream.open(fileName.c_str());
 }
 
+void FileNamer::CleanBirthFile(std::ofstream& aStream, double& nu, double& rotorIDThreshold)
+    {
+        string fileName;
+        m_Convert.clear();
+        m_Convert.str("");
+        aStream.close();
+    
+        m_Convert << setprecision(4) << nu << "_IDThr" << rotorIDThreshold;
+    
+        fileName =m_FileHeader + "_" + m_Convert.str() + "_" + "firstbirth" + ".txt";
+    
+        aStream.open(fileName.c_str());
+    }
+	
+	void FileNamer::CleanBirthMasterFile(std::ofstream& aStream, double& rotorIDThreshold)
+    {
+        string fileName;
+        m_Convert.clear();
+        m_Convert.str("");
+        aStream.close();
+
+		m_Convert << setprecision(4) << "_IDThr" << rotorIDThreshold;
+    
+        fileName =m_FileHeader + "_" + m_Convert.str() + "_firstbirthmaster" + ".txt";
+    
+        aStream.open(fileName.c_str());
+    }

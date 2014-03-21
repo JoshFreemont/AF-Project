@@ -58,6 +58,7 @@
 		03DCD73E18DCA95D001D6CB1 /* histogram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = histogram.h; sourceTree = "<group>"; };
 		03DCD74018DCAD28001D6CB1 /* initialise.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = initialise.cpp; sourceTree = "<group>"; };
 		03DCD74118DCAD28001D6CB1 /* initialise.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = initialise.h; sourceTree = "<group>"; };
+		03DCD74318DCADA2001D6CB1 /* optionsStruct.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = optionsStruct.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,6 +92,7 @@
 			isa = PBXGroup;
 			children = (
 				031F74AE18C8C250002BF2C3 /* rotorIDstruct.h */,
+				03DCD74318DCADA2001D6CB1 /* optionsStruct.h */,
 			);
 			name = "Structs/Data Classes";
 			sourceTree = "<group>";

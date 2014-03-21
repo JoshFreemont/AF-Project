@@ -17,6 +17,7 @@
 #include "optionsStruct.h"
 #include <algorithm>
 #include <string>
+#include <unistd.h>
 
 using namespace std;
 
@@ -33,8 +34,8 @@ bool DETECTCLEANBIRTH = false;
 
 int main(int argc, char** argv)
 {
+
     //VARIABLE DECLARATION + INITIALIZATION//
-    
     //AF parameters
     const int SAP=210;//Sinoatrial period is measured in frames- not in "SI time"- SI time=SAP/FPS
     const int RP=50;//Refractory peiod is measured in frames - not in "SI time".
@@ -54,7 +55,7 @@ int main(int argc, char** argv)
 	double delta = 0.3;
 	double epsilon = 0.05;
     int repeatMAX = 25;
-	int MAXFRAME=1000;
+	int MAXFRAME=10000;
 
 	//first clean rotor birth variables
 	bool isAbort;
@@ -400,7 +401,7 @@ int main(int argc, char** argv)
                             //declare and initialize rotor variables
                             double tempRotorIdRatio = 0.0;
                             int maxFreq = 0;
-                            int tempRotorId = 0;
+                            int tempRotorId = -1;
                             int parentRotorId = inheritedRotorId(*col, *(col+1)); //(define parent RotorId = inheritedRotorId for excited cell)
                             int teleFrameThresh = 15; //teleportation time threshold.
                             int teleDistThresh = 10; //teleportation distance threshold.
@@ -450,8 +451,8 @@ int main(int argc, char** argv)
                             
                             
                             //Teleport Rotor: check if rotor is teleported (temporarily disappears then reappears).
-                            else if(isRotorTeleported(rotorIdData[parentRotorId], frame, avX, avY, teleFrameThresh, teleDistThresh) &&
-                                    tempRotorId != -1 && parentRotorId != -1)
+                            else if(tempRotorId != -1 && parentRotorId != -1
+                                    && isRotorTeleported(rotorIdData[parentRotorId], frame, avX, avY, teleFrameThresh, teleDistThresh))
                             {
                                 //revive parentRotor
                                 reviveRotor(rotorIdData[parentRotorId], frame, avX, avY, isRotorAliveNow, parentRotorId);
@@ -514,8 +515,8 @@ int main(int argc, char** argv)
                         }
 					}
                     
-                    //calculate P(DBirth|nRotors)
-                    if(DETECTROTORS)
+                    //add data for DBirth|nRotors
+                    if(DETECTROTORS && (BIRTHPROBDIST || BIRTHEXPECTATION))
                     {
                         //add data to histogram with correct rotor count- check that index exists, if not create index.
                         if(rotorCount >= pDBirthNRotors.size())
@@ -551,12 +552,10 @@ int main(int argc, char** argv)
 					}
                     
 					//update excited cells in frame count
-					if (COUNTEXCELLS)
-                    {
-                        exCellCount[frame] = exCells;
-                    }
-
-					if (isAbort)break;
+					if (COUNTEXCELLS)exCellCount[frame] = exCells;
+					
+                    //if abort then restart experiment.
+                    if (isAbort)break;
                     
                 }//end frame loop
                 
@@ -633,7 +632,7 @@ int main(int argc, char** argv)
 				{	
 					firstCleanBirthVec.push_back(rotorIdTree.getFirstEdgeXY());
 				}
-				else if(DETECTCLEANBIRTH&&isAbort)
+				else if(DETECTCLEANBIRTH && isAbort)
 				{
 					cout << "Clean birth not successful, repeating." << endl;
 					repeat--;
@@ -644,7 +643,7 @@ int main(int argc, char** argv)
             
     		if (COUNTEXCELLS) FOutExMasterData(exCellMasterStream, exCellStats, MAXFRAME, nu);
             
-			if (DETECTROTORS&&DETECTCLEANBIRTH)
+			if (DETECTROTORS && DETECTCLEANBIRTH)
 			{
 				FOutCleanBirthColumns(cleanBirthStream);
 				FOutCleanBirthData(cleanBirthStream,firstCleanBirthVec);

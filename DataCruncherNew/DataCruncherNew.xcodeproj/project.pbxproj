@@ -16,6 +16,8 @@
 		03BD268718BB9B74005511EA /* mtrand.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 03BD268118BB9B74005511EA /* mtrand.cpp */; };
 		03BD268818BB9B74005511EA /* patch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 03BD268318BB9B74005511EA /* patch.cpp */; };
 		03D5F3ED18BC126200D9F277 /* filenamer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 03D5F3EB18BC126200D9F277 /* filenamer.cpp */; };
+		03DCD73F18DCA95D001D6CB1 /* histogram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 03DCD73D18DCA95D001D6CB1 /* histogram.cpp */; };
+		03DCD74218DCAD28001D6CB1 /* initialise.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 03DCD74018DCAD28001D6CB1 /* initialise.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -52,6 +54,10 @@
 		03BD268918BB9BBC005511EA /* array2D.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = array2D.h; sourceTree = "<group>"; };
 		03D5F3EB18BC126200D9F277 /* filenamer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = filenamer.cpp; sourceTree = "<group>"; };
 		03D5F3EC18BC126200D9F277 /* filenamer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = filenamer.h; sourceTree = "<group>"; };
+		03DCD73D18DCA95D001D6CB1 /* histogram.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = histogram.cpp; sourceTree = "<group>"; };
+		03DCD73E18DCA95D001D6CB1 /* histogram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = histogram.h; sourceTree = "<group>"; };
+		03DCD74018DCAD28001D6CB1 /* initialise.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = initialise.cpp; sourceTree = "<group>"; };
+		03DCD74118DCAD28001D6CB1 /* initialise.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = initialise.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,6 +74,8 @@
 		0393CA3618CE00F8001B61D5 /* functions */ = {
 			isa = PBXGroup;
 			children = (
+				03DCD74118DCAD28001D6CB1 /* initialise.h */,
+				03DCD74018DCAD28001D6CB1 /* initialise.cpp */,
 				03BD268018BB9B74005511EA /* main_functions.h */,
 				03BD267F18BB9B74005511EA /* main_functions.cpp */,
 				0393CA3418CE00E0001B61D5 /* rotorFunctions.h */,
@@ -100,6 +108,8 @@
 		0393CA3918CE0153001B61D5 /* main classes */ = {
 			isa = PBXGroup;
 			children = (
+				03DCD73E18DCA95D001D6CB1 /* histogram.h */,
+				03DCD73D18DCA95D001D6CB1 /* histogram.cpp */,
 				03BD268418BB9B74005511EA /* patch.h */,
 				03BD268318BB9B74005511EA /* patch.cpp */,
 				031F74AF18C922A3002BF2C3 /* network.cpp */,
@@ -194,9 +204,11 @@
 				03D5F3ED18BC126200D9F277 /* filenamer.cpp in Sources */,
 				0361544018CA0883003F2EC3 /* DataOutput.cpp in Sources */,
 				03BD268718BB9B74005511EA /* mtrand.cpp in Sources */,
+				03DCD74218DCAD28001D6CB1 /* initialise.cpp in Sources */,
 				031F74B118C922A3002BF2C3 /* network.cpp in Sources */,
 				03BD268518BB9B74005511EA /* main_data.cpp in Sources */,
 				03BD268818BB9B74005511EA /* patch.cpp in Sources */,
+				03DCD73F18DCA95D001D6CB1 /* histogram.cpp in Sources */,
 				031F74AD18C8C248002BF2C3 /* analysisfunctions.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

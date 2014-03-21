@@ -14,6 +14,7 @@
 #include "DataOutput.h"
 #include "histogram.h"
 #include "initialise.h"
+#include "optionsStruct.h"
 #include <algorithm>
 #include <string>
 
@@ -53,19 +54,19 @@ int main(int argc, char** argv)
 	double delta = 0.3;
 	double epsilon = 0.05;
     int repeatMAX = 25;
-	int MAXFRAME=10000;
+	int MAXFRAME=1000;
 
 	//first clean rotor birth variables
 	bool isAbort;
 	bool isCleanBirth;
 	vector<pair<int,int> > firstCleanBirthVec;
-	ofstream cleanBirthStream;
-	ofstream cleanBirthMasterStream;
+	
     
 	ifstream opFile("options.op");
-	if (opFile) {
+	if (opFile)
+    {
         // The file exists, and is open for input
-		optionsStruct startOptions;
+        optionsStruct startOptions;
 		readOptionsFile(opFile, startOptions);
 		FileHeader = startOptions.m_FileHeader;
 		DETECTROTORS = startOptions.m_DETECTROTORS;
@@ -131,7 +132,10 @@ int main(int argc, char** argv)
     ofstream eDBirthNRotorStream;
 	ofstream defectStream;
 	ofstream verConStream;
-    
+    ofstream cleanBirthStream;
+	ofstream cleanBirthMasterStream;
+    ofstream pDBirthNRotorHist3DStream;
+
     
     //rotor variables
     array2D <int> rotorCellFrequency (G_WIDTH,G_HEIGHT,0);
@@ -147,9 +151,7 @@ int main(int argc, char** argv)
     array2D<int> activeRotorId (G_WIDTH, G_HEIGHT, -1);//stores all rotor ids for the state.
     array2D<int> inheritedRotorId (G_WIDTH, G_HEIGHT, 0);//stores all rotor ids for all cells, whether in a rotor or not.
     unordered_map<int, int> tempRotorIdFrequency;//stores temp frequency count of ids
-    double rotorIdThresh = 0.01, tempRotorIdRatio;//threshold for rotor id inheritance. 1.0=100% of current rotor cells must have same id.
-    int maxFreq;//counts the maximum frequency rotor id within rotor
-    int tempRotorId;//creates a temp rotor id variable.
+    double rotorIdThresh = 0.01;//threshold for rotor id inheritance. 1.0=100% of current rotor cells must have same id.
     int maxRotorId=-1;//global maximum rotor id counter.
     vector<rotorIDstruct> rotorIdData;
     vector< pair <int,int> > rotorIdAverageCoords;
@@ -251,6 +253,8 @@ int main(int argc, char** argv)
                     MyFileNamer.RotorCountFile(rotorCountstream,nu,repeat,rotorIdThresh);
                     MyFileNamer.HistoFile(birthRateStream, nu, repeat, rotorIdThresh, "BirthRate");
                     MyFileNamer.HistoFile(deathRateStream, nu, repeat, rotorIdThresh, "DeathRate");
+                    MyFileNamer.XYFile(eDBirthNRotorStream, nu, repeat, rotorIdThresh, "E(dBirth)");
+                    MyFileNamer.HistoFile(pDBirthNRotorHist3DStream, nu, repeat, rotorIdThresh, "3D");
 
 					if (!BIRTHEXPECTATION)
                     MyFileNamer.XYFile(eDBirthNRotorStream, nu, repeat, rotorIdThresh, "E(dBirth)");
@@ -274,15 +278,8 @@ int main(int argc, char** argv)
                 inE.reset(HOR);
                 inW.reset(HOR);
 
-				if (STATICMODEL)
-				{
-					initStaticDefects(inW,inE,delta,epsilon);
-				}
-
-				if (STATICMODEL || JOINTMODEL)
-				{
-					initStaticVerts(inW,inE,inN,inS,nu,GRIDSIZE);
-				}
+				if (STATICMODEL)initStaticDefects(inW,inE,delta,epsilon);
+				if (STATICMODEL || JOINTMODEL)initStaticVerts(inW,inE,inN,inS,nu,GRIDSIZE);
 
 				isAbort = false;
 				isCleanBirth = false;
@@ -400,11 +397,21 @@ int main(int argc, char** argv)
 					{
                         for (auto col = exCoords[cyclicNow].begin(); col != exCoords[cyclicNow].end(); col+=2)
                         {
+                            //declare and initialize rotor variables
+                            double tempRotorIdRatio = 0.0;
+                            int maxFreq = 0;
+                            int tempRotorId = 0;
+                            int parentRotorId = inheritedRotorId(*col, *(col+1)); //(define parent RotorId = inheritedRotorId for excited cell)
+                            int teleFrameThresh = 15; //teleportation time threshold.
+                            int teleDistThresh = 10; //teleportation distance threshold.
+                            double avX = 0; //average x pos.
+                            double avY = 0; //average y pos.
+                            
                             
                             //First, fill up temp array with path of excitation.
                             fillTempCycle(tempCycleArray, rotorLengthLimit, excitedBy, *col, *(col+1));
                             
-                            //Check if already a rotor cell, and continue if so.
+                            //Check if exCell = rotor cell, and continue if so + height cutoff condition.
                             if (isRotor[cyclicNow](tempCycleArray[rotorLengthLimit-1].first,tempCycleArray[rotorLengthLimit-1].second)) continue;
                             if (abs(tempCycleArray[rotorLengthLimit-1].second - *(col+1)) > rotorHeightCutoff) continue;
                             
@@ -413,16 +420,14 @@ int main(int argc, char** argv)
                             else continue;
                             
                             //Rotor Id allocation
-                            //fill rotor frequency map with previous rotor ids + find average X and Y.
-                            double avX = 0;
-                            double avY = 0;
                             calcAvPos(cycleStart, cycleLength, tempCycleArray, tempRotorIdFrequency, avX, avY, rotorHeightCutoff, GRIDSIZE, activeRotorId);
                             
                             //now find max rotor id frequency and corresponding "tempRotorId"
                             calcMaxFreqId(tempRotorIdFrequency, tempRotorId, maxFreq);
                             tempRotorIdFrequency.clear();//clear rotor id frequency map after use.
                             
-                            //now check if tempRotorIdRatio > rotorIdThresh if so then inherit id. Exclude tempRotorId=-1.
+                            
+                            //Inherit Rotor: If tempRotorIdRatio > rotorIdThresh -> then inherit id. Exclude tempRotorId=-1.
                             tempRotorIdRatio=(double)maxFreq/cycleLength;
                             if(tempRotorIdRatio >= rotorIdThresh && tempRotorId != -1)
                             {
@@ -443,12 +448,19 @@ int main(int argc, char** argv)
                                 isRotorAliveNow[tempRotorId] = true;
                             }
                             
-                            //otherwise new rotor is born.
+                            
+                            //Teleport Rotor: check if rotor is teleported (temporarily disappears then reappears).
+                            else if(isRotorTeleported(rotorIdData[parentRotorId], frame, avX, avY, teleFrameThresh, teleDistThresh) &&
+                                    tempRotorId != -1 && parentRotorId != -1)
+                            {
+                                //revive parentRotor
+                                reviveRotor(rotorIdData[parentRotorId], frame, avX, avY, isRotorAliveNow, parentRotorId);
+                            }
+                            
+                            
+                            //Create Rotor: new rotor is born.
                             else
                             {
-                                //define parent RotorId = inheritedRotorId for excited cell.
-                                int parentRotorId = inheritedRotorId(*col, *(col+1));
-                                
                                 //add to max rotor id counter and assign this new id to rotor.
                                 maxRotorId++;
                                 
@@ -544,10 +556,11 @@ int main(int argc, char** argv)
                         exCellCount[frame] = exCells;
                     }
 
-					if (isAbort)
-						break;
+					if (isAbort)break;
+                    
                 }//end frame loop
-//------------------------------------------------------------------                
+                
+                //Main Data Output
 				if (DETECTROTORS)
 				{
                     //create and output histogram of birth rates wrt. time.
@@ -568,9 +581,13 @@ int main(int argc, char** argv)
                         {
                             MyFileNamer.HistoFile(pDBirthNRotorHistoStream, nu, repeat, rotorIdThresh, "pDBirth" + std::to_string(nRotors));
                             it->printHist(pDBirthNRotorHistoStream);
+                            
+                            //output Hist3D plot
+                            vector<vector<int> > hist3D = buildHist3D(pDBirthNRotors);
+                            FOut2DVector(pDBirthNRotorHist3DStream, hist3D);
                         }
                         
-                        if(DETECTROTORS&&BIRTHEXPECTATION) eDBirthNRotors.push_back(it->expValue());
+                        if(BIRTHEXPECTATION) eDBirthNRotors.push_back(it->expValue());
                         nRotors++;
                     }
                     
@@ -581,14 +598,15 @@ int main(int argc, char** argv)
                         eDBirthNRotors.clear();
                         
                     }
+                    
                     if (!DETECTCLEANBIRTH)
 					{
-                    //fOutput Rotor + Network Data
-                    FOutRotorIdData(rotorIDstream, rotorIdData);
-                    FOutRotorExCountData(rotorExCountstream, rotorCellFrequency);
-                    rotorIdNetwork_S.FOutGMLEdgeList(rotorIdInherit_S);
-                    rotorIdNetwork_S.FOutEdgeDistList(rotorIdDistStream);
-                    rotorIdTree.FOutGMLTreeEdgeList(rotorIdTreeStream);
+                        //fOutput Rotor + Network Data
+                        FOutRotorIdData(rotorIDstream, rotorIdData);
+                        FOutRotorExCountData(rotorExCountstream, rotorCellFrequency);
+                        rotorIdNetwork_S.FOutGMLEdgeList(rotorIdInherit_S);
+                        rotorIdNetwork_S.FOutEdgeDistList(rotorIdDistStream);
+                        rotorIdTree.FOutGMLTreeEdgeList(rotorIdTreeStream);
 					}
 				}
                 
@@ -624,10 +642,7 @@ int main(int argc, char** argv)
                 
             }//end repeat loop
             
-    		if (COUNTEXCELLS)
-    		{
-                FOutExMasterData(exCellMasterStream, exCellStats, MAXFRAME, nu);
-    		}
+    		if (COUNTEXCELLS) FOutExMasterData(exCellMasterStream, exCellStats, MAXFRAME, nu);
             
 			if (DETECTROTORS&&DETECTCLEANBIRTH)
 			{

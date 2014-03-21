@@ -70,111 +70,33 @@ std::vector<int> getDeathDataVect(std::vector<rotorIDstruct>& rotorIdData, const
     return dataVector;
 }
 
-void readOptionsFile(std::ifstream& opFile, optionsStruct& startOptions)
+std::vector<std::vector<int> > buildHist3D (std::vector<histogram> histogramData)
 {
-	std::string line;
-	while(getline(opFile, line)) 
+    //initialize counters
+    int maxXValue = 0;
+    int vectorSize = 0;
+    
+    //iterate through histogram vector to find max x value
+    for (auto it = histogramData.begin(); it != histogramData.end(); ++it)
     {
-        if(line[0] == '#') continue;
-		else break;
-	}
-	getline(opFile, line);
-	std::stringstream data;
-	std::string dataPart;
-	startOptions.m_FileHeader = line;
-	bool isTrue;
-
-	getline(opFile, line);
-	opFile >> std::boolalpha >> isTrue;
-	startOptions.m_DETECTROTORS = isTrue;
-
-	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-	getline(opFile, line);
-	opFile >> std::boolalpha >> isTrue;
-	startOptions.m_COUNTEXCELLS = isTrue;
-	
-	
-	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-	getline(opFile, line);
-	opFile >> std::boolalpha >> isTrue;
-	startOptions.m_DISPLAYFULLEXCELLS = isTrue;
-	
-	
-	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-	getline(opFile, line);
-	opFile >> std::boolalpha >> isTrue;
-	startOptions.m_BIRTHPROBDIST = isTrue;
-	
-	
-	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-	getline(opFile, line);
-	opFile >> std::boolalpha >> isTrue;
-	startOptions.m_BIRTHEXPECTATION = isTrue;
-	
-
-	
-	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');getline(opFile, line);
-	opFile >> std::boolalpha >> isTrue;
-	startOptions.m_STATICMODEL = isTrue;
-	
-
-	
-	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-	getline(opFile, line);
-	opFile >> std::boolalpha >> isTrue;
-	startOptions.m_JOINTMODEL = isTrue;
-	
-
-	
-	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-	getline(opFile, line);
-	opFile >> std::boolalpha >> isTrue;
-	startOptions.m_OUTPUTDEFECTLOC = isTrue;
-	
-
-	
-	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-	getline(opFile, line);
-	opFile >> std::boolalpha >> isTrue;
-	startOptions.m_DETECTCLEANBIRTH = isTrue;
-	
-
-	
-	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-	getline(opFile, line);
-	opFile >> dataPart;
-	startOptions.m_nuSTART = static_cast<double>(atof(dataPart.c_str()));
-
-	
-	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-	getline(opFile, line);
-	opFile >> dataPart;
-	startOptions.m_nuMAX = static_cast<double>(atof(dataPart.c_str()));
-
-	
-	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-	getline(opFile, line);
-	opFile >> dataPart;
-	startOptions.m_nuSTEP = static_cast<double>(atof(dataPart.c_str()));
-
-	
-	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-	getline(opFile, line);
-	opFile >> dataPart;
-	startOptions.m_delta = static_cast<double>(atof(dataPart.c_str()));
-
-	
-	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-	getline(opFile, line);
-	opFile >> dataPart;
-	startOptions.m_epsilon = static_cast<double>(atof(dataPart.c_str()));
-
-	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-	getline(opFile, line);
-	opFile >> dataPart;
-	startOptions.m_repeatMAX = atoi(dataPart.c_str());
-	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-	getline(opFile, line);
-	opFile >> dataPart;
-	startOptions.m_MAXFRAME = atoi(dataPart.c_str());
+        int xValue = (int)it->returnFreq().size();
+        if(xValue > maxXValue) maxXValue = xValue;
+        vectorSize++;
+    }
+    
+    //by default fill hist3D with zero vectors.
+    std::vector<std::vector<int> > hist3D(vectorSize, std::vector<int> (maxXValue, 0));
+    
+    //generate 3d vector
+    int iIndex = 0;
+    for (auto i = histogramData.begin(); i != histogramData.end(); ++i)
+    {
+        std::vector<int> tempVector = i->returnFreq();
+        for(int j = 0; j < (int)tempVector.size(); j++)
+        {
+            hist3D[iIndex][j] = tempVector[j];
+        }
+        iIndex++;
+    }
+    return hist3D;
 }

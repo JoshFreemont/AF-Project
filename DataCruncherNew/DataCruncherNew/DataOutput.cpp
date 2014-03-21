@@ -257,3 +257,17 @@ void FOutCleanBirthMasterData(std::ofstream& aStream, const std::vector<std::pai
 	sdev = standarddev(distances,Mean);
 	aStream << Mean << "\t" << sdev << std::endl;
 }
+
+
+//function to write out 3d histogram data
+void FOut2DVector(std::ofstream& aStream, std::vector<std::vector<int> > vector2D)
+{
+    for(auto it = vector2D.begin(); it != vector2D.end(); ++it)
+    {
+        for(auto it1 = it->begin(); it1 != it->end(); ++it1) {aStream << *it1 << "\t";}
+        aStream<<"\n";
+    }
+    
+    aStream.flush();
+    aStream.clear();
+}

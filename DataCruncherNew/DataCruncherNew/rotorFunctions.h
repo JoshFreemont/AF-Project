@@ -90,5 +90,26 @@ inline void calcAvPos(const int& cycleStart, const int& cycleLength, std::pair<i
     return;
 }
 
+//check if rotor is teleported
+inline bool isRotorTeleported(rotorIDstruct parent, int frame, int rotorX, int rotorY, int teleFrameThresh, int teleDistThresh)
+{
+    if(frame - (parent.lifetime + parent.birthframe) < teleFrameThresh)
+    {
+        int dist = static_cast<int>(sqrt((parent.birthX - rotorX)*(parent.birthX - rotorX)
+                                         + (parent.birthY - rotorY)*(parent.birthY - rotorY)));
+        if(dist < teleDistThresh) return true;
+    }
+    return false;
+}
+
+
+//revive rotor.
+inline void reviveRotor(rotorIDstruct& rotor, int frame, int x, int y, std::unordered_map<int, bool>& isRotorAliveNow, int Id)
+{
+    rotor.deathX = x;
+    rotor.deathY = y;
+    rotor.lifetime = frame - rotor.birthframe;
+    isRotorAliveNow[Id] = true;
+}
 
 #endif /* defined(__DataCruncherNew__rotorFunctions__) */

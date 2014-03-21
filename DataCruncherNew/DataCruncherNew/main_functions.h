@@ -17,6 +17,7 @@
 #include "rotorIDstruct.h"
 #include <fstream>
 #include <string>
+#include "histogram.h"
 
 //INLINE FUNCTIONS
 
@@ -108,6 +109,7 @@ inline void calcBirthDist (double& xDist, double& yDist, rotorIDstruct parent, r
 }
 
 
+
 //NON-INLINE FUNCTIONS
 //Pacemaker Function
 void pacemaker(array2D<int> &state_update, std::vector<int> &all_excited_coords, const int &RP, const int& GRIDSIZE, array2D<std::pair<int,int>> &excitedBy, int& exCells);
@@ -122,28 +124,8 @@ std::vector<int> getBirthDataVect(std::vector<rotorIDstruct>& rotorIdData);
 //Death data
 std::vector<int> getDeathDataVect(std::vector<rotorIDstruct>& rotorIdData, const int MAXFRAME);
 
-struct optionsStruct
-{
-	std::string m_FileHeader;
-	bool m_DETECTROTORS;
-	bool m_COUNTEXCELLS;
-	bool m_DISPLAYFULLEXCELLS;
-	bool m_BIRTHPROBDIST;
-	bool m_BIRTHEXPECTATION;
-	bool m_STATICMODEL;
-	bool m_JOINTMODEL;
-	bool m_OUTPUTDEFECTLOC;
-	bool m_DETECTCLEANBIRTH;
+//Build3dHistogram
+std::vector<std::vector<int> > buildHist3D(std::vector<histogram> histogramData);
 
-	double m_nuSTART;
-	double m_nuMAX;
-	double m_nuSTEP;
-	double m_delta;
-	double m_epsilon;
-	int m_repeatMAX;
-	int m_MAXFRAME;
-};
-
-void readOptionsFile(std::ifstream& opFile, optionsStruct& startOptions);
 
 #endif /* defined(__sdltest__main_functions__) */

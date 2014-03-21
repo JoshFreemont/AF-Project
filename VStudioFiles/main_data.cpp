@@ -615,7 +615,7 @@ int main(int argc, char** argv)
 				{	
 					firstCleanBirthVec.push_back(rotorIdTree.getFirstEdgeXY());
 				}
-				else
+				else if(DETECTCLEANBIRTH&&isAbort)
 				{
 					cout << "Clean birth not successful, repeating." << endl;
 					repeat--;

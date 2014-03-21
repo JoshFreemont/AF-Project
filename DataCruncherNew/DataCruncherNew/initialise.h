@@ -7,8 +7,8 @@
 #include <sstream>
 #include <fstream>
 
-void readOptionsFile(std::ifstream& opFile, optionsStruct& startOptions);
 
+void readOptionsFile(std::ifstream& opFile, optionsStruct& startOptions);
 
 void outputDefects(array2D<double>& inE, std::ofstream& aStream);
 

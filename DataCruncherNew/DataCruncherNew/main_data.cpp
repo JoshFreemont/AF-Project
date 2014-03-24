@@ -589,15 +589,16 @@ int main(int argc, char** argv)
                         {
                             MyFileNamer.HistoFile(pDBirthNRotorHistoStream, nu, repeat, rotorIdThresh, "pDBirth" + std::to_string(nRotors));
                             it->printHist(pDBirthNRotorHistoStream);
-                            
-                            //output Hist3D plot
-                            vector<vector<int> > hist3D = buildHist3D(pDBirthNRotors);
-                            FOut2DVector(pDBirthNRotorHist3DStream, hist3D);
                         }
                         
                         if(BIRTHEXPECTATION) eDBirthNRotors.push_back(it->expValue());
                         nRotors++;
                     }
+                    
+                    //output Hist3D plot
+                    vector<vector<int> > hist3D = buildHist3D(pDBirthNRotors);
+                    FOut2DVector(pDBirthNRotorHist3DStream, hist3D);
+                    
                     
                     //output EDbirthNRotor data
                     if(BIRTHEXPECTATION)
@@ -650,6 +651,9 @@ int main(int argc, char** argv)
                 
             }//end repeat loop
             
+            //clear PDBirth data between nu loops
+            pDBirthNRotors.clear();
+            
     		if (COUNTEXCELLS) FOutExMasterData(exCellMasterStream, exCellStats, MAXFRAME, nu);
             
 			if (DETECTROTORS && DETECTCLEANBIRTH)
@@ -666,7 +670,6 @@ int main(int argc, char** argv)
     exCellStream.close();
     exCellStatsStream.close();
 	exCellMasterStream.close();
-    
 
 }
 

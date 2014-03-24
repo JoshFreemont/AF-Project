@@ -2,6 +2,121 @@
 #include "mtrand.h"
 #include <ctime>
 
+void readOptionsFile(std::ifstream& opFile, optionsStruct& startOptions)
+{
+	std::string line;
+	while(getline(opFile, line))
+    {
+        if(line[0] == '#') continue;
+		else break;
+	}
+	getline(opFile, line);
+	std::stringstream data;
+	std::string dataPart;
+	startOptions.m_FileHeader = line;
+	bool isTrue;
+    
+	getline(opFile, line);
+	opFile >> std::boolalpha >> isTrue;
+	startOptions.m_DETECTROTORS = isTrue;
+    
+	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	getline(opFile, line);
+	opFile >> std::boolalpha >> isTrue;
+	startOptions.m_COUNTEXCELLS = isTrue;
+	
+	
+	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	getline(opFile, line);
+	opFile >> std::boolalpha >> isTrue;
+	startOptions.m_DISPLAYFULLEXCELLS = isTrue;
+	
+	
+	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	getline(opFile, line);
+	opFile >> std::boolalpha >> isTrue;
+	startOptions.m_BIRTHPROBDIST = isTrue;
+	
+	
+	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	getline(opFile, line);
+	opFile >> std::boolalpha >> isTrue;
+	startOptions.m_BIRTHEXPECTATION = isTrue;
+	
+    
+	
+	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');getline(opFile, line);
+	opFile >> std::boolalpha >> isTrue;
+	startOptions.m_STATICMODEL = isTrue;
+	
+    
+	
+	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	getline(opFile, line);
+	opFile >> std::boolalpha >> isTrue;
+	startOptions.m_JOINTMODEL = isTrue;
+	
+
+	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	getline(opFile, line);
+	opFile >> std::boolalpha >> isTrue;
+	startOptions.m_JOINT2MODEL = isTrue;
+    
+	
+	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	getline(opFile, line);
+	opFile >> std::boolalpha >> isTrue;
+	startOptions.m_OUTPUTDEFECTLOC = isTrue;
+	
+    
+	
+	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	getline(opFile, line);
+	opFile >> std::boolalpha >> isTrue;
+	startOptions.m_DETECTCLEANBIRTH = isTrue;
+	
+    
+	
+	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	getline(opFile, line);
+	opFile >> dataPart;
+	startOptions.m_nuSTART = static_cast<double>(atof(dataPart.c_str()));
+    
+	
+	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	getline(opFile, line);
+	opFile >> dataPart;
+	startOptions.m_nuMAX = static_cast<double>(atof(dataPart.c_str()));
+    
+	
+	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	getline(opFile, line);
+	opFile >> dataPart;
+	startOptions.m_nuSTEP = static_cast<double>(atof(dataPart.c_str()));
+    
+	
+	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	getline(opFile, line);
+	opFile >> dataPart;
+	startOptions.m_delta = static_cast<double>(atof(dataPart.c_str()));
+    
+	
+	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	getline(opFile, line);
+	opFile >> dataPart;
+	startOptions.m_epsilon = static_cast<double>(atof(dataPart.c_str()));
+    
+	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	getline(opFile, line);
+	opFile >> dataPart;
+	startOptions.m_repeatMAX = atoi(dataPart.c_str());
+	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	getline(opFile, line);
+	opFile >> dataPart;
+	startOptions.m_MAXFRAME = atoi(dataPart.c_str());
+}
+
+
 //Outputs defect locations to file
 void outputDefects(array2D<double>& inE, std::ofstream& aStream)
 {
@@ -75,4 +190,7 @@ void initStaticVerts (array2D<double>& inW, array2D<double>& inE, array2D<double
 		}
 	}
 }
+
+
+
 

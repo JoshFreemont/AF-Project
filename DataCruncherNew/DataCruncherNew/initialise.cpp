@@ -56,6 +56,11 @@ void readOptionsFile(std::ifstream& opFile, optionsStruct& startOptions)
 	opFile >> std::boolalpha >> isTrue;
 	startOptions.m_JOINTMODEL = isTrue;
 	
+
+	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	getline(opFile, line);
+	opFile >> std::boolalpha >> isTrue;
+	startOptions.m_JOINT2MODEL = isTrue;
     
 	
 	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');

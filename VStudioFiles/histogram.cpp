@@ -11,7 +11,6 @@
 #include <fstream>
 #include <cmath>
 
-
 histogram::histogram(int binIntervalInit)
 {
     binInterval = binIntervalInit;
@@ -89,7 +88,7 @@ int histogram::expValue()
     int totalFrequency = 0;
     for(auto it = frequency.begin(); it != frequency.end(); ++it)
     {
-        sum += (int)((*it)*(bin*binInterval + binInterval/2));
+        sum += (int)((*it)*(bin*binInterval + binInterval/2));//2->2.0
         totalFrequency += (*it);
         bin++;
     }
@@ -97,10 +96,6 @@ int histogram::expValue()
     if(totalFrequency)sum /= totalFrequency;
     return sum;
 }
-
-//Calculate Std deviation of data input -  ie. sqrt(Var(x))
-
-
 
 //reset frequency
 void histogram::resetFrequency()
@@ -125,3 +120,6 @@ void histogram::printHist(std::ofstream& aStream)
     
     aStream << "\n";
 }
+
+//return vector of frequency
+std::vector<int> histogram::returnFreq(){return frequency;}

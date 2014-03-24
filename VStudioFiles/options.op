@@ -1,6 +1,6 @@
 #something
 string m_FileHeader
-test
+teleport
 bool m_DETECTROTORS
 true
 bool m_COUNTEXCELLS
@@ -8,28 +8,30 @@ false
 bool m_DISPLAYFULLEXCELLS
 false
 bool m_BIRTHPROBDIST
-false
+true
 bool m_BIRTHEXPECTATION
-false
+true
 bool m_STATICMODEL
 false
 bool m_JOINTMODEL
 false
+bool m_JOINT2MODEL
+false
 bool m_OUTPUTDEFECTLOC
 false
 bool m_DETECTCLEANBIRTH
-true
+false
 double m_nuSTART
-0.080000
+0.10000
 double m_nuMAX
-0.080000
+0.25000
 double m_nuSTEP
-0.010000
+0.050000
 double m_delta
 0.300000
 double m_epsilon
 0.050000
 int m_repeatMAX
-10
+1
 int m_MAXFRAME
-10000
+1000000

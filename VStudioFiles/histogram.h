@@ -12,6 +12,7 @@
 #include <iostream>
 #include <vector>
 
+
 class histogram
 {
     //histogram variables
@@ -29,10 +30,8 @@ public:
     int expValue();
     int stdDev();
     void printHist(std::ofstream& aStream);
+    std::vector<int> returnFreq();
     
 };
-
-
-
 
 #endif /* defined(__sdltest__histogram__) */

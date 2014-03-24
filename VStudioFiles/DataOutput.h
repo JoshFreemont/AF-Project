@@ -105,4 +105,7 @@ void FOutCleanBirthMasterColumns(std::ofstream& aStream);
 //function to write out data for clean birth master file
 void FOutCleanBirthMasterData(std::ofstream& aStream, const std::vector<std::pair<int,int> >& firstCleanBirthVec, double& nu);
 
+//function to write out 3d histogram data
+void FOut2DVector(std::ofstream& aStream, std::vector<std::vector<int> > vector2D);
+
 #endif /* defined(__DataCruncherNew__DataOutput__) */

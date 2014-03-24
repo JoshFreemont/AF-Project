@@ -15,9 +15,9 @@
 #include "histogram.h"
 #include "initialise.h"
 #include "optionsStruct.h"
+#include "patch.h"
 #include <algorithm>
 #include <string>
-#include <unistd.h>
 
 using namespace std;
 
@@ -29,8 +29,16 @@ bool COUNTEXCELLS = true;
 bool DISPLAYFULLEXCELLS = true;
 bool STATICMODEL = true;
 bool JOINTMODEL = false;
+bool JOINT2MODEL = false;
 bool OUTPUTDEFECTLOC = true;
 bool DETECTCLEANBIRTH = false;
+bool INITPATCH = true;
+bool CIRCLE = true;
+bool SQUARE = false;
+bool DYNPATCH = true;
+bool JOINTPATCH = false;
+bool JOINTPATCH2 = false;
+bool STATICPATCH = false;
 
 int main(int argc, char** argv)
 {
@@ -77,6 +85,7 @@ int main(int argc, char** argv)
 		BIRTHEXPECTATION = startOptions.m_BIRTHEXPECTATION;
 		STATICMODEL = startOptions.m_STATICMODEL;
 		JOINTMODEL = startOptions.m_JOINTMODEL;
+		JOINT2MODEL = startOptions.m_JOINT2MODEL;
 		OUTPUTDEFECTLOC = startOptions.m_OUTPUTDEFECTLOC;
 		DETECTCLEANBIRTH = startOptions.m_DETECTCLEANBIRTH;
 		nuSTART = floor(startOptions.m_nuSTART*1000)/1000;
@@ -279,7 +288,7 @@ int main(int argc, char** argv)
                 inE.reset(HOR);
                 inW.reset(HOR);
 
-				if (STATICMODEL)initStaticDefects(inW,inE,delta,epsilon);
+				if (STATICMODEL||JOINT2MODEL)initStaticDefects(inW,inE,delta,epsilon);
 				if (STATICMODEL || JOINTMODEL)initStaticVerts(inW,inE,inN,inS,nu,GRIDSIZE);
 
 				isAbort = false;

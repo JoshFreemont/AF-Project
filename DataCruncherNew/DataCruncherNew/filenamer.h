@@ -29,7 +29,7 @@ public:
 
     void IDFile(std::ofstream& aStream, double nu, double iteration, double rotorIDthreshold);
 
-    void RotorExCountFile(std::ofstream& aStream, double nu, double iteration, double rotorIDthreshold);
+    void RotorExCountFile(std::ofstream& aStream, double nu, double iteration, double rotorIDthreshold, std::string type);
 
     void RotorCountFile(std::ofstream& aStream, double nu, double iteration, double rotorIDthreshold);
 

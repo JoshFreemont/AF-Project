@@ -33,12 +33,12 @@ bool JOINT2MODEL = false;
 bool OUTPUTDEFECTLOC = true;
 bool DETECTCLEANBIRTH = false;
 bool INITPATCH = true;
-bool CIRCLE = true;
-bool SQUARE = false;
-bool DYNPATCH = true;
-bool JOINTPATCH = false;
-bool JOINTPATCH2 = false;
-bool STATICPATCH = false;
+bool STATICCPATCH = true;
+bool ABLATE = false;
+int PATCHRADIUS = 15;
+double patchNuSTART = 0.2;
+double patchNuMAX = 0.2;
+double patchNuSTEP = 0.01;
 
 int main(int argc, char** argv)
 {
@@ -95,6 +95,13 @@ int main(int argc, char** argv)
 		epsilon = floor(startOptions.m_epsilon*1000)/1000;
 		repeatMAX = startOptions.m_repeatMAX;
 		MAXFRAME = startOptions.m_MAXFRAME;
+		INITPATCH = startOptions.m_INITPATCH;
+		STATICCPATCH = startOptions.m_STATICCPATCH;
+		ABLATE = startOptions.m_ABLATE;
+		PATCHRADIUS = startOptions.m_PATCHRADIUS;
+		patchNuSTART = startOptions.m_patchNuSTART;
+		patchNuMAX = startOptions.m_patchNuMAX;
+		patchNuSTEP = startOptions.m_patchNuSTEP;
 	}
     
     //frame and memory variables
@@ -234,8 +241,9 @@ int main(int argc, char** argv)
 			MyFileNamer.CleanBirthMasterFile(cleanBirthMasterStream, rotorIdThresh);
 			FOutCleanBirthMasterColumns(cleanBirthMasterStream);
 		}
+
 		//Start "nu loop"
-		for (nu = nuSTART; nu <= nuMAX; nu += nuSTEP)
+		for (nu = (INITPATCH? patchNuSTART: nuSTART); nu <= (INITPATCH? patchNuMAX: nuMAX); nu += (INITPATCH? patchNuSTEP: nuSTEP))
 		{
 			if (COUNTEXCELLS)
 			{
@@ -283,13 +291,42 @@ int main(int argc, char** argv)
 				}
                 
                 //Reset everything
-                inN.reset(nu);
-                inS.reset(nu);
-                inE.reset(HOR);
-                inW.reset(HOR);
+				if(!INITPATCH)
+				{
+					inN.reset(nu);
+					inS.reset(nu);
+					inE.reset(HOR);
+					inW.reset(HOR);
 
-				if (STATICMODEL||JOINT2MODEL)initStaticDefects(inW,inE,delta,epsilon);
-				if (STATICMODEL || JOINTMODEL)initStaticVerts(inW,inE,inN,inS,nu,GRIDSIZE);
+					if (STATICMODEL||JOINT2MODEL)initStaticDefects(inW,inE,delta,epsilon);
+					if (STATICMODEL || JOINTMODEL)initStaticVerts(inW,inE,inN,inS,nu,GRIDSIZE);
+				}
+				else
+				{
+					inN.reset(nuSTART);
+					inS.reset(nuSTART);
+					inE.reset(HOR);
+					inW.reset(HOR);
+
+					if (STATICMODEL||JOINT2MODEL)initStaticDefects(inW,inE,delta,epsilon);
+					if (STATICMODEL || JOINTMODEL)initStaticVerts(inW,inE,inN,inS,nuSTART,GRIDSIZE);
+
+					if(STATICCPATCH)
+					{
+						CpatchSTATIC patch1(PATCHRADIUS,50,50,inN,inS,inE,inW,delta,nu,epsilon);
+						CpatchSTATIC patch2(PATCHRADIUS,150,150,inN,inS,inE,inW,delta,nu,epsilon);
+					if (ABLATE)
+					{
+						patch1.ablate();
+						patch2.ablate();
+					}
+					else
+					{
+						patch1.setPatch();
+						patch2.setPatch();
+					}
+					}
+				}
 
 				isAbort = false;
 				isCleanBirth = false;

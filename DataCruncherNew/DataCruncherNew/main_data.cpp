@@ -138,6 +138,8 @@ int main(int argc, char** argv)
     ofstream rotorIdInherit_S;
     ofstream rotorIdTreeStream;
     ofstream rotorExCountstream;
+    ofstream rotorCellStabilitystream;
+    ofstream rotorCellBirthstream;
 	ofstream rotorCountstream;
 	ofstream rotorIDstream;
     ofstream birthRateStream;
@@ -156,6 +158,10 @@ int main(int argc, char** argv)
     
     //rotor variables
     array2D <int> rotorCellFrequency (G_WIDTH,G_HEIGHT,0);
+    array2D <int> rotorCellBirthFrequency (G_WIDTH, G_HEIGHT, 0);
+    array2D <int> rotorCellStability (G_WIDTH, G_HEIGHT, 0);
+    map<int, int> emptyMap;
+    array2D<map<int, int> > rotorCellStabilityMap (G_WIDTH, G_HEIGHT, emptyMap);
     const int rotorLengthLimit = 2*RP;
     array2D <bool> isRotorInit (G_WIDTH,G_HEIGHT,false);
     vector <array2D <bool> > isRotor (MEMLIMIT, isRotorInit);//Stores whether a cell is a "rotor" cell or not
@@ -267,12 +273,14 @@ int main(int argc, char** argv)
                     MyFileNamer.EdgeList(rotorIdDistStream, nu, repeat, rotorIdThresh, "Dist");
                     MyFileNamer.EdgeList(rotorIdInherit_S, nu, repeat, rotorIdThresh, "Spatial");
                     MyFileNamer.EdgeList(rotorIdTreeStream, nu, repeat, rotorIdThresh, "Tree");
-                    MyFileNamer.RotorExCountFile(rotorExCountstream,nu,repeat,rotorIdThresh);
+                    MyFileNamer.RotorExCountFile(rotorExCountstream,nu,repeat,rotorIdThresh, "Count");
                     MyFileNamer.RotorCountFile(rotorCountstream,nu,repeat,rotorIdThresh);
                     MyFileNamer.HistoFile(birthRateStream, nu, repeat, rotorIdThresh, "BirthRate");
                     MyFileNamer.HistoFile(deathRateStream, nu, repeat, rotorIdThresh, "DeathRate");
                     MyFileNamer.XYFile(eDBirthNRotorStream, nu, repeat, rotorIdThresh, "E(dBirth)");
                     MyFileNamer.HistoFile(pDBirthNRotorHist3DStream, nu, repeat, rotorIdThresh, "3D");
+                    MyFileNamer.RotorExCountFile(rotorCellStabilitystream, nu, repeat, rotorIdThresh, "stabCount");
+                    MyFileNamer.RotorExCountFile(rotorCellBirthstream, nu, repeat, rotorIdThresh, "birthCount");
 
 					if (!BIRTHEXPECTATION)
                     MyFileNamer.XYFile(eDBirthNRotorStream, nu, repeat, rotorIdThresh, "E(dBirth)");
@@ -336,6 +344,10 @@ int main(int argc, char** argv)
                 isRotorInit.reset(false);
                 activeRotorId.reset(-1);
                 rotorCellFrequency.reset(0);
+                rotorCellStabilityMap.reset(emptyMap);
+                rotorCellStability.reset(0);
+                rotorCellBirthFrequency.reset(0);
+                
                 
                 for(int k=0; k<G_WIDTH; ++k)
                 {
@@ -372,7 +384,6 @@ int main(int argc, char** argv)
                 for(frame=0; frame<=MAXFRAME; frame++)
                 {
                     //update frame and cyclic frame values
-                    //***function(cyclicNow, cyclicOld, cyclicBackRP, frame, MEMLIMIT, RP)
                     cyclicNow = frame%MEMLIMIT;
                     cyclicOld = (frame+MEMLIMIT-1)%MEMLIMIT;
                     cyclicBackRP = (frame+MEMLIMIT-1-RP)%MEMLIMIT;
@@ -449,8 +460,6 @@ int main(int argc, char** argv)
                             int maxFreq = 0;
                             int tempRotorId = -1;
                             int parentRotorId = inheritedRotorId(*col, *(col+1)); //(define parent RotorId = inheritedRotorId for excited cell)
-                            int teleFrameThresh = 15; //teleportation time threshold.
-                            int teleDistThresh = 10; //teleportation distance threshold.
                             double avX = 0; //average x pos.
                             double avY = 0; //average y pos.
                             
@@ -487,6 +496,7 @@ int main(int argc, char** argv)
                                     activeRotorId(i,j)=tempRotorId;
                                     inheritedRotorId(i,j)=tempRotorId;
                                     rotorCellFrequency(i,j)++;
+                                    rotorCellStabilityMap(i,j)[tempRotorId]++;
                                     isRotor[cyclicNow](i,j)=true;
                                 }
                                 
@@ -494,16 +504,6 @@ int main(int argc, char** argv)
                                 updateRotorIdData(rotorIdData[tempRotorId], cycleLength, avX, avY);
                                 isRotorAliveNow[tempRotorId] = true;
                             }
-                            
-                            
-                            //Teleport Rotor: check if rotor is teleported (temporarily disappears then reappears).
-                            else if(tempRotorId != -1 && parentRotorId != -1
-                                    && isRotorTeleported(rotorIdData[parentRotorId], frame, avX, avY, teleFrameThresh, teleDistThresh))
-                            {
-                                //revive parentRotor
-                                reviveRotor(rotorIdData[parentRotorId], frame, avX, avY, isRotorAliveNow, parentRotorId);
-                            }
-                            
                             
                             //Create Rotor: new rotor is born.
                             else
@@ -520,6 +520,8 @@ int main(int argc, char** argv)
                                     activeRotorId(i,j)=maxRotorId;
                                     inheritedRotorId(i,j)=maxRotorId;
                                     rotorCellFrequency(i,j)++;
+                                    rotorCellBirthFrequency(i,j)++;
+                                    rotorCellStabilityMap(i,j)[maxRotorId]++;
                                     isRotor[cyclicNow](i,j)=true;
                                 }
                                 
@@ -647,9 +649,31 @@ int main(int argc, char** argv)
                     
                     if (!DETECTCLEANBIRTH)
 					{
-                        //fOutput Rotor + Network Data
-                        FOutRotorIdData(rotorIDstream, rotorIdData);
+                        //generate rotorCellStability data
+                        for(int i = 0; i < G_WIDTH; i++)
+                        {
+                            for(int j = 0; j < G_HEIGHT; j++)
+                            {
+                                int sum = 0;
+                                int num = 0;
+                                for(auto it = rotorCellStabilityMap(i,j).begin(); it != rotorCellStabilityMap(i,j).end(); it++)
+                                {
+                                    sum += it->second;
+                                    num++;
+                                }
+                                if(num) rotorCellStability(i,j) = (int)sum/num;
+                            }
+                        }
+                        
+                        //fOutput rotor cell count data
                         FOutRotorExCountData(rotorExCountstream, rotorCellFrequency);
+                        FOutRotorExCountData(rotorCellStabilitystream, rotorCellStability);
+                        FOutRotorExCountData(rotorCellBirthstream, rotorCellBirthFrequency);
+                        
+                        //fOutput Rotor data
+                        FOutRotorIdData(rotorIDstream, rotorIdData);
+                        
+                        //fOutput Network data
                         rotorIdNetwork_S.FOutGMLEdgeList(rotorIdInherit_S);
                         rotorIdNetwork_S.FOutEdgeDistList(rotorIdDistStream);
                         rotorIdTree.FOutGMLTreeEdgeList(rotorIdTreeStream);

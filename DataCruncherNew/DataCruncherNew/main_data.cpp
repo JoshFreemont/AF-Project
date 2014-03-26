@@ -93,6 +93,7 @@ int main(int argc, char** argv)
 		nuSTEP = floor(startOptions.m_nuSTEP*1000)/1000;
 		delta = floor(startOptions.m_delta*1000)/1000;
 		epsilon = floor(startOptions.m_epsilon*1000)/1000;
+		HOR = startOptions.m_HOR;
 		repeatMAX = startOptions.m_repeatMAX;
 		MAXFRAME = startOptions.m_MAXFRAME;
 		INITPATCH = startOptions.m_INITPATCH;

@@ -30,6 +30,7 @@ struct optionsStruct
 	double m_nuSTEP;
 	double m_delta;
 	double m_epsilon;
+	double m_HOR;
 	int m_repeatMAX;
 	int m_MAXFRAME;
 

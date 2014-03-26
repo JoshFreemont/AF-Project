@@ -4,13 +4,13 @@ test
 bool m_DETECTROTORS
 true
 bool m_COUNTEXCELLS
-false
+true
 bool m_DISPLAYFULLEXCELLS
 false
 bool m_BIRTHPROBDIST
-true
+false
 bool m_BIRTHEXPECTATION
-true
+false
 bool m_STATICMODEL
 true
 bool m_JOINTMODEL
@@ -18,7 +18,7 @@ false
 bool m_JOINT2MODEL
 false
 bool m_OUTPUTDEFECTLOC
-false
+true
 bool m_DETECTCLEANBIRTH
 false
 double m_nuSTART
@@ -31,12 +31,14 @@ double m_delta
 0.300000
 double m_epsilon
 0.050000
+double m_HOR
+0.985
 int m_repeatMAX
-1
+10
 int m_MAXFRAME
-100000
+1000
 bool m_INITPATCH
-true
+false
 bool m_STATICCPATCH
 true
 bool m_ABLATE
@@ -44,8 +46,8 @@ false
 int m_PATCHRADIUS
 15
 double m_patchNuSTART
-0.100
+0.1
 double m_patchNuMAX
-0.200
+0.1
 double m_patchNuSTEP
-0.05
+0.02

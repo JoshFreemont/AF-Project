@@ -66,7 +66,7 @@ public:
 
     ~array2D()
     {
-        delete array1D;
+        delete[] array1D;
     }
 
     T& operator() (const int& x,const int& y)

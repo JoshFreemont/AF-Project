@@ -105,6 +105,11 @@ void readOptionsFile(std::ifstream& opFile, optionsStruct& startOptions)
 	getline(opFile, line);
 	opFile >> dataPart;
 	startOptions.m_epsilon = static_cast<double>(atof(dataPart.c_str()));
+
+	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	getline(opFile, line);
+	opFile >> dataPart;
+	startOptions.m_HOR = static_cast<double>(atof(dataPart.c_str()));
     
 	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 	getline(opFile, line);

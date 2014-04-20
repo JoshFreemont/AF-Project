@@ -30,6 +30,7 @@ public:
     int expValue();
     int stdDev();
     void printHist(std::ofstream& aStream);
+    void normalize(int normConstant, int binNo);
     std::vector<int> returnFreq();
     
 };

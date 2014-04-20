@@ -18,6 +18,7 @@
 #include "patch.h"
 #include <algorithm>
 #include <string>
+#include <unistd.h>
 
 using namespace std;
 
@@ -25,8 +26,8 @@ using namespace std;
 bool DETECTROTORS = false;
 bool BIRTHPROBDIST = false;
 bool BIRTHEXPECTATION = false;
-bool COUNTEXCELLS = true;
-bool DISPLAYFULLEXCELLS = true;
+bool COUNTEXCELLS = false;
+bool DISPLAYFULLEXCELLS = false;
 bool STATICMODEL = true;
 bool JOINTMODEL = false;
 bool JOINT2MODEL = false;
@@ -89,8 +90,8 @@ int main(int argc, char** argv)
 		OUTPUTDEFECTLOC = startOptions.m_OUTPUTDEFECTLOC;
 		DETECTCLEANBIRTH = startOptions.m_DETECTCLEANBIRTH;
 		nuSTART = floor(startOptions.m_nuSTART*1000)/1000;
-		nuMAX = floor(startOptions.m_nuMAX*1000)/1000;
-		nuSTEP = floor(startOptions.m_nuSTEP*1000)/1000;
+		nuMAX = startOptions.m_nuMAX;
+		nuSTEP = startOptions.m_nuSTEP;
 		delta = floor(startOptions.m_delta*1000)/1000;
 		epsilon = floor(startOptions.m_epsilon*1000)/1000;
 		HOR = startOptions.m_HOR;
@@ -112,6 +113,8 @@ int main(int argc, char** argv)
     int cyclicOld=0;
     int cyclicBackRP=0;
     
+    char * dir = getcwd(NULL, 0); // Platform-dependent, see reference link below
+    printf("Current dir: %s", dir);
     //other parameters
     MTRand drand(time(NULL));//seed rnd generator
     
@@ -155,6 +158,7 @@ int main(int argc, char** argv)
     ofstream cleanBirthStream;
 	ofstream cleanBirthMasterStream;
     ofstream pDBirthNRotorHist3DStream;
+    ofstream rotorStabHist3DStream;
 
     
     //rotor variables
@@ -214,7 +218,9 @@ int main(int argc, char** argv)
     //probability distribution
     //indexed by [0] = P(dBirth|0 rotors)- should always be zero, [1] = P(dBirth|1 rotor) etc...
     vector<histogram> pDBirthNRotors;
+    vector<histogram> rotorStability;//stability hist indexed by defectCount.
     histogram pDBirthNRotorHisto (1);
+    histogram rotorStabHist (1);
     vector<int> eDBirthNRotors;
     
     //cell coordinates
@@ -280,6 +286,7 @@ int main(int argc, char** argv)
                     MyFileNamer.HistoFile(deathRateStream, nu, repeat, rotorIdThresh, "DeathRate");
                     MyFileNamer.XYFile(eDBirthNRotorStream, nu, repeat, rotorIdThresh, "E(dBirth)");
                     MyFileNamer.HistoFile(pDBirthNRotorHist3DStream, nu, repeat, rotorIdThresh, "3D");
+                    MyFileNamer.HistoFile(rotorStabHist3DStream, nu, repeat, rotorIdThresh, "Stab_3D");
                     MyFileNamer.RotorExCountFile(rotorCellStabilitystream, nu, repeat, rotorIdThresh, "stabCount");
                     MyFileNamer.RotorExCountFile(rotorCellBirthstream, nu, repeat, rotorIdThresh, "birthCount");
 
@@ -488,21 +495,44 @@ int main(int argc, char** argv)
                             tempRotorIdRatio=(double)maxFreq/cycleLength;
                             if(tempRotorIdRatio >= rotorIdThresh && tempRotorId != -1)
                             {
+                                int vertCount=0, defectCount=0;
                                 //put data in memory, [0]=i, [1]=j, [2]=state, [3]=rotorid
                                 for (int m=cycleStart, k=0;k<cycleLength;++k)
                                 {
                                     int i = tempCycleArray[m+k].first, j = tempCycleArray[m+k].second, state = state_update(i,j)+1;
-                                    
                                     updateRotorCoords(rotorCoords[cyclicNow], i, j, state, tempRotorId);
                                     activeRotorId(i,j)=tempRotorId;
                                     inheritedRotorId(i,j)=tempRotorId;
                                     rotorCellFrequency(i,j)++;
                                     rotorCellStabilityMap(i,j)[tempRotorId]++;
                                     isRotor[cyclicNow](i,j)=true;
+                                    
+                                    //defects
+                                    if (STATICMODEL||JOINT2MODEL)
+                                    {
+                                        if(inW(i,j) != 1.0) defectCount++;
+                                    }
+                                    
+                                    //vertical connections
+                                    if (STATICMODEL||JOINTMODEL)
+                                    {
+                                        if(inS(i,j) != 0.0) vertCount++;
+                                        if(inN(i,j) != 0.0) vertCount++;
+                                    }
                                 }
                                 
+                                //other models
+                                if(JOINT2MODEL) vertCount = static_cast<int>(round((double)cycleLength*VER*2.0));
+                                else if(JOINTMODEL) defectCount = static_cast<int>(round((double)cycleLength*(1.0-HOR)));
+                                else if(!STATICMODEL)//DYNAMIC
+                                {
+                                    vertCount = static_cast<int>(round((double)cycleLength*VER*2.0));
+                                    defectCount = static_cast<int>(round((double)cycleLength*(1.0-HOR)));
+                                }
+                                
+                                
                                 //update rotorIdData[tempRotorId] struct +isRotorAliveNow map - don't add edge/node- no rotor is born.
-                                updateRotorIdData(rotorIdData[tempRotorId], cycleLength, avX, avY);
+                                updateRotorIdData(rotorIdData[tempRotorId], cycleLength, avX, avY, defectCount, vertCount);
                                 isRotorAliveNow[tempRotorId] = true;
                             }
                             
@@ -511,7 +541,7 @@ int main(int argc, char** argv)
                             {
                                 //add to max rotor id counter and assign this new id to rotor.
                                 maxRotorId++;
-                                
+                                int vertCount=0, defectCount=0;
                                 //put data in memory, [0]=i, [1]=j, [2]=state, [3]=rotorid
                                 for (int m=cycleStart, k=0;k<cycleLength;++k)
                                 {
@@ -524,10 +554,32 @@ int main(int argc, char** argv)
                                     rotorCellBirthFrequency(i,j)++;
                                     rotorCellStabilityMap(i,j)[maxRotorId]++;
                                     isRotor[cyclicNow](i,j)=true;
+                                    
+                                    //defects
+                                    if (STATICMODEL||JOINT2MODEL)
+                                    {
+                                        if(inW(i,j) != 1.0) defectCount++;
+                                    }
+                                    
+                                    //vertical connections
+                                    if (STATICMODEL||JOINTMODEL)
+                                    {
+                                        if(inS(i,j) != 0.0) vertCount++;
+                                        if(inN(i,j) != 0.0) vertCount++;
+                                    }
+                                }
+                                
+                                //other models
+                                if(JOINT2MODEL) vertCount = static_cast<int>(round((double)cycleLength*VER*2.0));
+                                else if(JOINTMODEL) defectCount = static_cast<int>(round((double)cycleLength*(1.0-HOR)));
+                                else//DYNAMIC
+                                {
+                                    vertCount = static_cast<int>(round((double)cycleLength*VER*2.0));
+                                    defectCount = static_cast<int>(round((double)cycleLength*(1.0-HOR)));
                                 }
                                 
                                 //add rotorIdData struct + isRotorAliveNow = true for new_rotor = maxRotorId
-                                rotorIdData.push_back(rotorIDstruct(frame, cycleLength, avX, avY));
+                                rotorIdData.push_back(rotorIDstruct(frame, cycleLength, avX, avY, defectCount, vertCount));
                                 isRotorAliveNow[maxRotorId] = true;
                                 
                                 //calculate rotor bucket (spatial node) and add to network, alongside bucket position.
@@ -607,6 +659,62 @@ int main(int argc, char** argv)
                     if (isAbort)break;
                     
                 }//end frame loop
+                
+                //Generate rotor Stability data
+                if(DETECTROTORS)
+                {
+                    //array of normalization constants updated to average the individual data.
+                    //indexed as [defects][verts]
+                    vector<vector<int> > normalizationConstant(1000, vector<int> (1000, 1));
+                    
+                    for(auto it = rotorIdData.begin(); it != rotorIdData.end(); it++)
+                    {
+                        int avDefects = (int)((it->totalDefects)/(it->lifetime));
+                        if(avDefects >= rotorStability.size())
+                        {
+                            for(int i = (int)rotorStability.size(); i<=(avDefects+1); ++i)
+                            {
+                                //push back empty histogram
+                                rotorStability.push_back(rotorStabHist);
+                            }
+                        }
+                        
+                        //now calculate average vertical connections
+                        int avVerts = (int)((it->totalVerts)/(it->lifetime));
+                        
+                        //update normalizationConstants
+                        normalizationConstant[avDefects][avVerts]++;
+                        
+                        //add point to histogram for each frame the rotor has been alive at the
+                        for(int i = 0; i<it->lifetime; i++)
+                        {
+                            rotorStability[avDefects].addPoint(avVerts);
+                        }
+                    }
+
+                    
+                    //convert rotor stability data into 3d output
+                    vector<vector<int> > stability3D = buildHist3D(rotorStability);
+                    
+                    //normalize output
+                    int iIndex=0;
+                    for(auto it = stability3D.begin(); it != stability3D.end(); it++)
+                    {
+                        int jIndex=0;
+                        for(auto it1 = it->begin(); it1 != it->end(); it1++)
+                        {
+                            *it1/=normalizationConstant[iIndex][jIndex];
+                            jIndex++;
+                        }
+                        iIndex++;
+                    }
+                    
+                    //output in 2d vector form
+                    FOut2DVector(rotorStabHist3DStream, stability3D);
+                    rotorStability.clear();
+                }
+                
+                
                 
                 //Main Data Output
 				if (DETECTROTORS)

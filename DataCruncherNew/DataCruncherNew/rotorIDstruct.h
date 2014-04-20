@@ -10,9 +10,11 @@ struct rotorIDstruct
 	int birthX, birthY;
 	int deathX, deathY;
 	std::vector<int> length;
-	rotorIDstruct(int frame,int currentlength, int x, int y):
+    int totalVerts;
+    int totalDefects;
+	rotorIDstruct(int frame,int currentlength, int x, int y, int defectInit, int vertInit):
 	lifetime(1), birthframe(frame), birthX(x), birthY(y),
-	deathX(x), deathY(y)
+	deathX(x), deathY(y), totalVerts(defectInit), totalDefects(vertInit)
 	{
 		length.reserve(50);
 		length.push_back(currentlength);

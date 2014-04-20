@@ -36,7 +36,8 @@ void FOutRotorIdData(std::ofstream& aStream, std::vector<struct rotorIDstruct> &
 		aStream << *min_element(it->length.begin(),it->length.end()) << "\t"; //Min length
 		aStream << *max_element(it->length.begin(),it->length.end()) << "\t"; //Max length
 		aStream << it->birthX << "\t" << it->birthY << "\t"; //rotor birth locations
-		aStream << it->deathX << "\t" << it->deathY << "\n"; //rotor death locations
+		aStream << it->deathX << "\t" << it->deathY << "\t"; //rotor death locations
+        aStream << it->totalDefects << "\t" << it->totalVerts << "\n";
 
 		rotorCounter++;
     }
@@ -53,7 +54,8 @@ void FOutRotorIDColumns(std::ofstream& aStream)
     aStream << "Min Length" << "\t";
     aStream << "Max Length" << "\t";
     aStream << "BirthX" << "\t" << "BirthY" << "\t";
-    aStream << "DeathX" << "\t" << "DeathY" << "\n";
+    aStream << "DeathX" << "\t" << "DeathY" << "\t";
+    aStream << "totalDefects" << "\t" << "totalVerts" << "\n";
 
 }
 

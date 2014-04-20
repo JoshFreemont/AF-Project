@@ -30,12 +30,14 @@ inline void update_arrays(int &state_update, std::vector<int> &all_excited_coord
     return;
 }
 
-inline void updateRotorIdData(rotorIDstruct& rotor, const int& cycleLength, const int& averageX, const int& averageY)
+inline void updateRotorIdData(rotorIDstruct& rotor, const int& cycleLength, const int& averageX, const int& averageY, const int& defectInit, const int & vertInit)
 {
     rotor.lifetime++;
     rotor.length.push_back(cycleLength);
     rotor.deathX = averageX;
     rotor.deathY = averageY;
+    rotor.totalDefects += defectInit;
+    rotor.totalVerts += vertInit;
     return;
 }
 

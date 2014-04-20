@@ -77,7 +77,7 @@ Cpatch::Cpatch(const int &radius_init, const int &x_init, const int &y_init, arr
     {
         for(int j=y_init-m_radius; j<y_init+m_radius; ++j)
         {
-			int r2= i*i + j*j;
+			int r2= (i-x_init)*(i-x_init) + (j-y_init)*(j-y_init);
             if(r2<=(m_radius*m_radius))
             {
 				toAblate((i+GRIDWIDTH)%GRIDWIDTH,
@@ -98,7 +98,7 @@ void SpatchSTATIC::setPatch()
         {
 			if (toAblate(i,j))
 			{
-				if (m_delta < drand())
+				if (m_delta > drand())
 				{
 				(*inEAddress)(i,j)=1.0-m_epsilon;
 				(*inWAddress)(i,j)=1.0-m_epsilon;
@@ -118,7 +118,7 @@ void SpatchSTATIC::setPatch()
         {
 			if (toAblate(i,j))
 			{
-				if (m_nu < drand())
+				if (m_nu > drand())
 				{
 				(*inNAddress)(i,j) = (*inWAddress)(i,j);
 				(*inSAddress)(i,(j+1)%GRIDHEIGHT) =
@@ -173,7 +173,7 @@ void SpatchJOINT::setPatch()
         {
 			if (toAblate(i,j))
 			{
-				if (m_nu < drand())
+				if (m_nu > drand())
 				{
 				(*inNAddress)(i,j) = (*inWAddress)(i,j);
 				(*inSAddress)(i,(j+1)%GRIDHEIGHT) =
@@ -199,7 +199,7 @@ void CpatchSTATIC::setPatch()
         {
 			if (toAblate(i,j))
 			{
-				if (m_delta < drand())
+				if (m_delta > drand())
 				{
 				(*inEAddress)(i,j)=1.0-m_epsilon;
 				(*inWAddress)(i,j)=1.0-m_epsilon;
@@ -219,7 +219,7 @@ void CpatchSTATIC::setPatch()
         {
 			if (toAblate(i,j))
 			{
-				if (m_nu < drand())
+				if (m_nu > drand())
 				{
 				(*inNAddress)(i,j) = (*inWAddress)(i,j);
 				(*inSAddress)(i,(j+1)%GRIDHEIGHT) =
@@ -274,7 +274,7 @@ void CpatchJOINT::setPatch()
         {
 			if (toAblate(i,j))
 			{
-				if (m_nu < drand())
+				if (m_nu > drand())
 				{
 				(*inNAddress)(i,j) = (*inWAddress)(i,j);
 				(*inSAddress)(i,(j+1)%GRIDHEIGHT) =

@@ -123,3 +123,9 @@ void histogram::printHist(std::ofstream& aStream)
 
 //return vector of frequency
 std::vector<int> histogram::returnFreq(){return frequency;}
+
+
+void histogram::normalize(int normConstant, int selectedBin)
+{
+    frequency[selectedBin]/=normConstant;
+}

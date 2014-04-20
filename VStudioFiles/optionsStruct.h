@@ -24,21 +24,24 @@ struct optionsStruct
 	bool m_JOINT2MODEL;
 	bool m_OUTPUTDEFECTLOC;
 	bool m_DETECTCLEANBIRTH;
-	bool INITPATCH;
-	bool m_CIRCLE;
-	bool m_SQUARE;
-	bool m_DYNPATCH;
-	bool m_JOINTPATCH;
-	bool m_JOINTPATCH2;
-	bool m_STATICPATCH;
     
 	double m_nuSTART;
 	double m_nuMAX;
 	double m_nuSTEP;
 	double m_delta;
 	double m_epsilon;
+	double m_HOR;
 	int m_repeatMAX;
 	int m_MAXFRAME;
+
+	//Patch options
+	bool m_INITPATCH;
+	bool m_STATICCPATCH;
+	bool m_ABLATE;
+	int m_PATCHRADIUS;
+	double m_patchNuSTART;
+	double m_patchNuMAX;
+	double m_patchNuSTEP;
 };
 
 #endif

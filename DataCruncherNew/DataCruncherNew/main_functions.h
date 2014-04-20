@@ -36,8 +36,8 @@ inline void updateRotorIdData(rotorIDstruct& rotor, const int& cycleLength, cons
     rotor.length.push_back(cycleLength);
     rotor.deathX = averageX;
     rotor.deathY = averageY;
-    rotor.totalDefects = defectInit;
-    rotor.totalVerts = vertInit;
+    rotor.totalDefects += defectInit;
+    rotor.totalVerts += vertInit;
     return;
 }
 

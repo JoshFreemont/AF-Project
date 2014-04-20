@@ -105,15 +105,56 @@ void readOptionsFile(std::ifstream& opFile, optionsStruct& startOptions)
 	getline(opFile, line);
 	opFile >> dataPart;
 	startOptions.m_epsilon = static_cast<double>(atof(dataPart.c_str()));
+
+	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	getline(opFile, line);
+	opFile >> dataPart;
+	startOptions.m_HOR = static_cast<double>(atof(dataPart.c_str()));
     
 	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 	getline(opFile, line);
 	opFile >> dataPart;
 	startOptions.m_repeatMAX = atoi(dataPart.c_str());
+
 	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 	getline(opFile, line);
 	opFile >> dataPart;
 	startOptions.m_MAXFRAME = atoi(dataPart.c_str());
+
+	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	getline(opFile, line);
+	opFile >> std::boolalpha >> isTrue;
+	startOptions.m_INITPATCH = isTrue;
+
+	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	getline(opFile, line);
+	opFile >> std::boolalpha >> isTrue;
+	startOptions.m_STATICCPATCH = isTrue;
+
+	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	getline(opFile, line);
+	opFile >> std::boolalpha >> isTrue;
+	startOptions.m_ABLATE = isTrue;
+
+	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	getline(opFile, line);
+	opFile >> dataPart;
+	startOptions.m_PATCHRADIUS = atoi(dataPart.c_str());
+
+	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	getline(opFile, line);
+	opFile >> dataPart;
+	startOptions.m_patchNuSTART = static_cast<double>(atof(dataPart.c_str()));
+
+	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	getline(opFile, line);
+	opFile >> dataPart;
+	startOptions.m_patchNuMAX= static_cast<double>(atof(dataPart.c_str()));
+
+	opFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	getline(opFile, line);
+	opFile >> dataPart;
+	startOptions.m_patchNuSTEP= static_cast<double>(atof(dataPart.c_str()));
 }
 
 

@@ -75,7 +75,7 @@ FileNamer::FileNamer(const string& FileHeader): m_FileHeader(FileHeader)
 
     }
 
-    void FileNamer::RotorExCountFile(std::ofstream& aStream, double nu, double iteration, double rotorIDthreshold)
+void FileNamer::RotorExCountFile(std::ofstream& aStream, double nu, double iteration, double rotorIDthreshold, std::string type)
     {
         string fileName;
         m_Convert.clear();
@@ -83,8 +83,7 @@ FileNamer::FileNamer(const string& FileHeader): m_FileHeader(FileHeader)
         aStream.close();
 
         m_Convert << setprecision(4) << "rtrcellcount_nu_" << nu << "_IDThresh" << rotorIDthreshold << "_" << iteration;
-        fileName =
-        m_FileHeader + "_" + m_Convert.str() + ".txt";
+        fileName = m_FileHeader + "_" + m_Convert.str() + type + ".txt";
 
         aStream.open(fileName.c_str());
     }

@@ -18,7 +18,6 @@
 #include "patch.h"
 #include <algorithm>
 #include <string>
-#include <unistd.h>
 
 using namespace std;
 
@@ -113,8 +112,6 @@ int main(int argc, char** argv)
     int cyclicOld=0;
     int cyclicBackRP=0;
     
-    char * dir = getcwd(NULL, 0); // Platform-dependent, see reference link below
-    printf("Current dir: %s", dir);
     //other parameters
     MTRand drand(time(NULL));//seed rnd generator
     

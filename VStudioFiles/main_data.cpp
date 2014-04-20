@@ -52,7 +52,7 @@ int main(int argc, char** argv)
     const int GRIDSIZE=200;
     const int G_HEIGHT=GRIDSIZE;
     const int G_WIDTH=GRIDSIZE;
-	const int AFTHRESHOLD = 300; //Number of excited cells needed to be considered
+	const int AFTHRESHOLD = 300; //Number of excited cells needed to be considered to be
     //in AF
     
 	//iteration parameters
@@ -115,6 +115,9 @@ int main(int argc, char** argv)
 
     //other parameters
     MTRand drand(time(NULL));//seed rnd generator
+
+	//to normalize the stability of rotors across several runs for stability against nu and delta
+	vector<vector<int> > normalizationConstant(1000, vector<int> (1000, 1));
     
     //AF matrix declaration + initialization.
     array2D<double> inN (G_WIDTH, G_HEIGHT, VER);
@@ -663,7 +666,6 @@ int main(int argc, char** argv)
                 {
                     //array of normalization constants updated to average the individual data.
                     //indexed as [defects][verts]
-                    vector<vector<int> > normalizationConstant(1000, vector<int> (1000, 1));
                     
                     for(auto it = rotorIdData.begin(); it != rotorIdData.end(); it++)
                     {
@@ -690,26 +692,6 @@ int main(int argc, char** argv)
                         }
                     }
 
-                    
-                    //convert rotor stability data into 3d output
-                    vector<vector<int> > stability3D = buildHist3D(rotorStability);
-                    
-                    //normalize output
-                    int iIndex=0;
-                    for(auto it = stability3D.begin(); it != stability3D.end(); it++)
-                    {
-                        int jIndex=0;
-                        for(auto it1 = it->begin(); it1 != it->end(); it1++)
-                        {
-                            *it1/=normalizationConstant[iIndex][jIndex];
-                            jIndex++;
-                        }
-                        iIndex++;
-                    }
-                    
-                    //output in 2d vector form
-                    FOut2DVector(rotorStabHist3DStream, stability3D);
-                    rotorStability.clear();
                 }
                 
                 
@@ -785,6 +767,27 @@ int main(int argc, char** argv)
                         rotorIdNetwork_S.FOutEdgeDistList(rotorIdDistStream);
                         rotorIdTree.FOutGMLTreeEdgeList(rotorIdTreeStream);
 					}
+
+				//Print Rotor stability vs defects and vert conn
+				//convert rotor stability data into 3d output
+                    vector<vector<int> > stability3D = buildHist3D(rotorStability);
+                    
+                    //normalize output
+                    int iIndex=0;
+                    for(auto it = stability3D.begin(); it != stability3D.end(); it++)
+                    {
+                        int jIndex=0;
+                        for(auto it1 = it->begin(); it1 != it->end(); it1++)
+                        {
+                            *it1/=normalizationConstant[iIndex][jIndex];
+                            jIndex++;
+                        }
+                        iIndex++;
+                    }
+                    
+                    //output in 2d vector form
+                    FOut2DVector(rotorStabHist3DStream, stability3D);
+                    rotorStability.clear();
 				}
                 
 				if (COUNTEXCELLS)

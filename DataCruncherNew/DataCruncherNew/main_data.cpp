@@ -52,7 +52,7 @@ int main(int argc, char** argv)
     const int GRIDSIZE=200;
     const int G_HEIGHT=GRIDSIZE;
     const int G_WIDTH=GRIDSIZE;
-	const int AFTHRESHOLD = 300; //Number of excited cells needed to be considered
+	const int AFTHRESHOLD = 300; //Number of excited cells needed to be considered to be
     //in AF
     
 	//iteration parameters
@@ -112,8 +112,12 @@ int main(int argc, char** argv)
     int cyclicOld=0;
     int cyclicBackRP=0;
     
+
     //other parameters
     MTRand drand(time(NULL));//seed rnd generator
+
+	//to normalize the stability of rotors across several runs for stability against nu and delta
+	vector<vector<int> > normalizationConstant(1000, vector<int> (1000, 1));
     
     //AF matrix declaration + initialization.
     array2D<double> inN (G_WIDTH, G_HEIGHT, VER);
@@ -519,12 +523,12 @@ int main(int argc, char** argv)
                                 }
                                 
                                 //other models
-                                if(JOINT2MODEL) vertCount = static_cast<int>(round((double)cycleLength*VER*2.0));
-                                else if(JOINTMODEL) defectCount = static_cast<int>(round((double)cycleLength*(1.0-HOR)));
+                                if(JOINT2MODEL) vertCount = static_cast<int>(floor((double)cycleLength*VER*2.0)+0.5);
+                                else if(JOINTMODEL) defectCount = static_cast<int>(floor((double)cycleLength*(1.0-HOR)+0.5));
                                 else if(!STATICMODEL)//DYNAMIC
                                 {
-                                    vertCount = static_cast<int>(round((double)cycleLength*VER*2.0));
-                                    defectCount = static_cast<int>(round((double)cycleLength*(1.0-HOR)));
+                                    vertCount = static_cast<int>(floor((double)cycleLength*VER*2.0+0.5));
+                                    defectCount = static_cast<int>(floor((double)cycleLength*(1.0-HOR)+0.5));
                                 }
                                 
                                 
@@ -567,12 +571,12 @@ int main(int argc, char** argv)
                                 }
                                 
                                 //other models
-                                if(JOINT2MODEL) vertCount = static_cast<int>(round((double)cycleLength*VER*2.0));
-                                else if(JOINTMODEL) defectCount = static_cast<int>(round((double)cycleLength*(1.0-HOR)));
-                                else//DYNAMIC
+                                if(JOINT2MODEL) vertCount = static_cast<int>(floor((double)cycleLength*VER*2.0+0.5));
+                                else if(JOINTMODEL) defectCount = static_cast<int>(floor((double)cycleLength*(1.0-HOR)+0.5));
+                                else if (!STATICMODEL)//DYNAMIC
                                 {
-                                    vertCount = static_cast<int>(round((double)cycleLength*VER*2.0));
-                                    defectCount = static_cast<int>(round((double)cycleLength*(1.0-HOR)));
+                                    vertCount = static_cast<int>(floor((double)cycleLength*VER*2.0+0.5));
+                                    defectCount = static_cast<int>(floor((double)cycleLength*(1.0-HOR)+0.5));
                                 }
                                 
                                 //add rotorIdData struct + isRotorAliveNow = true for new_rotor = maxRotorId
@@ -662,7 +666,6 @@ int main(int argc, char** argv)
                 {
                     //array of normalization constants updated to average the individual data.
                     //indexed as [defects][verts]
-                    vector<vector<int> > normalizationConstant(1000, vector<int> (1000, 1));
                     
                     for(auto it = rotorIdData.begin(); it != rotorIdData.end(); it++)
                     {
@@ -689,26 +692,6 @@ int main(int argc, char** argv)
                         }
                     }
 
-                    
-                    //convert rotor stability data into 3d output
-                    vector<vector<int> > stability3D = buildHist3D(rotorStability);
-                    
-                    //normalize output
-                    int iIndex=0;
-                    for(auto it = stability3D.begin(); it != stability3D.end(); it++)
-                    {
-                        int jIndex=0;
-                        for(auto it1 = it->begin(); it1 != it->end(); it1++)
-                        {
-                            *it1/=normalizationConstant[iIndex][jIndex];
-                            jIndex++;
-                        }
-                        iIndex++;
-                    }
-                    
-                    //output in 2d vector form
-                    FOut2DVector(rotorStabHist3DStream, stability3D);
-                    rotorStability.clear();
                 }
                 
                 
@@ -784,6 +767,27 @@ int main(int argc, char** argv)
                         rotorIdNetwork_S.FOutEdgeDistList(rotorIdDistStream);
                         rotorIdTree.FOutGMLTreeEdgeList(rotorIdTreeStream);
 					}
+
+				//Print Rotor stability vs defects and vert conn
+				//convert rotor stability data into 3d output
+                    vector<vector<int> > stability3D = buildHist3D(rotorStability);
+                    
+                    //normalize output
+                    int iIndex=0;
+                    for(auto it = stability3D.begin(); it != stability3D.end(); it++)
+                    {
+                        int jIndex=0;
+                        for(auto it1 = it->begin(); it1 != it->end(); it1++)
+                        {
+                            *it1/=normalizationConstant[iIndex][jIndex];
+                            jIndex++;
+                        }
+                        iIndex++;
+                    }
+                    
+                    //output in 2d vector form
+                    FOut2DVector(rotorStabHist3DStream, stability3D);
+                    rotorStability.clear();
 				}
                 
 				if (COUNTEXCELLS)

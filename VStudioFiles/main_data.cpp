@@ -768,26 +768,6 @@ int main(int argc, char** argv)
                         rotorIdTree.FOutGMLTreeEdgeList(rotorIdTreeStream);
 					}
 
-				//Print Rotor stability vs defects and vert conn
-				//convert rotor stability data into 3d output
-                    vector<vector<int> > stability3D = buildHist3D(rotorStability);
-                    
-                    //normalize output
-                    int iIndex=0;
-                    for(auto it = stability3D.begin(); it != stability3D.end(); it++)
-                    {
-                        int jIndex=0;
-                        for(auto it1 = it->begin(); it1 != it->end(); it1++)
-                        {
-                            *it1/=normalizationConstant[iIndex][jIndex];
-                            jIndex++;
-                        }
-                        iIndex++;
-                    }
-                    
-                    //output in 2d vector form
-                    FOut2DVector(rotorStabHist3DStream, stability3D);
-                    rotorStability.clear();
 				}
                 
 				if (COUNTEXCELLS)
@@ -821,6 +801,30 @@ int main(int argc, char** argv)
 				}
                 
             }//end repeat loop
+
+			if (DETECTROTORS)
+			{
+				//Print Rotor stability vs defects and vert conn
+				//convert rotor stability data into 3d output
+                    vector<vector<int> > stability3D = buildHist3D(rotorStability);
+                    
+                    //normalize output
+                    int iIndex=0;
+                    for(auto it = stability3D.begin(); it != stability3D.end(); it++)
+                    {
+                        int jIndex=0;
+                        for(auto it1 = it->begin(); it1 != it->end(); it1++)
+                        {
+                            *it1/=normalizationConstant[iIndex][jIndex];
+                            jIndex++;
+                        }
+                        iIndex++;
+                    }
+                    
+                    //output in 2d vector form
+                    FOut2DVector(rotorStabHist3DStream, stability3D);
+                    rotorStability.clear();
+			}
             
             //clear PDBirth data between nu loops
             pDBirthNRotors.clear();

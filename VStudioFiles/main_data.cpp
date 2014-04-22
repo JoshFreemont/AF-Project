@@ -117,7 +117,7 @@ int main(int argc, char** argv)
     MTRand drand(time(NULL));//seed rnd generator
 
 	//to normalize the stability of rotors across several runs for stability against nu and delta
-	vector<vector<int> > normalizationConstant(1000, vector<int> (1000, 1));
+	vector<vector<int> > normalizationConstant(1000, vector<int> (1000, 0));
     
     //AF matrix declaration + initialization.
     array2D<double> inN (G_WIDTH, G_HEIGHT, VER);
@@ -287,7 +287,6 @@ int main(int argc, char** argv)
                     MyFileNamer.HistoFile(deathRateStream, nu, repeat, rotorIdThresh, "DeathRate");
                     MyFileNamer.XYFile(eDBirthNRotorStream, nu, repeat, rotorIdThresh, "E(dBirth)");
                     MyFileNamer.HistoFile(pDBirthNRotorHist3DStream, nu, repeat, rotorIdThresh, "3D");
-                    MyFileNamer.HistoFile(rotorStabHist3DStream, nu, repeat, rotorIdThresh, "Stab_3D");
                     MyFileNamer.RotorExCountFile(rotorCellStabilitystream, nu, repeat, rotorIdThresh, "stabCount");
                     MyFileNamer.RotorExCountFile(rotorCellBirthstream, nu, repeat, rotorIdThresh, "birthCount");
 
@@ -807,7 +806,7 @@ int main(int argc, char** argv)
 				//Print Rotor stability vs defects and vert conn
 				//convert rotor stability data into 3d output
                     vector<vector<int> > stability3D = buildHist3D(rotorStability);
-                    
+                    ofstream normArrayOut ("normArray.txt");
                     //normalize output
                     int iIndex=0;
                     for(auto it = stability3D.begin(); it != stability3D.end(); it++)
@@ -815,12 +814,15 @@ int main(int argc, char** argv)
                         int jIndex=0;
                         for(auto it1 = it->begin(); it1 != it->end(); it1++)
                         {
+							if (normalizationConstant[iIndex][jIndex]!=0)
                             *it1/=normalizationConstant[iIndex][jIndex];
+							normArrayOut << normalizationConstant[iIndex][jIndex] << "\t";
                             jIndex++;
                         }
                         iIndex++;
+						normArrayOut << endl;
                     }
-                    
+                    MyFileNamer.HistoFile(rotorStabHist3DStream, nu, repeatMAX, rotorIdThresh, "Stab_3D");
                     //output in 2d vector form
                     FOut2DVector(rotorStabHist3DStream, stability3D);
                     rotorStability.clear();
